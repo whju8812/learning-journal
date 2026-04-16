@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>軟體技術學習日誌</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --bg2: #1a1d2e;
+      --bg3: #242738;
+      --accent: #6c63ff;
+      --accent2: #4ecdc4;
+      --accent3: #ff6b6b;
+      --text: #e8eaf6;
+      --muted: #8b8fa8;
+      --border: #2e3151;
+      --card: #1e2135;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── Header ─── */
+    header {
+      background: linear-gradient(135deg, #1a1d2e 0%, #242738 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .logo-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .date-badge {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: .35rem .9rem;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    /* ─── Nav tabs ─── */
+    nav {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      padding: 0 2rem;
+    }
+    .tab {
+      padding: .9rem 1.4rem;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      color: var(--muted);
+      font-size: .9rem;
+      white-space: nowrap;
+      transition: all .2s;
+      user-select: none;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* ─── Layout ─── */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ─── Section header ─── */
+    .section-header {
+      margin-bottom: 1.5rem;
+    }
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: .3rem;
+    }
+    .section-sub {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    /* ─── Loading ─── */
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 3rem 1rem;
+      color: var(--muted);
+    }
+    .spinner {
+      width: 24px; height: 24px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Source filter ─── */
+    .filter-bar {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .filter-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: .3rem .85rem;
+      font-size: .8rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ─── News grid ─── */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
+    .source-block {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .source-block:hover { border-color: var(--accent); }
+    .source-head {
+      padding: .9rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .source-icon { font-size: 1.1rem; }
+    .source-name { font-weight: 600; font-size: .95rem; }
+    .source-cat {
+      margin-left: auto;
+      background: var(--bg3);
+      border-radius: 10px;
+      padding: .15rem .6rem;
+      font-size: .75rem;
+      color: var(--muted);
+    }
+    .news-list { padding: .5rem 0; }
+    .news-item {
+      padding: .65rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      transition: background .15s;
+    }
+    .news-item:last-child { border-bottom: none; }
+    .news-item:hover { background: var(--bg3); }
+    .news-title {
+      font-size: .88rem;
+      line-height: 1.45;
+      margin-bottom: .25rem;
+    }
+    .news-meta {
+      display: flex;
+      gap: .75rem;
+      font-size: .75rem;
+      color: var(--muted);
+    }
+    .lang-badge {
+      background: rgba(108, 99, 255, .15);
+      color: var(--accent);
+      border-radius: 8px;
+      padding: .05rem .4rem;
+    }
+    .stars { color: #f5c518; }
+
+    /* ─── Sources table ─── */
+    .sources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .source-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .source-card-head {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-weight: 600;
+    }
+    .source-card-url {
+      font-size: .78rem;
+      color: var(--accent2);
+      word-break: break-all;
+      text-decoration: none;
+    }
+    .source-card-url:hover { text-decoration: underline; }
+    .source-card-cat {
+      font-size: .8rem;
+      color: var(--muted);
+    }
+    .source-card-count {
+      margin-top: auto;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+    .count-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--accent2);
+      border-radius: 50%;
+      margin-right: .4rem;
+    }
+
+    /* ─── Learning directions ─── */
+    .learning-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.2rem;
+    }
+    .learning-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s, transform .2s;
+    }
+    .learning-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .learning-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .lc-head {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .lc-icon { font-size: 1.4rem; }
+    .lc-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+      margin-bottom: 1rem;
+    }
+    .topic-tag {
+      background: rgba(108, 99, 255, .12);
+      border: 1px solid rgba(108, 99, 255, .25);
+      color: #a89fff;
+      border-radius: 8px;
+      padding: .2rem .6rem;
+      font-size: .78rem;
+    }
+    .lc-resources-label {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-bottom: .4rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .lc-resources {
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+    }
+    .resource-link {
+      font-size: .82rem;
+      color: var(--accent2);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+    }
+    .resource-link::before { content: '→'; opacity: .6; }
+    .resource-link:hover { text-decoration: underline; }
+
+    /* ─── Stats bar ─── */
+    .stats-bar {
+      display: flex;
+      gap: 1.5rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.4rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-label { font-size: .75rem; color: var(--muted); }
+
+    /* ─── Refresh button ─── */
+    .refresh-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      padding: .45rem 1rem;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .refresh-btn:hover { opacity: .85; }
+    .refresh-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    @media (max-width: 640px) {
+      main { padding: 1rem; }
+      header { padding: 1rem; }
+      nav { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">📚</div>
+    軟體技術學習日誌
+  </div>
+  <div class="date-badge" id="dateDisplay">{{ today }}</div>
+</header>
+
+<nav>
+  <div class="tab active" onclick="switchTab('news', this)">📰 今日技術內容</div>
+  <div class="tab" onclick="switchTab('sources', this)">🔗 資料出處</div>
+  <div class="tab" onclick="switchTab('learning', this)">🎯 學習方向</div>
+</nav>
+
+<main>
+
+  <!-- ── Section 1: 今日技術內容 ── -->
+  <section id="tab-news" class="section active">
+    <div class="section-header" style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+      <div class="section-header">
+        <div class="section-title">今日最新技術內容</div>
+        <div class="section-sub">彙整自多個軟體技術來源，即時更新</div>
+      </div>
+      <button class="refresh-btn" id="refreshBtn" onclick="loadNews()">重新整理</button>
+    </div>
+
+    <div id="stats-bar" class="stats-bar" style="display:none;">
+      <div class="stat">
+        <div class="stat-num" id="stat-sources">-</div>
+        <div class="stat-label">資料來源</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-articles">-</div>
+        <div class="stat-label">篇文章</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-time">-</div>
+        <div class="stat-label">更新時間</div>
+      </div>
+    </div>
+
+    <div class="filter-bar" id="filterBar" style="display:none;"></div>
+
+    <div id="news-loading" class="loading">
+      <div class="spinner"></div>
+      正在從各大技術平台彙整最新資訊…
+    </div>
+    <div id="news-grid" class="news-grid"></div>
+  </section>
+
+  <!-- ── Section 2: 資料出處 ── -->
+  <section id="tab-sources" class="section">
+    <div class="section-header">
+      <div class="section-title">資料出處</div>
+      <div class="section-sub">本系統從以下來源自動彙整軟體技術內容</div>
+    </div>
+    <div id="sources-loading" class="loading" style="display:none;">
+      <div class="spinner"></div>載入中…
+    </div>
+    <div id="sources-grid" class="sources-grid"></div>
+  </section>
+
+  <!-- ── Section 3: 學習方向 ── -->
+  <section id="tab-learning" class="section">
+    <div class="section-header">
+      <div class="section-title">學習方向</div>
+      <div class="section-sub">根據今日技術趨勢，建議以下學習路徑</div>
+    </div>
+    <div class="learning-grid">
+      {% for d in learning_directions %}
+      <div class="learning-card">
+        <div class="lc-head">
+          <span class="lc-icon">{{ d.icon }}</span>
+          {{ d.title }}
+        </div>
+        <div class="lc-topics">
+          {% for t in d.topics %}
+          <span class="topic-tag">{{ t }}</span>
+          {% endfor %}
+        </div>
+        <div class="lc-resources-label">推薦資源</div>
+        <div class="lc-resources">
+          {% for r in d.resources %}
+          <a class="resource-link" href="https://{{ r }}" target="_blank" rel="noopener">{{ r }}</a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+</main>
+
+<script>
+  let newsData = [];
+
+  async function loadNews() {
+    const btn = document.getElementById('refreshBtn');
+    btn.disabled = true;
+    btn.textContent = '載入中…';
+    document.getElementById('news-loading').style.display = 'flex';
+    document.getElementById('news-grid').innerHTML = '';
+    document.getElementById('stats-bar').style.display = 'none';
+    document.getElementById('filterBar').style.display = 'none';
+
+    try {
+      const resp = await fetch('/api/news');
+      newsData = await resp.json();
+      renderNews(newsData);
+      renderSourcesFromData(newsData);
+    } catch (e) {
+      document.getElementById('news-loading').innerHTML =
+        '<span style="color:#ff6b6b">載入失敗，請檢查網路連線後重試。</span>';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '重新整理';
+    }
+  }
+
+  function renderNews(data, filter = 'all') {
+    const grid = document.getElementById('news-grid');
+    const loading = document.getElementById('news-loading');
+    loading.style.display = 'none';
+    grid.innerHTML = '';
+
+    const filtered = filter === 'all' ? data : data.filter(s => s.category === filter);
+    const totalArticles = filtered.reduce((s, x) => s + x.count, 0);
+
+    document.getElementById('stat-sources').textContent = filtered.length;
+    document.getElementById('stat-articles').textContent = totalArticles;
+    document.getElementById('stat-time').textContent = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
+    document.getElementById('stats-bar').style.display = 'flex';
+
+    // Build filter bar
+    const bar = document.getElementById('filterBar');
+    bar.style.display = 'flex';
+    if (bar.children.length === 0) {
+      const allBtn = makeFilterBtn('全部', 'all', filter);
+      bar.appendChild(allBtn);
+      const cats = [...new Set(data.map(s => s.category))];
+      cats.forEach(cat => bar.appendChild(makeFilterBtn(cat, cat, filter)));
+    } else {
+      [...bar.querySelectorAll('.filter-btn')].forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+    }
+
+    filtered.forEach(source => {
+      if (!source.items.length) return;
+      const block = document.createElement('div');
+      block.className = 'source-block';
+      block.innerHTML = `
+        <div class="source-head">
+          <span class="source-icon">${source.icon}</span>
+          <span class="source-name">${source.name}</span>
+          <span class="source-cat">${source.category}</span>
+        </div>
+        <div class="news-list">
+          ${source.items.map(item => `
+            <a class="news-item" href="${escHtml(item.url)}" target="_blank" rel="noopener">
+              <div class="news-title">${escHtml(item.title)}</div>
+              <div class="news-meta">
+                ${item.date ? `<span>${item.date}</span>` : ''}
+                ${item.language ? `<span class="lang-badge">${escHtml(item.language)}</span>` : ''}
+                ${item.stars ? `<span class="stars">★ ${item.stars.toLocaleString()}</span>` : ''}
+              </div>
+            </a>
+          `).join('')}
+        </div>`;
+      grid.appendChild(block);
+    });
+
+    if (!filtered.length || !filtered.some(s => s.items.length)) {
+      grid.innerHTML = '<p style="color:var(--muted);padding:2rem;">此分類目前無資料。</p>';
+    }
+  }
+
+  function makeFilterBtn(label, filter, current) {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (filter === current ? ' active' : '');
+    btn.dataset.filter = filter;
+    btn.textContent = label;
+    btn.onclick = () => renderNews(newsData, filter);
+    return btn;
+  }
+
+  function renderSourcesFromData(data) {
+    const grid = document.getElementById('sources-grid');
+    grid.innerHTML = '';
+    data.forEach(source => {
+      const card = document.createElement('div');
+      card.className = 'source-card';
+      card.innerHTML = `
+        <div class="source-card-head">
+          <span>${source.icon}</span>
+          <span>${source.name}</span>
+        </div>
+        <div class="source-card-cat">${source.category}</div>
+        <a class="source-card-url" href="${escHtml(source.url)}" target="_blank" rel="noopener">${escHtml(source.url)}</a>
+        <div class="source-card-count">
+          <span class="count-dot"></span>
+          今日取得 ${source.count} 篇
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+
+  // Auto-load on start
+  loadNews();
+</script>
+
+</body>
+</html>
