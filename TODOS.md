@@ -38,3 +38,33 @@ CREATE INDEX IF NOT EXISTS idx_journal_entries_date ON journal_entries (entry_da
 ```
 
 **Depends on:** Nothing. Can be done anytime.
+
+---
+
+## Deferred from /plan-design-review (2026-04-16)
+
+### [ ] Run /design-consultation to create DESIGN.md
+
+**What:** Execute `/design-consultation` to formalize the implicit CSS variable design system into a proper DESIGN.md file.
+
+**Why:** The current design system is implicit (12 CSS variables in `index.html`). No reference document exists for future features. New components risk drifting from the established palette and spacing.
+
+**Pros:** Unified design language, faster future feature work, consistency guarantee.
+**Cons:** Extra work, not blocking v1.
+**Context:** The plan-design-review mapped all new components to existing CSS variables, but this is a one-time mapping. A DESIGN.md makes it systematic.
+
+**Depends on:** Nothing. Can be done anytime.
+
+---
+
+### [ ] Screen reader test for journal tab after implementation
+
+**What:** After the journal tab is implemented, test with a screen reader (NVDA on Windows) to verify ARIA landmarks, tab navigation, and date selection work correctly.
+
+**Why:** ARIA specs were added to the plan (role="navigation", role="tablist", role="alert") but need real-world validation. Keyboard navigation for date sidebar ↑↓ and inner tabs ←→ must be verified.
+
+**Pros:** Ensures accessibility is real, not just documented.
+**Cons:** Requires extra testing time.
+**Context:** Plan specifies: sidebar `role="navigation" aria-label="日期導航"`, inner tabs use WAI-ARIA tabs pattern, health banner `role="alert"`. Touch targets ≥ 44px.
+
+**Depends on:** Journal tab must be implemented first.

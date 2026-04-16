@@ -170,26 +170,231 @@ curl -X POST https://your-app.vercel.app/api/entries \
 
 Add "📖 學習日誌" as a 4th tab in the existing `<nav>` bar. Inside the tab:
 
+### Information Hierarchy (visual priority order)
+
 ```
-┌─────────────────────────────────────────────────────┐
-│  [⚠ 昨日日誌未生成]  (health banner, shows if overdue) │
-├────────────────┬────────────────────────────────────┤
-│  DATE LIST     │  ENTRY VIEW                        │
-│                │                                    │
-│  2026-04-16 ←  │  [技術內容]  [學習方向分析]  ← tabs  │
-│  2026-04-15    │                                    │
-│  2026-04-14    │  tech_content prose here...        │
-│  ...           │                                    │
-│                │  (or per-direction cards)          │
-└────────────────┴────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│  [⚠ 昨日日誌未生成]  (health banner, ONLY if overdue)        │
+├──────────┬──────────────────────────────────────────────────┤
+│ DATE     │  ① 2026年4月16日 技術日誌    ← 日期大標題 (1.4rem) │
+│ SIDEBAR  │  ─────────────────────────────────────           │
+│ (180px)  │  ② [技術內容]  [學習方向分析]  ← inner tabs        │
+│          │  ─────────────────────────────────────           │
+│ 04/16 ←  │  ③ 主要內容區                                    │
+│ 04/15    │     tech_content prose (技術內容 tab)              │
+│ 04/14    │     — OR —                                       │
+│ ...      │     5 direction cards (學習方向分析 tab)           │
+│          │                                                  │
+│ (muted   │  ④ 來源連結 (sources, 最底部, 小字)               │
+│  text,   │                                                  │
+│  narrow) │                                                  │
+└──────────┴──────────────────────────────────────────────────┘
 ```
 
+**Visual weight:** Content area is the primary focus (~80% width). Date sidebar is secondary navigation (~180px fixed width, muted text, `var(--muted)` color). The user is here to READ, not to pick dates.
+
+### Layout & Navigation Rules
+
 - Left sidebar: vertical list of clickable date chips from `GET /api/entries` (sorted desc)
+  - Fixed width 180px, scrollable if many dates
+  - Active date highlighted with `var(--accent)` left border
+  - Show dates as compact format: `MM/DD (週X)` e.g. `04/16 (三)`
+  - **Today's entry:** If today's date exists in the list, show a `✦ 今天` badge next to it (accent color). This creates the "new content!" moment on daily revisit.
+  - Max visible: ~20 dates before scroll, no pagination needed (v1)
+- Content area header: date displayed as full format `YYYY年MM月DD日 技術日誌`
+  - If viewing today's entry: add a small `🆕 今日日誌` badge next to the date title (green accent, `var(--accent2)`)
+  - If viewing a past entry: no badge, just the date
 - Click a date → fetch `GET /api/entries/<date>` → display in right panel
-- Two inner tabs: 技術內容 (prose) and 學習方向分析 (5 direction cards)
-- Health banner at top if `is_overdue: true` from health endpoint
+- Two inner tabs: 技術內容 (prose) and 學習方向分析 (5 direction sections)
+- **學習方向分析 layout:** NOT a card grid — use vertical stacked sections.
+  Each direction is a full-width block:
+  ```
+  ┌─────────────────────────────────────────────────┐
+  │ 🤖 AI / 機器學習                                │
+  │ summary 文字（一段）                              │
+  │ • item 1                                        │
+  │ • item 2                                        │
+  ├─────────────────────────────────────────────────┤
+  │ ☁️ 雲端與基礎架構                               │
+  │ summary 文字                                     │
+  │ • item 1                                        │
+  └─────────────────────────────────────────────────┘
+  ```
+  - Section heading: icon + direction name, `font-weight: 600`, left-aligned
+  - Summary: regular text, `var(--text)` color
+  - Items: bullet list, `var(--muted)` color, indented
+  - Sections separated by `1px solid var(--border)` divider, not floating cards
+  - Directions with no items: still show summary, items section omitted
+  - This reads like a report, not a dashboard. Avoids AI slop pattern #2 (3-column feature grid).
+- 來源 (sources) section at bottom of content area, small text, collapsible
+  - Default: collapsed, showing only "📎 參考來源 (N)" as a clickable toggle
+  - Expanded: vertical list of `{title → url}` links, `var(--muted)` text, `var(--accent2)` link color
+  - If sources array is empty or null: omit the section entirely
+- Health banner at top of the journal tab if `is_overdue: true` from health endpoint
+  - Yellow/amber background (`#f5c518` on dark), icon ⚠, text: "昨日日誌未生成"
+  - Dismissible (X button, session-only dismiss)
+
+### Design Token Mapping (new journal components → existing CSS variables)
+
+No DESIGN.md exists. All new components must use the existing CSS custom properties in `index.html`:
+
+| New Component | Background | Text | Border | Accent |
+|---|---|---|---|---|
+| Date sidebar | `--bg2` | `--muted` | `--border` (right edge) | `--accent` (active date) |
+| Date chip (default) | transparent | `--muted` | none | — |
+| Date chip (active) | `--bg3` | `--text` | `--accent` (left 3px) | — |
+| Date chip (today) | transparent | `--accent2` | — | `--accent2` (badge) |
+| Entry header (date title) | transparent | `--text` | — | — |
+| Entry inner tabs | same as existing `.tab` class | — | — | `--accent` (active) |
+| Direction section heading | transparent | `--text` | — | — |
+| Direction section divider | — | — | `--border` | — |
+| Direction summary text | transparent | `--text` | — | — |
+| Direction items | transparent | `--muted` | — | — |
+| Shimmer animation | `--bg3` → `--border` → `--bg3` | — | — | — |
+| Health banner | `rgba(245,197,24,0.1)` | `#f5c518` | `#f5c518` | — |
+| Empty state icon | — | `--accent` | — | — |
+| Empty state text | — | `--muted` | — | — |
+| Empty state CTA | `--accent` | `#fff` | — | — |
+| Error text | — | `--accent3` | — | — |
+| Error retry button | `--bg3` | `--text` | `--border` | — |
+
+**Reuse existing classes where possible:**
+- Inner tabs → reuse `.tab` class exactly
+- Direction section heading → match `.section-title` sizing (1.05rem, 600 weight)
+- CTA button → reuse `.refresh-btn` class
+- Scrollable sidebar → new CSS, but follow existing card-style border radius (14px on containers)
+
+### Responsive Behavior
+
+**Desktop (> 768px):** sidebar (180px fixed) + content area (flex: 1) side by side.
+
+**Tablet (481–768px):** Same layout but sidebar shrinks to 140px. Content area adapts.
+
+**Mobile (≤ 480px):**
+```
+┌─────────────────────────────────────┐
+│ [⚠ banner if overdue]              │
+├─────────────────────────────────────┤
+│ ← 04/14 | 04/15 | ✦04/16 | →     │  ← 橫向 scrollable date strip
+├─────────────────────────────────────┤
+│ 2026年4月16日 技術日誌 🆕           │
+│ [技術內容] [學習方向分析]            │
+│                                     │
+│ 內容區（全寬）                       │
+│                                     │
+└─────────────────────────────────────┘
+```
+- Sidebar 消失，轉為頂部橫向 scrollable date strip
+- Date strip: `display: flex; overflow-x: auto; gap: 8px;`
+- Date chips 變為 pill 形狀 (`border-radius: 20px; padding: 6px 12px`)
+- Active date 有 accent bottom border
+- Content area 占滿全寬
+- Inner tabs 仍為橫向 tab bar
+- Direction sections 不變（已經是全寬垂直堆疊）
+
+**Breakpoint:** Use existing `@media (max-width: 640px)` breakpoint from current CSS. Add a new `@media (max-width: 480px)` specifically for sidebar → date strip conversion.
+
+### Accessibility
+
+**Keyboard navigation:**
+- Date sidebar / date strip: arrow keys (↑↓ on desktop, ←→ on mobile) to navigate dates, Enter to select
+- Inner tabs (技術內容 / 學習方向分析): arrow keys ←→ to switch, based on WAI-ARIA tabs pattern
+- Tab order: health banner → date nav → inner tabs → content
+
+**ARIA landmarks:**
+- Date sidebar: `role="navigation"` + `aria-label="日期導航"`
+- Each date chip: `role="tab"` within a `role="tablist"`
+- Inner tabs: `role="tablist"` + `role="tab"` + `role="tabpanel"`
+- Content area: `role="main"` (already on `<main>`)
+- Health banner: `role="alert"`
+
+**Touch targets:**
+- Date chips: minimum 44px height (already satisfied by padding design)
+- Inner tab buttons: minimum 44px tap area
+- Dismiss button on health banner: 44x44px
+
+**Color contrast:**
+- All body text (`--text: #e8eaf6` on `--bg: #0f1117`): contrast ratio ~13:1 ✓
+- Muted text (`--muted: #8b8fa8` on `--bg: #0f1117`): contrast ratio ~5.3:1 ✓ (above 4.5:1)
+- Accent on dark (`--accent: #6c63ff` on `--bg: #0f1117`): ~4.8:1 ✓
 - All journal content rendered via `escHtml()` (existing function, XSS safe)
 - Keep existing RSS/real-time view unchanged (the 3 existing tabs)
+- Default view: most recent entry auto-loaded on tab open
+
+### Content Formatting
+
+**tech_content (技術內容 tab):**
+- Pure text rendering — no Markdown parser needed
+- Split on `\n\n` into `<p>` paragraphs
+- Line height: 1.7 for readability
+- Font size: 0.95rem (slightly larger than news items for reading comfort)
+- Max width: 700px within content area (prevent overly long lines)
+- `var(--text)` color on `var(--bg)` background
+
+**learning_analysis (學習方向分析 tab):**
+- See "學習方向分析 layout" section above for stacked section format
+- Directions that have items: show summary + bulleted items
+- Directions with empty items array: show summary only, items section omitted
+- Directions with more items get more vertical space — no fixed card height
+
+### Date Sidebar Loading
+
+- Load all dates from `GET /api/entries` on tab open (typically < 365 entries/year, single API call)
+- No pagination in v1 — if the list exceeds viewport, sidebar scrolls independently (`overflow-y: auto`)
+
+### Interaction States
+
+Every async operation in the journal tab has defined states:
+
+```
+  FEATURE                | LOADING                  | EMPTY                          | ERROR                    | SUCCESS
+  -----------------------|--------------------------|--------------------------------|--------------------------|--------
+  日期列表 sidebar        | 3 個 shimmer placeholder  | 見「首次空狀態」                | "無法載入日期列表" + 重試   | 日期 chips 顯示
+  日誌內容 (tech_content) | 段落 shimmer 動畫         | —（sidebar 有日期才能點）       | "載入日誌失敗" + 重試按鈕  | prose 顯示
+  學習方向 cards          | 5 張 skeleton cards       | —（同上）                      | 同上                      | 5 張卡片顯示
+  Health banner          | 不顯示（靜默載入）         | 不顯示                         | 不顯示（靜默失敗）         | 條件顯示
+```
+
+#### 首次空狀態（DB 無任何 entry）
+
+這是上線後最可能的第一個體驗。不是錯誤，是正常狀態。
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                                                          │
+│              📖                                          │
+│                                                          │
+│        學習日誌即將開始                                    │
+│                                                          │
+│   Claude 每日自動研究軟體技術趨勢，                        │
+│   撰寫你的專屬學習日誌。                                   │
+│                                                          │
+│   第一篇日誌將在明天早上自動產生。                          │
+│                                                          │
+│   ┌──────────────────────────┐                           │
+│   │  📰 先看今日技術新聞 →    │   ← 導向既有的新聞 tab      │
+│   └──────────────────────────┘                           │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+- 居中顯示，不顯示 sidebar（sidebar 在有 entry 後才出現）
+- 主要 CTA "先看今日技術新聞" 切換到第一個 tab
+- 文字用 `var(--muted)` 色，圖示用 `var(--accent)` 色
+- 語氣溫暖、期待感，不是冷冰冰的「無資料」
+
+#### Loading 狀態
+
+- **Shimmer/Skeleton 動畫**，不用 spinner — 與現有 `.loading` spinner 區分
+- Sidebar: 3 個圓角矩形 shimmer（模擬日期 chips）
+- Content area: 2 段 shimmer lines + 5 個 skeleton cards（模擬完整 entry）
+- 動畫：左到右的漸層光掃過 (`background: linear-gradient(90deg, var(--bg3) 25%, var(--border) 50%, var(--bg3) 75%)`)
+
+#### Error 狀態
+
+- 紅色 icon (`var(--accent3)`) + 錯誤訊息 + 「重試」按鈕
+- 不顯示 stack trace 或技術細節
+- 格式：`"載入失敗，請稍後重試。"` + 重試 button
 
 ## Implementation Notes (from /plan-eng-review)
 
@@ -253,9 +458,8 @@ These are concrete gotchas to address during implementation — not design decis
 | CEO Review | `/plan-ceo-review` | Scope & strategy | 0 | — | — |
 | Codex Review | `/codex review` | Independent 2nd opinion | 0 | — | — |
 | Eng Review | `/plan-eng-review` | Architecture & tests (required) | 1 | CLEAR (PLAN) | 6 issues, 2 critical gaps (resolved in doc) |
-| Design Review | `/plan-design-review` | UI/UX gaps | 0 | — | — |
+| Design Review | `/plan-design-review` | UI/UX gaps | 1 | CLEAR (FULL) | score: 4/10 → 8/10, 8 decisions made |
 | DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
 
-**CROSS-MODEL:** Outside voice (Claude subagent) ran. Key additions: date nav UX wireframe sketched, supabase-py version pinning noted, upsert/concurrency pattern documented.
 **UNRESOLVED:** 0
-**VERDICT:** ENG CLEARED — ready to implement.
+**VERDICT:** ENG + DESIGN CLEARED — ready to implement.
