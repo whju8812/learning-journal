@@ -42,7 +42,7 @@ And displays them alongside 5 learning directions (defined in `LEARNING_DIRECTIO
 
 The journal entry feature — see `docs/design.md` for full spec. Summary:
 
-1. **Supabase connection** — add `psycopg2-binary` to `requirements.txt`, connect via `DATABASE_URL` env var
+1. **Supabase connection** — add `supabase` to `requirements.txt`, connect via `SUPABASE_URL` + `SUPABASE_KEY` env vars (use supabase-py, NOT psycopg2 — Vercel serverless exhausts Postgres direct connections)
 2. **4 new Flask endpoints** in `app.py`:
    - `POST /api/entries` — Claude writes a daily entry (auth via `X-Journal-Key` header)
    - `GET /api/entries` — list of dates for navigation
@@ -62,7 +62,8 @@ The journal entry feature — see `docs/design.md` for full spec. Summary:
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | Supabase PostgreSQL connection string |
+| `SUPABASE_URL` | Supabase project URL (e.g. https://xxx.supabase.co) |
+| `SUPABASE_KEY` | Supabase service role key (not anon key — needs INSERT permission) |
 | `JOURNAL_API_KEY` | Secret for Claude Desktop to authenticate POST /api/entries |
 
 ## Learning Directions (hardcoded in app.py)
