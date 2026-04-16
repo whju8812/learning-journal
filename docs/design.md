@@ -15,7 +15,7 @@ The gap: no existing daily digest is organized around the user's specific learni
 ## What Makes This Cool
 
 - Claude is the author, not the aggregator. Instead of displaying raw RSS headlines, the journal contains Claude's actual analysis and synthesis of what matters today.
-- Organized by the 5 learning directions the user already defined — each entry tells you "what happened today in *your* learning areas."
+- Organized by the 5 learning directions the user already defined — each entry tells you "what happened today in _your_ learning areas."
 - Fully automated via Claude Desktop scheduled tasks — zero manual effort after setup.
 
 ## Constraints
@@ -35,12 +35,15 @@ The gap: no existing daily digest is organized around the user's specific learni
 ## Approaches Considered
 
 ### Approach A: GitHub Actions + Claude API + Supabase
+
 Daily Python script on GitHub Actions calls Anthropic API, writes to Supabase. Full automation but requires API key management in CI secrets.
 
 ### Approach B: Manual trigger + Claude API + Supabase
+
 Flask endpoint triggers generation on demand. Simple MVP but manual daily step.
 
 ### Approach C: Claude Desktop Scheduled Tasks (Chosen)
+
 Claude Desktop runs a daily scheduled task, researches today's tech with web search, POSTs a structured entry to a Flask API endpoint. Flask stores in Supabase. No API keys in code, no CI setup.
 
 ## Recommended Approach
@@ -220,6 +223,7 @@ Add "📖 學習日誌" as a 4th tab in the existing `<nav>` bar. Inside the tab
   │ • item 1                                        │
   └─────────────────────────────────────────────────┘
   ```
+
   - Section heading: icon + direction name, `font-weight: 600`, left-aligned
   - Summary: regular text, `var(--text)` color
   - Items: bullet list, `var(--muted)` color, indented
@@ -238,27 +242,28 @@ Add "📖 學習日誌" as a 4th tab in the existing `<nav>` bar. Inside the tab
 
 No DESIGN.md exists. All new components must use the existing CSS custom properties in `index.html`:
 
-| New Component | Background | Text | Border | Accent |
-|---|---|---|---|---|
-| Date sidebar | `--bg2` | `--muted` | `--border` (right edge) | `--accent` (active date) |
-| Date chip (default) | transparent | `--muted` | none | — |
-| Date chip (active) | `--bg3` | `--text` | `--accent` (left 3px) | — |
-| Date chip (today) | transparent | `--accent2` | — | `--accent2` (badge) |
-| Entry header (date title) | transparent | `--text` | — | — |
-| Entry inner tabs | same as existing `.tab` class | — | — | `--accent` (active) |
-| Direction section heading | transparent | `--text` | — | — |
-| Direction section divider | — | — | `--border` | — |
-| Direction summary text | transparent | `--text` | — | — |
-| Direction items | transparent | `--muted` | — | — |
-| Shimmer animation | `--bg3` → `--border` → `--bg3` | — | — | — |
-| Health banner | `rgba(245,197,24,0.1)` | `#f5c518` | `#f5c518` | — |
-| Empty state icon | — | `--accent` | — | — |
-| Empty state text | — | `--muted` | — | — |
-| Empty state CTA | `--accent` | `#fff` | — | — |
-| Error text | — | `--accent3` | — | — |
-| Error retry button | `--bg3` | `--text` | `--border` | — |
+| New Component             | Background                     | Text        | Border                  | Accent                   |
+| ------------------------- | ------------------------------ | ----------- | ----------------------- | ------------------------ |
+| Date sidebar              | `--bg2`                        | `--muted`   | `--border` (right edge) | `--accent` (active date) |
+| Date chip (default)       | transparent                    | `--muted`   | none                    | —                        |
+| Date chip (active)        | `--bg3`                        | `--text`    | `--accent` (left 3px)   | —                        |
+| Date chip (today)         | transparent                    | `--accent2` | —                       | `--accent2` (badge)      |
+| Entry header (date title) | transparent                    | `--text`    | —                       | —                        |
+| Entry inner tabs          | same as existing `.tab` class  | —           | —                       | `--accent` (active)      |
+| Direction section heading | transparent                    | `--text`    | —                       | —                        |
+| Direction section divider | —                              | —           | `--border`              | —                        |
+| Direction summary text    | transparent                    | `--text`    | —                       | —                        |
+| Direction items           | transparent                    | `--muted`   | —                       | —                        |
+| Shimmer animation         | `--bg3` → `--border` → `--bg3` | —           | —                       | —                        |
+| Health banner             | `rgba(245,197,24,0.1)`         | `#f5c518`   | `#f5c518`               | —                        |
+| Empty state icon          | —                              | `--accent`  | —                       | —                        |
+| Empty state text          | —                              | `--muted`   | —                       | —                        |
+| Empty state CTA           | `--accent`                     | `#fff`      | —                       | —                        |
+| Error text                | —                              | `--accent3` | —                       | —                        |
+| Error retry button        | `--bg3`                        | `--text`    | `--border`              | —                        |
 
 **Reuse existing classes where possible:**
+
 - Inner tabs → reuse `.tab` class exactly
 - Direction section heading → match `.section-title` sizing (1.05rem, 600 weight)
 - CTA button → reuse `.refresh-btn` class
@@ -271,6 +276,7 @@ No DESIGN.md exists. All new components must use the existing CSS custom propert
 **Tablet (481–768px):** Same layout but sidebar shrinks to 140px. Content area adapts.
 
 **Mobile (≤ 480px):**
+
 ```
 ┌─────────────────────────────────────┐
 │ [⚠ banner if overdue]              │
@@ -284,6 +290,7 @@ No DESIGN.md exists. All new components must use the existing CSS custom propert
 │                                     │
 └─────────────────────────────────────┘
 ```
+
 - Sidebar 消失，轉為頂部橫向 scrollable date strip
 - Date strip: `display: flex; overflow-x: auto; gap: 8px;`
 - Date chips 變為 pill 形狀 (`border-radius: 20px; padding: 6px 12px`)
@@ -297,11 +304,13 @@ No DESIGN.md exists. All new components must use the existing CSS custom propert
 ### Accessibility
 
 **Keyboard navigation:**
+
 - Date sidebar / date strip: arrow keys (↑↓ on desktop, ←→ on mobile) to navigate dates, Enter to select
 - Inner tabs (技術內容 / 學習方向分析): arrow keys ←→ to switch, based on WAI-ARIA tabs pattern
 - Tab order: health banner → date nav → inner tabs → content
 
 **ARIA landmarks:**
+
 - Date sidebar: `role="navigation"` + `aria-label="日期導航"`
 - Each date chip: `role="tab"` within a `role="tablist"`
 - Inner tabs: `role="tablist"` + `role="tab"` + `role="tabpanel"`
@@ -309,11 +318,13 @@ No DESIGN.md exists. All new components must use the existing CSS custom propert
 - Health banner: `role="alert"`
 
 **Touch targets:**
+
 - Date chips: minimum 44px height (already satisfied by padding design)
 - Inner tab buttons: minimum 44px tap area
 - Dismiss button on health banner: 44x44px
 
 **Color contrast:**
+
 - All body text (`--text: #e8eaf6` on `--bg: #0f1117`): contrast ratio ~13:1 ✓
 - Muted text (`--muted: #8b8fa8` on `--bg: #0f1117`): contrast ratio ~5.3:1 ✓ (above 4.5:1)
 - Accent on dark (`--accent: #6c63ff` on `--bg: #0f1117`): ~4.8:1 ✓
@@ -324,6 +335,7 @@ No DESIGN.md exists. All new components must use the existing CSS custom propert
 ### Content Formatting
 
 **tech_content (技術內容 tab):**
+
 - Pure text rendering — no Markdown parser needed
 - Split on `\n\n` into `<p>` paragraphs
 - Line height: 1.7 for readability
@@ -332,6 +344,7 @@ No DESIGN.md exists. All new components must use the existing CSS custom propert
 - `var(--text)` color on `var(--bg)` background
 
 **learning_analysis (學習方向分析 tab):**
+
 - See "學習方向分析 layout" section above for stacked section format
 - Directions that have items: show summary + bulleted items
 - Directions with empty items array: show summary only, items section omitted
@@ -418,13 +431,13 @@ These are concrete gotchas to address during implementation — not design decis
 
 ## Scope Decisions (v1 vs. v2)
 
-| Feature | v1 | v2 |
-|---|---|---|
-| RSS live feed coexistence | Keep existing RSS view alongside journal | — |
-| Entry editing | Read-only | Personal notes field |
-| Date nav gap markers | No — show only existing entries | Visual gap indicators for missed days |
-| Manual trigger button | No | Yes |
-| GET /api/config for direction names | No — hardcode in frontend | Yes |
+| Feature                             | v1                                       | v2                                    |
+| ----------------------------------- | ---------------------------------------- | ------------------------------------- |
+| RSS live feed coexistence           | Keep existing RSS view alongside journal | —                                     |
+| Entry editing                       | Read-only                                | Personal notes field                  |
+| Date nav gap markers                | No — show only existing entries          | Visual gap indicators for missed days |
+| Manual trigger button               | No                                       | Yes                                   |
+| GET /api/config for direction names | No — hardcode in frontend                | Yes                                   |
 
 ## Success Criteria
 
@@ -453,13 +466,13 @@ These are concrete gotchas to address during implementation — not design decis
 
 ## GSTACK REVIEW REPORT
 
-| Review | Trigger | Why | Runs | Status | Findings |
-|--------|---------|-----|------|--------|----------|
-| CEO Review | `/plan-ceo-review` | Scope & strategy | 0 | — | — |
-| Codex Review | `/codex review` | Independent 2nd opinion | 0 | — | — |
-| Eng Review | `/plan-eng-review` | Architecture & tests (required) | 1 | CLEAR (PLAN) | 6 issues, 2 critical gaps (resolved in doc) |
-| Design Review | `/plan-design-review` | UI/UX gaps | 1 | CLEAR (FULL) | score: 4/10 → 8/10, 8 decisions made |
-| DX Review | `/plan-devex-review` | Developer experience gaps | 0 | — | — |
+| Review        | Trigger               | Why                             | Runs | Status       | Findings                                    |
+| ------------- | --------------------- | ------------------------------- | ---- | ------------ | ------------------------------------------- |
+| CEO Review    | `/plan-ceo-review`    | Scope & strategy                | 0    | —            | —                                           |
+| Codex Review  | `/codex review`       | Independent 2nd opinion         | 0    | —            | —                                           |
+| Eng Review    | `/plan-eng-review`    | Architecture & tests (required) | 1    | CLEAR (PLAN) | 6 issues, 2 critical gaps (resolved in doc) |
+| Design Review | `/plan-design-review` | UI/UX gaps                      | 1    | CLEAR (FULL) | score: 4/10 → 8/10, 8 decisions made        |
+| DX Review     | `/plan-devex-review`  | Developer experience gaps       | 0    | —            | —                                           |
 
 **UNRESOLVED:** 0
 **VERDICT:** ENG + DESIGN CLEARED — ready to implement.

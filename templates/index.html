@@ -113,35 +113,7 @@
       color: var(--text-secondary);
     }
 
-    /* ─── Nav tabs ─── */
-    nav {
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      gap: 0;
-      overflow-x: auto;
-      padding: 0 var(--space-6);
-    }
-    .tab {
-      padding: var(--space-3) var(--space-5);
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      color: var(--text-secondary);
-      font-size: var(--text-body);
-      font-weight: 400;
-      white-space: nowrap;
-      transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
-      user-select: none;
-    }
-    .tab:hover {
-      color: var(--text);
-      background: var(--bg3);
-    }
-    .tab.active {
-      color: var(--text);
-      font-weight: 700;
-      border-bottom-color: var(--accent);
-    }
+
 
     /* ─── Main layout ─── */
     .main-container {
@@ -149,8 +121,7 @@
       margin: 0 auto;
       padding: var(--space-6);
     }
-    .section { display: none; }
-    .section.active { display: block; }
+
 
     /* ─── Journal layout ─── */
     .journal-layout {
@@ -615,7 +586,7 @@
     @media (max-width: 768px) {
       .main-container { padding: var(--space-4); }
       header { padding: var(--space-3) var(--space-4); }
-      nav { padding: 0 var(--space-4); }
+
       .date-sidebar { width: 180px; }
       .logo { font-size: var(--text-h1); }
     }
@@ -628,7 +599,7 @@
       .entry-date-title { font-size: var(--text-h2); }
       .logo { font-size: var(--text-h2); }
       .logo-icon { width: 32px; height: 32px; font-size: 1rem; }
-      nav .tab { padding: var(--space-3) var(--space-4); font-size: var(--text-small); }
+
     }
 
     /* ─── Reduced motion ─── */
@@ -670,44 +641,12 @@
   <div class="date-badge" id="dateDisplay"></div>
 </header>
 
-<nav role="navigation" aria-label="主導覽">
-  <div class="tab active" role="tab" tabindex="0" onclick="switchTab('news', this)" aria-selected="true">📰 今日技術內容</div>
-  <div class="tab" role="tab" tabindex="0" onclick="switchTab('sources', this)" aria-selected="false">🔗 資料出處</div>
-  <div class="tab" role="tab" tabindex="0" onclick="switchTab('learning', this)" aria-selected="false">🎯 學習方向</div>
-  <div class="tab" role="tab" tabindex="0" onclick="switchTab('journal', this)" aria-selected="false">📖 學習日誌</div>
-</nav>
+
 
 <div class="main-container">
 
-  <!-- ── Section 1: placeholder for news ── -->
-  <section id="tab-news" class="section active">
-    <div class="section-header">
-      <div class="section-title">今日最新技術內容</div>
-      <div class="section-sub">彙整自多個軟體技術來源，即時更新</div>
-    </div>
-    <p style="color: var(--text-muted); padding: var(--space-6);">（此預覽聚焦於學習日誌 tab，請點擊上方「📖 學習日誌」查看設計。）</p>
-  </section>
-
-  <!-- ── Section 2: placeholder ── -->
-  <section id="tab-sources" class="section">
-    <div class="section-header">
-      <div class="section-title">資料出處</div>
-      <div class="section-sub">本系統從以下來源自動彙整軟體技術內容</div>
-    </div>
-    <p style="color: var(--text-muted); padding: var(--space-6);">（此預覽聚焦於學習日誌 tab。）</p>
-  </section>
-
-  <!-- ── Section 3: placeholder ── -->
-  <section id="tab-learning" class="section">
-    <div class="section-header">
-      <div class="section-title">學習方向</div>
-      <div class="section-sub">根據今日技術趨勢，建議以下學習路徑</div>
-    </div>
-    <p style="color: var(--text-muted); padding: var(--space-6);">（此預覽聚焦於學習日誌 tab。）</p>
-  </section>
-
-  <!-- ── Section 4: 學習日誌 ── -->
-  <section id="tab-journal" class="section">
+  <!-- ── 學習日誌 ── -->
+  <section id="tab-journal">
 
     <!-- Mobile date strip -->
     <div class="date-strip" role="tablist" aria-label="日期導覽（行動裝置）" id="mobileStrip"></div>
@@ -849,21 +788,7 @@ function escHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-// ─── Tab switching (outer) ───
-function switchTab(name, el) {
-  document.querySelectorAll('nav .tab').forEach(t => {
-    t.classList.remove('active');
-    t.setAttribute('aria-selected', 'false');
-  });
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  el.classList.add('active');
-  el.setAttribute('aria-selected', 'true');
-  document.getElementById('tab-' + name).classList.add('active');
 
-  if (name === 'journal') {
-    renderJournal();
-  }
-}
 
 // ─── Format date ───
 function formatDateFull(dateStr) {
@@ -1064,7 +989,7 @@ function renderEmptyState() {
         Claude 每日自動研究軟體技術趨勢，撰寫你的專屬學習日誌。<br>
         第一篇日誌將在明天早上自動產生。
       </div>
-      <button class="empty-cta" onclick="switchTab('news', document.querySelector('.tab'))">📰 先看今日技術新聞 →</button>
+      <button class="empty-cta" onclick="location.reload()">🔄 重新整理 →</button>
     </div>
   `;
 }
@@ -1102,30 +1027,8 @@ function renderJournal() {
   renderEntry();
 }
 
-// ─── Keyboard nav for outer tabs ───
-document.querySelector('nav').addEventListener('keydown', (e) => {
-  const tabs = [...document.querySelectorAll('nav .tab')];
-  const idx = tabs.indexOf(document.activeElement);
-  if (idx < 0) return;
-  if (e.key === 'ArrowRight' && idx < tabs.length - 1) {
-    e.preventDefault();
-    tabs[idx + 1].focus();
-  }
-  if (e.key === 'ArrowLeft' && idx > 0) {
-    e.preventDefault();
-    tabs[idx - 1].focus();
-  }
-  if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
-    tabs[idx].click();
-  }
-});
-
-// ─── Auto-open journal tab for preview ───
-setTimeout(() => {
-  const journalTab = document.querySelectorAll('nav .tab')[3];
-  switchTab('journal', journalTab);
-}, 100);
+// ─── Init ───
+renderJournal();
 </script>
 
 </body>

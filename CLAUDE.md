@@ -8,13 +8,13 @@ A personal tech learning journal web app. Claude Desktop runs a daily scheduled 
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Backend | Python / Flask |
-| Frontend | Vanilla JS + HTML (single template: `templates/index.html`) |
-| Database | Supabase (PostgreSQL) — **not yet wired up, next step** |
-| Deployment | Vercel (serverless) |
-| Daily agent | Claude Desktop scheduled task |
+| Layer       | Technology                                                  |
+| ----------- | ----------------------------------------------------------- |
+| Backend     | Python / Flask                                              |
+| Frontend    | Vanilla JS + HTML (single template: `templates/index.html`) |
+| Database    | Supabase (PostgreSQL) — **not yet wired up, next step**     |
+| Deployment  | Vercel (serverless)                                         |
+| Daily agent | Claude Desktop scheduled task                               |
 
 ## Project Structure
 
@@ -33,6 +33,7 @@ learning-journal/
 ## Current State
 
 The app **already works** and is deployed on Vercel. It fetches RSS feeds from:
+
 - Hacker News, The Verge, InfoQ, Dev.to (via RSS)
 - GitHub Trending (via GitHub API)
 
@@ -60,11 +61,11 @@ The journal entry feature — see `docs/design.md` for full spec. Summary:
 
 ## Environment Variables (Vercel)
 
-| Variable | Purpose |
-|---|---|
-| `SUPABASE_URL` | Supabase project URL (e.g. https://xxx.supabase.co) |
-| `SUPABASE_KEY` | Supabase service role key (not anon key — needs INSERT permission) |
-| `JOURNAL_API_KEY` | Secret for Claude Desktop to authenticate POST /api/entries |
+| Variable          | Purpose                                                            |
+| ----------------- | ------------------------------------------------------------------ |
+| `SUPABASE_URL`    | Supabase project URL (e.g. https://xxx.supabase.co)                |
+| `SUPABASE_KEY`    | Supabase service role key (not anon key — needs INSERT permission) |
+| `JOURNAL_API_KEY` | Secret for Claude Desktop to authenticate POST /api/entries        |
 
 ## Learning Directions (hardcoded in app.py)
 
@@ -81,6 +82,7 @@ LEARNING_DIRECTIONS = [
 Each journal entry's `learning_analysis` field must contain all 5 keys with `{ "summary": str, "items": [str] }`.
 
 ## Design System
+
 Always read DESIGN.md before making any visual or UI decisions.
 All font choices, colors, spacing, and aesthetic direction are defined there.
 Do not deviate without explicit user approval.
@@ -93,6 +95,7 @@ tool as your FIRST action. Do NOT answer directly, do NOT use other tools first.
 The skill has specialized workflows that produce better results than ad-hoc answers.
 
 Key routing rules:
+
 - Product ideas, "is this worth building", brainstorming → invoke office-hours
 - Bugs, errors, "why is this broken", 500 errors → invoke investigate
 - Ship, deploy, push, create PR → invoke ship
