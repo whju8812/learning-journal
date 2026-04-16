@@ -5,5 +5,12 @@
       "Bash(.venv/Scripts/pip show:*)",
       "Bash(.venv/Scripts/python -c ':*)"
     ]
+  },
+  "sandbox": {
+    "network": {
+      "allowedDomains": [
+        "learning-journal.mariposa-lw.xyz"
+      ]
+    }
   }
 }
