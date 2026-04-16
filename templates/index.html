@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>軟體技術學習日誌</title>
+  <title>learning journal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@
       /* Typography */
       --font-sans: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-      --text-hero: 28px;
+      --text-hero: 20px;
       --text-h1: 22px;
       --text-h2: 18px;
       --text-h3: 16px;
@@ -212,18 +212,15 @@
       gap: var(--space-3);
       font-size: var(--text-small);
     }
-    .health-banner.success {
-      border-left: 3px solid var(--success);
+    .health-banner.success { 
       background: #E8F5E9;
       color: #2E7D32;
     }
-    .health-banner.warning {
-      border-left: 3px solid var(--warning);
+    .health-banner.warning { 
       background: #FFF8E1;
       color: #F57F17;
     }
-    .health-banner.error {
-      border-left: 3px solid var(--error);
+    .health-banner.error { 
       background: #FFEBEE;
       color: #C62828;
     }
@@ -629,6 +626,32 @@
       color: var(--text-secondary);
       font-size: var(--text-small);
     }
+
+    /* ─── Multi-session display ─── */
+    .session-block {
+      margin-bottom: var(--space-5);
+    }
+    .session-time-label {
+      font-size: var(--text-small);
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: var(--space-3);
+      padding: 2px var(--space-3);
+      background: var(--bg2);
+      border-radius: var(--radius-sm);
+      display: inline-block;
+      border: 1px solid var(--border);
+    }
+    .session-divider {
+      border: none;
+      border-top: 1px dashed var(--border);
+      margin: var(--space-5) 0;
+    }
+    .session-count-note {
+      font-size: var(--text-small);
+      color: var(--text-muted);
+      margin-top: var(--space-2);
+    }
   </style>
 </head>
 <body>
@@ -636,7 +659,7 @@
 <header>
   <div class="logo">
     <div class="logo-icon">📚</div>
-    軟體技術學習日誌
+    learning journal
   </div>
   <div class="date-badge" id="dateDisplay"></div>
 </header>
@@ -655,8 +678,7 @@
     <div class="journal-layout">
 
       <!-- Date sidebar -->
-      <aside class="date-sidebar" role="navigation" aria-label="日期導覽" id="dateSidebar">
-        <div class="date-sidebar-title">📅 日期列表</div>
+      <aside class="date-sidebar" role="navigation" aria-label="日期導覽" id="dateSidebar"> 
         <div id="dateList"></div>
       </aside>
 
@@ -673,113 +695,46 @@
 <script>
 // ─── Rainbow Day System ───
 const RAINBOW = [
-  { accent: '#8E24AA', light: '#F3E5F5', hover: '#6A1B9A', name: '日' },
-  { accent: '#E53935', light: '#FFEBEE', hover: '#C62828', name: '一' },
-  { accent: '#F4511E', light: '#FBE9E7', hover: '#D84315', name: '二' },
-  { accent: '#F9A825', light: '#FFF8E1', hover: '#F57F17', name: '三' },
-  { accent: '#43A047', light: '#E8F5E9', hover: '#2E7D32', name: '四' },
-  { accent: '#1E88E5', light: '#E3F2FD', hover: '#1565C0', name: '五' },
-  { accent: '#3949AB', light: '#E8EAF6', hover: '#283593', name: '六' },
+  { accent: '#8E24AA', light: '#F3E5F5', hover: '#6A1B9A' },
+  { accent: '#E53935', light: '#FFEBEE', hover: '#C62828' },
+  { accent: '#F4511E', light: '#FBE9E7', hover: '#D84315' },
+  { accent: '#F9A825', light: '#FFF8E1', hover: '#F57F17' },
+  { accent: '#43A047', light: '#E8F5E9', hover: '#2E7D32' },
+  { accent: '#1E88E5', light: '#E3F2FD', hover: '#1565C0' },
+  { accent: '#3949AB', light: '#E8EAF6', hover: '#283593' },
 ];
-
 const DAY_NAMES = ['日', '一', '二', '三', '四', '五', '六'];
 
-function applyDayColor() {
-  const day = new Date().getDay();
-  const c = RAINBOW[day];
-  const root = document.documentElement.style;
-  root.setProperty('--accent', c.accent);
-  root.setProperty('--accent-light', c.light);
-  root.setProperty('--accent-hover', c.hover);
-}
-applyDayColor();
+(function applyDayColor() {
+  const c = RAINBOW[new Date().getDay()];
+  document.documentElement.style.setProperty('--accent', c.accent);
+  document.documentElement.style.setProperty('--accent-light', c.light);
+  document.documentElement.style.setProperty('--accent-hover', c.hover);
+})();
 
-// ─── Date display ───
 const now = new Date();
 document.getElementById('dateDisplay').textContent =
   `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 (${DAY_NAMES[now.getDay()]})`;
 
-// ─── Sample data ───
-const SAMPLE_ENTRIES = [
-  {
-    entry_date: '2026-04-16',
-    tech_content: 'Google 在今天的 Cloud Next 大會上發布了 Gemini 2.5 Pro 的正式版本，這是目前為止最強大的多模態 AI 模型。新版本在程式碼生成、數學推理和長文本理解方面都有顯著提升。特別值得注意的是，Gemini 2.5 Pro 現在支援高達 200 萬 token 的上下文視窗，這對於大型程式碼庫的分析和理解來說是一個重大突破。\n\nRust 1.85 穩定版今天正式發布，帶來了備受期待的 async trait 功能。這個功能讓開發者可以在 trait 中定義 async 方法，大幅簡化了非同步程式碼的抽象設計。社群反應熱烈，許多框架（包括 Axum 和 Tokio）已經開始更新以支援這個新特性。\n\nVercel 宣布推出 v0 2.0，一個基於 AI 的全端應用程式生成器。與前一版相比，v0 2.0 可以生成完整的 Next.js 應用程式，包括資料庫 schema、API 路由和前端元件。這引發了關於 AI 輔助開發未來走向的廣泛討論。',
-    learning_analysis: {
-      'AI / 機器學習': {
-        summary: 'Gemini 2.5 Pro 正式發布，200 萬 token 上下文視窗是重大突破。OpenAI 同步更新了 GPT-4o 的函式呼叫能力，競爭持續加劇。值得關注 AI 模型在程式碼生成領域的實際應用效果。',
-        items: ['Gemini 2.5 Pro GA 發布，支援 200 萬 token 上下文', 'v0 2.0 展示了 AI 全端生成的可能性', 'Hugging Face 推出新的模型評估框架 LightEval 2.0']
-      },
-      '雲端與基礎架構': {
-        summary: 'Google Cloud Next 大會帶來多項基礎架構更新，包括新的 A4 GPU 執行個體和改進的 Cloud Run 冷啟動時間。AWS 則宣布了 Lambda 的 SnapStart 功能擴展到 Python runtime。',
-        items: ['Google Cloud A4 GPU 執行個體（基於 NVIDIA B200）', 'Cloud Run 冷啟動時間改善 40%']
-      },
-      '前端開發': {
-        summary: 'React 19.1 修復了多個 Server Components 的效能問題。Svelte 5 的 rune 系統獲得越來越多的正面回饋。CSS @scope 規則在所有主流瀏覽器中達到穩定狀態。',
-        items: ['React 19.1 patch release', 'CSS @scope 全面穩定', 'Astro 5.2 支援 View Transitions API']
-      },
-      '後端 / 系統設計': {
-        summary: 'Rust 1.85 的 async trait 是今天最重要的後端新聞。另外，PostgreSQL 18 Beta 1 發布，帶來了原生的 JSON 路徑查詢優化。',
-        items: ['Rust 1.85 async trait 穩定化', 'PostgreSQL 18 Beta 1', 'gRPC-Web 正式脫離 beta 階段']
-      },
-      '開發者工具 / DevOps': {
-        summary: 'GitHub 推出了 Copilot Workspace 的公開預覽版，讓開發者可以用自然語言描述需求，自動規劃和實作變更。Docker Desktop 4.38 改進了 Compose Watch 的效能。',
-        items: ['GitHub Copilot Workspace 公開預覽', 'Docker Desktop 4.38 更新', 'Terraform 1.10 支援動態 provider 設定']
-      }
-    },
-    sources: [
-      { title: 'Google Cloud Blog: Gemini 2.5 Pro GA', url: 'https://cloud.google.com/blog' },
-      { title: 'Rust Blog: Announcing Rust 1.85', url: 'https://blog.rust-lang.org' },
-      { title: 'Vercel Blog: Introducing v0 2.0', url: 'https://vercel.com/blog' },
-      { title: 'Hacker News 討論串', url: 'https://news.ycombinator.com' },
-      { title: 'GitHub Blog: Copilot Workspace', url: 'https://github.blog' }
-    ]
-  },
-  {
-    entry_date: '2026-04-15',
-    tech_content: 'TypeScript 5.8 正式發布，帶來了改進的類型推斷和更快的編譯速度。新版本在大型專案中的編譯速度提升了約 15%。\n\nCloudflare 宣布 Workers AI 現在支援 Llama 4 模型系列，開發者可以在邊緣節點直接運行 AI 推理，無需管理 GPU 基礎架構。',
-    learning_analysis: {
-      'AI / 機器學習': { summary: 'Cloudflare Workers AI 支援 Llama 4，邊緣 AI 推理的門檻持續降低。', items: ['Workers AI + Llama 4'] },
-      '雲端與基礎架構': { summary: 'Cloudflare 持續擴展其邊緣運算平台能力。', items: [] },
-      '前端開發': { summary: 'TypeScript 5.8 的類型推斷改進對前端開發者影響最大。', items: ['TypeScript 5.8 發布'] },
-      '後端 / 系統設計': { summary: '今天後端領域較為平靜，主要是既有工具的更新。', items: [] },
-      '開發者工具 / DevOps': { summary: 'TypeScript 編譯速度提升 15%，這對 CI/CD pipeline 有直接影響。', items: ['TypeScript 5.8 編譯加速'] }
-    },
-    sources: [
-      { title: 'TypeScript Blog: Announcing 5.8', url: 'https://devblogs.microsoft.com/typescript' },
-      { title: 'Cloudflare Blog: Workers AI', url: 'https://blog.cloudflare.com' }
-    ]
-  },
-  {
-    entry_date: '2026-04-14',
-    tech_content: 'Deno 2.2 發布，新增了原生的 npm workspace 支援。這讓 Deno 在 monorepo 場景中更具競爭力。\n\nLinux 6.13 核心正式釋出，帶來了改進的 io_uring 效能和新的檔案系統快取策略。',
-    learning_analysis: {
-      'AI / 機器學習': { summary: '今天 AI 領域沒有重大新聞。', items: [] },
-      '雲端與基礎架構': { summary: 'Linux 6.13 的 io_uring 改進對高效能伺服器有正面影響。', items: ['Linux 6.13 核心釋出'] },
-      '前端開發': { summary: 'Deno 2.2 的 npm workspace 支援值得前端開發者關注。', items: ['Deno 2.2 發布'] },
-      '後端 / 系統設計': { summary: 'io_uring 效能改進是系統程式設計的重要進展。', items: ['Linux 6.13 io_uring 優化'] },
-      '開發者工具 / DevOps': { summary: 'Deno 對 npm workspace 的支援改善了工具鏈相容性。', items: [] }
-    },
-    sources: [
-      { title: 'Deno Blog: v2.2 Release', url: 'https://deno.com/blog' },
-      { title: 'LKML: Linux 6.13', url: 'https://lkml.org' }
-    ]
-  }
-];
-
+// ─── Constants ───
 const DIRECTION_ICONS = {
   'AI / 機器學習': '🤖',
   '雲端與基礎架構': '☁️',
   '前端開發': '🎨',
   '後端 / 系統設計': '⚙️',
-  '開發者工具 / DevOps': '🔧'
+  '開發者工具 / DevOps': '🔧',
 };
+const DIRECTIONS_ORDER = ['AI / 機器學習', '雲端與基礎架構', '前端開發', '後端 / 系統設計', '開發者工具 / DevOps'];
 
 // ─── State ───
 let currentDate = null;
+let currentSessions = [];   // [{id, session_label, tech_content, learning_analysis, sources, created_at}]
+let allDates = [];           // [{entry_date, created_at}]
+let healthData = null;
 let healthDismissed = false;
 let currentInnerTab = 'tech';
 
-// ─── Escape HTML ───
+// ─── Utils ───
 function escHtml(str) {
   return String(str)
     .replace(/&/g, '&amp;')
@@ -788,9 +743,13 @@ function escHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
+function todayStr() {
+  const t = new Date();
+  return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+}
 
+function isToday(dateStr) { return dateStr === todayStr(); }
 
-// ─── Format date ───
 function formatDateFull(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
   return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 技術日誌`;
@@ -798,71 +757,121 @@ function formatDateFull(dateStr) {
 
 function formatDateChip(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
-  const mm = String(d.getMonth()+1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${mm}/${dd} (${DAY_NAMES[d.getDay()]})`;
+  return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} (${DAY_NAMES[d.getDay()]})`;
 }
 
-function isToday(dateStr) {
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-  return dateStr === todayStr;
+// ─── API calls ───
+async function apiFetch(path) {
+  const res = await fetch(path);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw Object.assign(new Error(err.error || res.statusText), { status: res.status });
+  }
+  return res.json();
 }
 
-// ─── Render date sidebar ───
-function renderDateList() {
+// ─── Init ───
+async function initJournal() {
+  showLoadingState();
+  try {
+    [healthData, allDates] = await Promise.all([
+      fetch('/api/entries/health').then(r => r.json()).catch(() => null),
+      apiFetch('/api/entries').catch(() => []),
+    ]);
+
+    if (!allDates || allDates.length === 0) {
+      renderDateSidebarEmpty();
+      document.getElementById('journalContent').innerHTML = renderEmptyState();
+      return;
+    }
+
+    currentDate = allDates[0].entry_date;
+    renderDateSidebar();
+    await loadEntry(currentDate);
+  } catch (e) {
+    document.getElementById('journalContent').innerHTML = renderErrorState(initJournal);
+  }
+}
+
+async function loadEntry(dateStr) {
+  currentDate = dateStr;
+  renderDateSidebar();
+  document.getElementById('journalContent').innerHTML =
+    '<div style="padding:var(--space-8);text-align:center;"><div class="accent-spinner"></div></div>';
+  try {
+    currentSessions = await apiFetch(`/api/entries/${dateStr}`);
+    renderEntry();
+  } catch (e) {
+    if (e.status === 404) {
+      document.getElementById('journalContent').innerHTML = renderEmptyState();
+    } else {
+      document.getElementById('journalContent').innerHTML = renderErrorState(() => loadEntry(dateStr));
+    }
+  }
+}
+
+function selectDate(dateStr) {
+  if (dateStr === currentDate && currentSessions.length > 0) return;
+  loadEntry(dateStr);
+}
+
+// ─── Date sidebar ───
+function renderDateSidebarEmpty() {
+  document.getElementById('dateList').innerHTML =
+    '<div style="color:var(--text-muted);font-size:var(--text-small);padding:var(--space-3);">尚無日誌</div>';
+  document.getElementById('mobileStrip').innerHTML = '';
+}
+
+function renderDateSidebar() {
   const list = document.getElementById('dateList');
   const strip = document.getElementById('mobileStrip');
   list.innerHTML = '';
   strip.innerHTML = '';
 
-  SAMPLE_ENTRIES.forEach(entry => {
+  allDates.forEach(entry => {
     const today = isToday(entry.entry_date);
     const active = entry.entry_date === currentDate;
 
-    // Sidebar chip
     const chip = document.createElement('div');
     chip.className = 'date-chip' + (active ? ' active' : '') + (today ? ' today' : '');
     chip.setAttribute('role', 'tab');
     chip.setAttribute('tabindex', '0');
     chip.setAttribute('aria-selected', active ? 'true' : 'false');
-    chip.innerHTML = `${today ? '✦ ' : ''}${formatDateChip(entry.entry_date)}<span class="today-badge">今天</span>`;
+    chip.innerHTML = `${today ? '✦ ' : ''}${escHtml(formatDateChip(entry.entry_date))}<span class="today-badge">今天</span>`;
     chip.onclick = () => selectDate(entry.entry_date);
-    chip.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectDate(entry.entry_date); }};
+    chip.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectDate(entry.entry_date); } };
     list.appendChild(chip);
 
-    // Mobile pill
     const pill = document.createElement('div');
     pill.className = 'date-pill' + (active ? ' active' : '') + (today ? ' today' : '');
     pill.setAttribute('role', 'tab');
     pill.setAttribute('tabindex', '0');
-    pill.textContent = (today ? '✦' : '') + formatDateChip(entry.entry_date);
+    pill.textContent = (today ? '✦ ' : '') + formatDateChip(entry.entry_date);
     pill.onclick = () => selectDate(entry.entry_date);
     strip.appendChild(pill);
   });
 }
 
-// ─── Select date ───
-function selectDate(dateStr) {
-  currentDate = dateStr;
-  renderDateList();
-  renderEntry();
-}
-
-// ─── Render health banner ───
+// ─── Health banner ───
 function renderHealthBanner() {
-  if (healthDismissed) return '';
+  if (healthDismissed || !healthData) return '';
+  const { last_entry_date, last_session_label, days_since_last_entry, is_overdue } = healthData;
 
-  // Simulate: today's entry exists
-  const todayEntry = SAMPLE_ENTRIES.find(e => isToday(e.entry_date));
-  if (todayEntry) {
-    return `<div class="health-banner success">
-      <span>▎ 上次更新：${todayEntry.entry_date}（今天）— 一切正常 ✓</span>
+  if (!last_entry_date) {
+    return `<div class="health-banner warning">
+      <span>⚠ 尚無任何日誌 — Claude Desktop 排程尚未執行</span>
       <button class="health-dismiss" onclick="dismissHealth()" aria-label="關閉">×</button>
     </div>`;
   }
+  if (!is_overdue) {
+    return `<div class="health-banner success">
+      <span>▎ 上次更新：${escHtml(last_entry_date)} ${escHtml(last_session_label || '')} — 一切正常 ✓</span>
+      <button class="health-dismiss" onclick="dismissHealth()" aria-label="關閉">×</button>
+    </div>`;
+  }
+  const daysText = days_since_last_entry > 1 ? `${days_since_last_entry} 天前` : '昨天';
   return `<div class="health-banner warning">
-    <span>⚠ 昨日日誌未生成</span>
+    <span>⚠ 上次更新：${escHtml(last_entry_date)} ${escHtml(last_session_label || '')}（${daysText}）— Claude Desktop 可能未正常執行</span>
     <button class="health-dismiss" onclick="dismissHealth()" aria-label="關閉">×</button>
   </div>`;
 }
@@ -873,62 +882,79 @@ function dismissHealth() {
   if (banner) banner.remove();
 }
 
-// ─── Render entry content ───
+// ─── Entry rendering ───
 function renderEntry() {
   const content = document.getElementById('journalContent');
-  const entry = SAMPLE_ENTRIES.find(e => e.entry_date === currentDate);
-
-  if (!entry) {
+  if (!currentSessions || currentSessions.length === 0) {
     content.innerHTML = renderEmptyState();
     return;
   }
 
-  const today = isToday(entry.entry_date);
+  const today = isToday(currentDate);
+  const multi = currentSessions.length > 1;
+
+  // Tech content: all sessions in order, with time labels if multiple
+  const techHtml = currentSessions.map((s, i) => {
+    const paras = s.tech_content.split('\n\n')
+      .map(p => `<p>${escHtml(p)}</p>`).join('');
+    if (!multi) return `<div class="tech-content">${paras}</div>`;
+    return `
+      <div class="session-block">
+        <span class="session-time-label">${escHtml(s.session_label)}</span>
+        <div class="tech-content">${paras}</div>
+      </div>
+      ${i < currentSessions.length - 1 ? '<div class="session-divider"></div>' : ''}
+    `;
+  }).join('');
+
+  // Learning analysis: use last session (most recent data)
+  const lastSession = currentSessions[currentSessions.length - 1];
+
+  // Sources: all sessions combined, deduplicated by URL
+  const seenUrls = new Set();
+  const allSources = currentSessions.flatMap(s => s.sources || []).filter(s => {
+    if (seenUrls.has(s.url)) return false;
+    seenUrls.add(s.url);
+    return true;
+  });
 
   content.innerHTML = `
     ${renderHealthBanner()}
     <div class="entry-header">
       <div class="entry-date-title">
-        ${formatDateFull(entry.entry_date)}
+        ${formatDateFull(currentDate)}
         ${today ? '<span class="today-entry-badge">🆕 今日日誌</span>' : ''}
       </div>
+      ${multi ? `<div class="session-count-note">共 ${currentSessions.length} 個 session（${currentSessions.map(s => escHtml(s.session_label)).join('、')}）</div>` : ''}
     </div>
     <div class="inner-tabs" role="tablist" aria-label="日誌內容切換">
       <div class="inner-tab ${currentInnerTab === 'tech' ? 'active' : ''}" role="tab" tabindex="0" aria-selected="${currentInnerTab === 'tech'}" onclick="switchInnerTab('tech')">技術內容</div>
       <div class="inner-tab ${currentInnerTab === 'analysis' ? 'active' : ''}" role="tab" tabindex="0" aria-selected="${currentInnerTab === 'analysis'}" onclick="switchInnerTab('analysis')">學習方向分析</div>
     </div>
     <div id="inner-tech" class="inner-section ${currentInnerTab === 'tech' ? 'active' : ''}" role="tabpanel">
-      <div class="tech-content" data-pretext>
-        ${entry.tech_content.split('\n\n').map(p => `<p>${escHtml(p)}</p>`).join('')}
-      </div>
+      ${techHtml}
     </div>
     <div id="inner-analysis" class="inner-section ${currentInnerTab === 'analysis' ? 'active' : ''}" role="tabpanel">
-      ${renderDirections(entry.learning_analysis)}
+      ${renderDirections(lastSession.learning_analysis)}
     </div>
-    ${renderSources(entry.sources)}
+    ${renderSources(allSources)}
   `;
 }
 
-// ─── Inner tab switching ───
 function switchInnerTab(tab) {
   currentInnerTab = tab;
-  document.querySelectorAll('.inner-tab').forEach(t => {
-    t.classList.remove('active');
-    t.setAttribute('aria-selected', 'false');
+  document.querySelectorAll('.inner-tab').forEach((t, i) => {
+    const isActive = (i === 0 && tab === 'tech') || (i === 1 && tab === 'analysis');
+    t.classList.toggle('active', isActive);
+    t.setAttribute('aria-selected', String(isActive));
   });
   document.querySelectorAll('.inner-section').forEach(s => s.classList.remove('active'));
-
-  const idx = tab === 'tech' ? 0 : 1;
-  document.querySelectorAll('.inner-tab')[idx].classList.add('active');
-  document.querySelectorAll('.inner-tab')[idx].setAttribute('aria-selected', 'true');
   document.getElementById('inner-' + tab).classList.add('active');
 }
 
-// ─── Render direction sections ───
 function renderDirections(analysis) {
-  const directions = ['AI / 機器學習', '雲端與基礎架構', '前端開發', '後端 / 系統設計', '開發者工具 / DevOps'];
-  return directions.map(dir => {
-    const data = analysis[dir];
+  return DIRECTIONS_ORDER.map(dir => {
+    const data = analysis && analysis[dir];
     if (!data) return '';
     const icon = DIRECTION_ICONS[dir] || '📌';
     const hasItems = data.items && data.items.length > 0;
@@ -939,7 +965,7 @@ function renderDirections(analysis) {
           <span class="direction-toggle">▼</span>
         </div>
         <div class="direction-body">
-          <p class="direction-summary" data-pretext>${escHtml(data.summary)}</p>
+          <p class="direction-summary">${escHtml(data.summary)}</p>
           ${hasItems ? `<ul class="direction-items">${data.items.map(item => `<li>${escHtml(item)}</li>`).join('')}</ul>` : ''}
         </div>
       </div>
@@ -950,13 +976,12 @@ function renderDirections(analysis) {
 function toggleDirection(header) {
   const body = header.nextElementSibling;
   const toggle = header.querySelector('.direction-toggle');
-  const expanded = !body.classList.contains('collapsed');
+  const wasExpanded = !body.classList.contains('collapsed');
   body.classList.toggle('collapsed');
   toggle.classList.toggle('collapsed');
-  header.setAttribute('aria-expanded', String(!expanded));
+  header.setAttribute('aria-expanded', String(!wasExpanded));
 }
 
-// ─── Render sources ───
 function renderSources(sources) {
   if (!sources || sources.length === 0) return '';
   return `
@@ -966,20 +991,18 @@ function renderSources(sources) {
         📎 參考來源 (${sources.length})
       </div>
       <div class="sources-list" id="sourcesList">
-        ${sources.map(s => `<a class="source-link" href="${escHtml(s.url)}" target="_blank" rel="noopener">${escHtml(s.title)} <span>↗</span></a>`).join('')}
+        ${sources.map(s => `<a class="source-link" href="${escHtml(s.url)}" target="_blank" rel="noopener noreferrer">${escHtml(s.title)} <span>↗</span></a>`).join('')}
       </div>
     </div>
   `;
 }
 
 function toggleSources() {
-  const list = document.getElementById('sourcesList');
-  const icon = document.getElementById('sourcesIcon');
-  list.classList.toggle('expanded');
-  icon.classList.toggle('expanded');
+  document.getElementById('sourcesList').classList.toggle('expanded');
+  document.getElementById('sourcesIcon').classList.toggle('expanded');
 }
 
-// ─── Empty state ───
+// ─── Static states ───
 function renderEmptyState() {
   return `
     <div class="empty-state">
@@ -987,48 +1010,46 @@ function renderEmptyState() {
       <div class="empty-title">學習日誌即將開始</div>
       <div class="empty-desc">
         Claude 每日自動研究軟體技術趨勢，撰寫你的專屬學習日誌。<br>
-        第一篇日誌將在明天早上自動產生。
+        第一篇日誌將在排程執行後自動產生。
       </div>
       <button class="empty-cta" onclick="location.reload()">🔄 重新整理 →</button>
     </div>
   `;
 }
 
-// ─── Loading state (shimmer) ───
-function renderLoadingState() {
+function renderErrorState(retryFn) {
+  window._retryFn = retryFn;
   return `
-    <div style="display:flex;gap:var(--space-6);">
-      <div style="width:240px;flex-shrink:0;">
-        <div class="shimmer shimmer-chip"></div>
-        <div class="shimmer shimmer-chip"></div>
-        <div class="shimmer shimmer-chip"></div>
-      </div>
-      <div style="flex:1;">
-        <div class="shimmer shimmer-line long"></div>
-        <div class="shimmer shimmer-line medium"></div>
-        <div class="shimmer shimmer-line short"></div>
-        <div style="margin-top:var(--space-6);">
-          <div class="shimmer shimmer-card"></div>
-          <div class="shimmer shimmer-card"></div>
-          <div class="shimmer shimmer-card"></div>
-        </div>
+    <div class="error-state">
+      <div class="error-icon">⚠</div>
+      <div class="error-text">載入失敗，請稍後再試</div>
+      <button class="retry-btn" onclick="window._retryFn && window._retryFn()">重試</button>
+    </div>
+  `;
+}
+
+function showLoadingState() {
+  document.getElementById('dateList').innerHTML = `
+    <div class="shimmer shimmer-chip"></div>
+    <div class="shimmer shimmer-chip"></div>
+    <div class="shimmer shimmer-chip"></div>
+  `;
+  document.getElementById('journalContent').innerHTML = `
+    <div style="flex:1;">
+      <div class="shimmer shimmer-line long"></div>
+      <div class="shimmer shimmer-line medium"></div>
+      <div class="shimmer shimmer-line short"></div>
+      <div style="margin-top:var(--space-6);">
+        <div class="shimmer shimmer-card"></div>
+        <div class="shimmer shimmer-card"></div>
+        <div class="shimmer shimmer-card"></div>
       </div>
     </div>
   `;
 }
 
-// ─── Render journal tab ───
-function renderJournal() {
-  // Auto-select most recent entry
-  if (!currentDate && SAMPLE_ENTRIES.length > 0) {
-    currentDate = SAMPLE_ENTRIES[0].entry_date;
-  }
-  renderDateList();
-  renderEntry();
-}
-
 // ─── Init ───
-renderJournal();
+initJournal();
 </script>
 
 </body>
