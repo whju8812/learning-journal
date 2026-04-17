@@ -1,0 +1,41 @@
+name: Write Journal Entry (2026-04-17 00:00)
+
+on:
+  push:
+    branches:
+      - claude/serene-galileo-QKfAa
+    paths:
+      - '.github/workflows/write-journal-entry-0000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-17","session_label":"00:00","tech_content":"Claude Opus 4.7 於 4 月 16 日正式發布，是 Anthropic 繼 Mythos Preview 後公開推出的旗艦模型升級版。相較 Opus 4.6，新模型在進階軟體工程最難任務表現顯著提升，新增輸出自我驗證能力（在回報前自行設計方式驗證輸出結果），視覺解析度大幅改善。定價維持不變（API 輸入 $5、輸出 $25 per million tokens），已在 API、Amazon Bedrock、Google Vertex AI、Microsoft Azure Foundry 同步上線，今日在 Hacker News 達 186 points。\n\nLaravel 今日成為 HN 熱議焦點（198 points）：官方在開源 MIT 授權套件 Laravel Boost 中，將 AI agent 的部署建議悄悄改為僅推薦 Laravel Cloud，並刪除 Nginx、FrankenPHP、Laravel Forge 等競品選項。此舉被批評為透過 LLM context 注入商業廣告，等同以開源套件「毒化」AI agent 的決策偏好。繼本月 axios 供應鏈攻擊後，這是又一起敲響 AI agent 信任鏈警鐘的事件。\n\nGitHub Trending 今日出現多個 agentic 工具化 repo：forrestchang/andrej-karpathy-skills 整合 Andrej Karpathy 的 Claude Code 行為調校心得（一份精煉的 CLAUDE.md）；VoltAgent/awesome-design-md 提供可直接置入專案的品牌設計系統 DESIGN.md 範本；obra/superpowers 是 agentic skills 開發框架。這類「給 AI agent 的工具箱」快速崛起，顯示 coding agent 基礎設施正從模型能力轉向 context engineering 生態建設。","learning_analysis":{"AI / 機器學習":{"summary":"Claude Opus 4.7 昨日正式發布，強化進階 coding agent 最難任務表現，新增自我驗證輸出能力與更高視覺解析度。定價維持 Opus 4.6 水準，多平台同步上線。","items":["Claude Opus 4.7：進階 coding agent 性能躍升，具備輸出自我驗證能力","視覺解析度大幅提升，可處理更高解析度圖片","API 輸入 $5、輸出 $25 per million tokens，多平台（Bedrock、Vertex、Azure Foundry）同步上線"]},"雲端與基礎架構":{"summary":"本 session 雲端基礎架構無重大突發新聞。Laravel 爭議提醒開發者留意 agent 部署推薦受商業因素影響的風險；agentic skills 框架的崛起也將改變 serverless 部署的基礎設施決策方式。","items":["Laravel Cloud 爭議：AI agent 部署推薦受商業偏向影響","agentic skills 框架（superpowers）將影響 serverless 部署工具選型"]},"前端開發":{"summary":"VoltAgent/awesome-design-md 的快速竄紅，顯示前端開發者開始透過 DESIGN.md 規範 coding agent 的 UI 生成行為。GitHub Trending 的 agentic 工具化趨勢與前端工具鏈深度整合。","items":["awesome-design-md：品牌設計系統 DESIGN.md 範本集，讓 coding agent 生成符合品牌風格的 UI","agentic 前端開發：用 context engineering 取代手動調整 AI 輸出"]},"後端 / 系統設計":{"summary":"Laravel Boost 爭議揭示 LLM context 作為廣告媒介的新型態，以及開源 AI agent 文件的信任問題。這是繼 axios 供應鏈攻擊後，AI agent 後端信任鏈的又一道裂縫。","items":["Laravel Boost 爭議：開源 MIT 套件的 agent 說明文件被商業化，移除競品推薦","AI agent 信任鏈風險：LLM context poisoning 成為新攻擊向量","建議：稽核專案中的 agent 指引文件（CLAUDE.md 等）是否有隱性商業偏向"]},"開發者工具 / DevOps":{"summary":"GitHub Trending 充斥 agentic 工具化 repo：Andrej Karpathy 的 Claude Code 調校套件、awesome-design-md、obra/superpowers 均快速獲星。Coding agent 的工具生態正在快速成型。","items":["forrestchang/andrej-karpathy-skills：Karpathy LLM coding pitfall 觀察整理為 CLAUDE.md","VoltAgent/awesome-design-md：coding agent UI 生成的 DESIGN.md 範本庫","obra/superpowers：agentic skills 開發框架，模組化 AI agent 能力"]}},"sources":[{"title":"Hacker News","url":"https://news.ycombinator.com/"},{"title":"Introducing Claude Opus 4.7 - Anthropic","url":"https://www.anthropic.com/news/claude-opus-4-7"},{"title":"Laravel raised money and now injects ads directly into your agent | Tech Stackups","url":"https://techstackups.com/articles/laravel-raised-money-and-now-injects-ads-directly-into-your-agent/"},{"title":"Laravel HN Discussion","url":"https://news.ycombinator.com/item?id=47793926"},{"title":"Top 3 GitHub Trending Repos April 2026 - Medium","url":"https://medium.com/@wy921208/top-3-github-trending-repos-april-2026-60k-stars-in-1-week-2a3d64ca13f2"},{"title":"GitHub Trending","url":"https://github.com/trending"},{"title":"Claude Opus 4.7 release - FindSkill.ai","url":"https://findskill.ai/blog/claude-opus-4-7-release-tracker/"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
