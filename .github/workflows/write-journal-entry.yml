@@ -1,0 +1,41 @@
+name: Write Journal Entry (2026-04-17 18:00)
+
+on:
+  push:
+    branches:
+      - claude/serene-galileo-xHIBJ
+    paths:
+      - '.github/workflows/write-journal-entry.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-17","session_label":"18:00","tech_content":"OpenAI GPT-6 於 4 月 14 日正式發布，具備 200 萬 Token 上下文窗口，定價 $2.50/$12 per 1M tokens。Anthropic 同期公告 Claude Mythos Preview，以網路安全漏洞偵測為核心，因潛在風險暫限約 50 個合作夥伴使用。Google 於 4 月初釋出 Gemma 4 家族（Apache 2.0），31B Dense 版本評測中擊敗 20 倍參數競品；Arcee AI 推出 Trinity 400B 開源模型。本月所有主流模型發布皆以 Agent 工作流為核心差異，tool calling 準確率與多步驟規劃能力成為選型關鍵。\n\nHacker News 今日熱議安全事件：Fiverr left customer files public and searchable 達 765 points；前端社群 @mike_cheng1208 警告 npm 套件 axios@1.14.1 和 axios@0.30.4 遭供應鏈攻擊，一位核心維護者帳號被入侵。HN 另有 Stop Flock（858 points）與 Claude Code Routines 引發開發社群廣泛討論。\n\nICSE 2026 國際軟體工程研討會於本週（4/15-17）閉幕，議程聚焦 Agentic Engineer 專題，顯示工程師角色正從直接撰寫程式轉向指導 AI 產出程式，由生產者轉型為監督者。@kaochenlong 分享以 RAG 加上百 MB 以下微型模型查詢規格文件的工具 Spectra，展示輕量 AI 落地應用。","learning_analysis":{"AI / 機器學習":{"summary":"GPT-6、Claude Mythos Preview、Gemma 4、Arcee Trinity 400B 本月密集發布，Agent 工作流可靠性成主要競爭點。@kaochenlong 分享 RAG 加微型模型工具 Spectra，展示輕量 AI 實際落地。","items":["GPT-6：200 萬 Token context window，agent workflow 優化","Claude Mythos Preview：網路安全專項，限合作夥伴存取","Gemma 4 31B Dense（Apache 2.0）評測超越 20 倍參數競品","Arcee Trinity 400B 開源模型，企業可自行部署","Spectra 工具：RAG 加微型模型（小於 100MB）查詢規格文件"]},"雲端與基礎架構":{"summary":"Self-Healing Infrastructure 興起，AIOps 自動分析遙測資料、識別問題並自動回滾部署。Platform Engineering 已成為高績效 DevOps 團隊的核心實踐。","items":["Self-Healing Infrastructure：AIOps 自動分析遙測並回滾部署","Platform Engineering 成為 DevOps 高績效團隊標配"]},"前端開發":{"summary":"TypeScript 成為前端專業專案基線，Next.js 和 Nuxt 為主流 Meta-Framework。npm 供應鏈攻擊（axios@1.14.1 和 axios@0.30.4）值得前端開發者立即確認相依版本。","items":["TypeScript 成前端專業專案基線","Next.js 和 Nuxt 為主流 Meta-Framework 入口","axios 供應鏈攻擊：axios@1.14.1 和 axios@0.30.4 受影響，請確認版本"]},"後端 / 系統設計":{"summary":"微服務搭配事件驅動架構成主流，OpenTelemetry 加 Prometheus 讓可觀測性標準化。Fiverr 資料外洩事件提醒 cloud storage bucket 權限配置的重要性。","items":["微服務加事件驅動架構（Kafka 和 RabbitMQ）成後端主流","OpenTelemetry 加 Prometheus 可觀測性標準化","Fiverr 資料外洩：提醒 cloud storage bucket 權限審查"]},"開發者工具 / DevOps":{"summary":"ICSE 2026 以 Agentic Engineer 為核心議題，工程師從程式生產者轉為 AI 監督者。Claude Code Routines 在 HN 熱議；npm 供應鏈攻擊提醒 DevOps 需強化套件版本鎖定。","items":["ICSE 2026（4/15-17）：Agentic Engineer 專題，工程師角色轉型","Claude Code Routines 在 HN 熱議，AI 驅動開發工作流","AI Agent 管理完整 DevOps 生命週期（IaC、安全掃描、成本分析）","axios 供應鏈攻擊：鎖定套件版本加自動化安全稽核"]}},"sources":[{"title":"Hacker News","url":"https://news.ycombinator.com/"},{"title":"LLM News Today (April 2026)","url":"https://llm-stats.com/ai-news"},{"title":"New LLM Releases April 2026 - Fazm Blog","url":"https://fazm.ai/blog/new-llm-releases-april-2026"},{"title":"GitHub Trending","url":"https://github.com/trending"},{"title":"ICSE 2026 Conference","url":"https://conf.researchr.org/home/icse-2026"},{"title":"高見龍.agent (@kaochenlong) on Threads","url":"https://www.threads.com/@kaochenlong"},{"title":"成智遠 Mike (@mike_cheng1208) on Threads","url":"https://www.threads.com/@mike_cheng1208/post/DWiWhqnkRUJ"},{"title":"AI郵報 (@aiposthub) on Threads","url":"https://www.threads.com/@aiposthub"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
