@@ -1,5 +1,5 @@
 import pytest
-from app import app, _text, _strip_tags, LEARNING_DIRECTIONS, SOURCES
+from app import app, _text, LEARNING_DIRECTIONS, SOURCES
 import xml.etree.ElementTree as ET
 
 
@@ -38,8 +38,3 @@ def test_text_helper():
     el = ET.fromstring(xml)
     assert _text(el, "title") == "Hello"
     assert _text(el, "missing") == ""
-
-
-def test_strip_tags():
-    assert _strip_tags("<p>Hello <b>World</b></p>") == "Hello "
-    assert _strip_tags("") == ""

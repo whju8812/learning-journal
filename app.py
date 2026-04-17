@@ -1,5 +1,6 @@
 import os
 import secrets
+import time
 import xml.etree.ElementTree as ET
 import requests
 from datetime import datetime, timezone, date as date_type
@@ -9,8 +10,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 app = Flask(__name__)
 
 # ─── Supabase ───
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+SUPABASE_URL    = os.environ.get("SUPABASE_URL", "")
+SUPABASE_KEY    = os.environ.get("SUPABASE_KEY", "")
 JOURNAL_API_KEY = os.environ.get("JOURNAL_API_KEY", "")
 
 supabase = None
@@ -98,28 +99,24 @@ LEARNING_DIRECTIONS = [
 ]
 
 HEADERS = {"User-Agent": "LearningJournal/1.0 (+https://github.com)"}
-
 NS = {
-    "atom": "http://www.w3.org/2005/Atom",
-    "dc": "http://purl.org/dc/elements/1.1/",
+    "atom":    "http://www.w3.org/2005/Atom",
+    "dc":      "http://purl.org/dc/elements/1.1/",
     "content": "http://purl.org/rss/1.0/modules/content/",
 }
 
+# ─── RSS cache (5-minute TTL) ───
+_news_cache      = None
+_news_cache_time = 0.0
+_NEWS_CACHE_TTL  = 300
+
 
 def _text(el, *tags):
-    """Return stripped text of the first matching child tag."""
     for tag in tags:
         child = el.find(tag, NS)
         if child is not None and child.text:
             return child.text.strip()
     return ""
-
-
-def _strip_tags(s):
-    try:
-        return ET.fromstring(f"<x>{s}</x>").itertext().__next__()
-    except Exception:
-        return s[:200] if s else ""
 
 
 def fetch_rss(name, source):
@@ -129,31 +126,22 @@ def fetch_rss(name, source):
         root = ET.fromstring(resp.content)
 
         channel = root.find("channel")
-        if channel is not None:
-            entries = channel.findall("item")
-        else:
-            entries = root.findall("{http://www.w3.org/2005/Atom}entry")
+        entries = channel.findall("item") if channel is not None \
+            else root.findall("{http://www.w3.org/2005/Atom}entry")
 
         items = []
         for entry in entries[:8]:
-            title = (
-                _text(entry, "title", "{http://www.w3.org/2005/Atom}title") or "無標題"
-            )[:120]
-
-            link = _text(entry, "link", "guid")
+            title = (_text(entry, "title", "{http://www.w3.org/2005/Atom}title") or "無標題")[:120]
+            link  = _text(entry, "link", "guid")
             if not link:
                 a_link = entry.find("{http://www.w3.org/2005/Atom}link")
-                link = (a_link.get("href", "#") if a_link is not None else "#")
-
+                link   = a_link.get("href", "#") if a_link is not None else "#"
             date_str = _text(
-                entry,
-                "pubDate",
-                "published",
+                entry, "pubDate", "published",
                 "{http://www.w3.org/2005/Atom}published",
                 "{http://www.w3.org/2005/Atom}updated",
             )[:16]
-
-            items.append({"title": title, "url": link, "summary": "", "date": date_str})
+            items.append({"title": title, "url": link, "date": date_str})
 
         return name, source, items
     except Exception:
@@ -163,21 +151,17 @@ def fetch_rss(name, source):
 def fetch_github_trending(name, source):
     try:
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        url = source["url"].replace("{date}", today)
-        resp = requests.get(
-            url,
-            headers={**HEADERS, "Accept": "application/vnd.github+json"},
-            timeout=10,
-        )
-        data = resp.json()
+        url   = source["url"].replace("{date}", today)
+        resp  = requests.get(url, headers={**HEADERS, "Accept": "application/vnd.github+json"}, timeout=10)
+        data  = resp.json()
         items = [
             {
-                "title": repo.get("full_name", ""),
-                "url": repo.get("html_url", "#"),
-                "summary": (repo.get("description") or "")[:200],
-                "date": repo.get("created_at", "")[:10],
-                "stars": repo.get("stargazers_count", 0),
+                "title":    repo.get("full_name", ""),
+                "url":      repo.get("html_url", "#"),
+                "date":     repo.get("created_at", "")[:10],
+                "stars":    repo.get("stargazers_count", 0),
                 "language": repo.get("language") or "N/A",
+                "summary":  (repo.get("description") or "")[:200],
             }
             for repo in data.get("items", [])[:8]
         ]
@@ -186,46 +170,56 @@ def fetch_github_trending(name, source):
         return name, source, []
 
 
-def fetch_all_sources():
+def _fetch_all_sources():
     results = []
     with ThreadPoolExecutor(max_workers=6) as executor:
         futures = [
             executor.submit(
                 fetch_rss if src["type"] == "rss" else fetch_github_trending,
-                name,
-                src,
+                name, src,
             )
             for name, src in SOURCES.items()
         ]
         for future in as_completed(futures):
             name, source, items = future.result()
-            results.append(
-                {
-                    "name": name,
-                    "icon": source["icon"],
-                    "category": source["category"],
-                    "url": source["url"].split("?")[0],
-                    "items": items,
-                    "count": len(items),
-                }
-            )
+            results.append({
+                "name":     name,
+                "icon":     source["icon"],
+                "category": source["category"],
+                "url":      source["url"].split("?")[0],
+                "items":    items,
+                "count":    len(items),
+            })
     results.sort(key=lambda x: x["name"])
     return results
 
 
-# ─── Page route ───
+def fetch_all_sources_cached():
+    global _news_cache, _news_cache_time
+    now = time.monotonic()
+    if _news_cache is None or now - _news_cache_time > _NEWS_CACHE_TTL:
+        _news_cache      = _fetch_all_sources()
+        _news_cache_time = now
+    return _news_cache
+
+
+# ─── Page routes ───
 
 @app.route("/")
 def index():
-    today = datetime.now().strftime("%Y 年 %m 月 %d 日")
-    return render_template("index.html", today=today, learning_directions=LEARNING_DIRECTIONS)
+    return render_template("index.html")
 
 
-# ─── RSS / learning routes ───
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
+# ─── API routes ───
 
 @app.route("/api/news")
 def api_news():
-    return jsonify(fetch_all_sources())
+    return jsonify(fetch_all_sources_cached())
 
 
 @app.route("/api/learning")
@@ -247,13 +241,9 @@ def _auth_error():
 
 @app.route("/api/entries/health")
 def api_journal_health():
+    OVERDUE_RESPONSE = {"last_entry_date": None, "last_session_label": None, "days_since_last_entry": None, "is_overdue": True}
     if supabase is None:
-        return jsonify({
-            "last_entry_date": None,
-            "last_session_label": None,
-            "days_since_last_entry": None,
-            "is_overdue": True,
-        }), 200
+        return jsonify(OVERDUE_RESPONSE), 200
     try:
         result = (
             supabase.table("journal_entries")
@@ -263,29 +253,18 @@ def api_journal_health():
             .execute()
         )
         if not result.data:
-            return jsonify({
-                "last_entry_date": None,
-                "last_session_label": None,
-                "days_since_last_entry": None,
-                "is_overdue": True,
-            }), 200
-        row = result.data[0]
+            return jsonify(OVERDUE_RESPONSE), 200
+        row       = result.data[0]
         last_date = date_type.fromisoformat(row["entry_date"])
-        today = date_type.today()
-        delta = (today - last_date).days
+        delta     = (date_type.today() - last_date).days
         return jsonify({
-            "last_entry_date": row["entry_date"],
-            "last_session_label": row["session_label"],
+            "last_entry_date":     row["entry_date"],
+            "last_session_label":  row["session_label"],
             "days_since_last_entry": delta,
-            "is_overdue": delta > 0,
+            "is_overdue":          delta > 0,
         }), 200
     except Exception:
-        return jsonify({
-            "last_entry_date": None,
-            "last_session_label": None,
-            "days_since_last_entry": None,
-            "is_overdue": True,
-        }), 200
+        return jsonify(OVERDUE_RESPONSE), 200
 
 
 @app.route("/api/entries")
@@ -299,14 +278,12 @@ def api_journal_list():
             .order("entry_date", desc=True)
             .execute()
         )
-        # One entry per date for the date nav sidebar
         seen = {}
         for row in result.data:
             d = row["entry_date"]
             if d not in seen:
                 seen[d] = row["created_at"]
-        entries = [{"entry_date": d, "created_at": seen[d]} for d in seen]
-        return jsonify(entries), 200
+        return jsonify([{"entry_date": d, "created_at": seen[d]} for d in seen]), 200
     except Exception:
         return jsonify([]), 200
 
@@ -344,11 +321,11 @@ def api_journal_post():
     if not data:
         return jsonify({"error": "Invalid JSON"}), 400
 
-    entry_date = (data.get("entry_date") or "").strip()
-    session_label = (data.get("session_label") or "").strip()
-    tech_content = (data.get("tech_content") or "").strip()
+    entry_date        = (data.get("entry_date") or "").strip()
+    session_label     = (data.get("session_label") or "").strip()
+    tech_content      = (data.get("tech_content") or "").strip()
     learning_analysis = data.get("learning_analysis")
-    sources = data.get("sources", [])
+    sources           = data.get("sources", [])
 
     if not entry_date or not session_label or not tech_content or not learning_analysis:
         return jsonify({"error": "Missing required fields: entry_date, session_label, tech_content, learning_analysis"}), 400
@@ -378,11 +355,11 @@ def api_journal_post():
 
     try:
         result = supabase.table("journal_entries").insert({
-            "entry_date": entry_date,
-            "session_label": session_label,
-            "tech_content": tech_content,
+            "entry_date":        entry_date,
+            "session_label":     session_label,
+            "tech_content":      tech_content,
             "learning_analysis": learning_analysis,
-            "sources": sources,
+            "sources":           sources,
         }).execute()
         return jsonify({"ok": True, "id": result.data[0]["id"]}), 201
     except Exception as e:
