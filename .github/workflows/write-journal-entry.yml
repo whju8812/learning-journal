@@ -1,0 +1,41 @@
+name: Write Journal Entry (2026-04-17 21:00)
+
+on:
+  push:
+    branches:
+      - claude/serene-galileo-dytVR
+    paths:
+      - '.github/workflows/write-journal-entry.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-17","session_label":"21:00","tech_content":"OpenAI 收購 Python 套件管理器 Astral（uv 開發商），O'Reilly Radar 四月趨勢報告視此為 AI 實驗室搶佔開發者基礎設施的重大訊號。作為回應，社群已分叉出 Fyn，延續 uv 的開源路線。同期，Anthropic 宣布 Claude Code Channels 實驗功能，允許透過 Telegram 或 Discord 與 Claude 互動；OpenAI Codex 新增 Plugins 功能，可將 MCP Server 整合成可重複使用的工作流程。開發者工具層正成為 AI 軍備競賽的新戰場，如何掌控開發者日常使用的基礎設施已成為各大 AI 實驗室的戰略目標。\n\nCISA 今日警告 Apache ActiveMQ Classic 存在高危漏洞 CVE-2026-34197（CVSS 8.8），正遭積極利用，聯邦機構須於 4 月 30 日前完成修補。NIST 亦宣布因 CVE 提交量在 2020–2025 年間暴增 263%，將僅對符合特定條件的漏洞進行深度標注與豐富化，安全資源分配效率問題浮上檯面。\n\nGitHub Trending 上本地 AI 助理 OpenClaw 突破 21 萬顆星，展現端側 AI 的強勁需求；WebAssembly 正從瀏覽器延伸至伺服器端，成為 serverless 與 edge 場景中容器的輕量安全替代方案。O'Reilly 同時觀察到 React Compiler（2025 年 10 月 v1.0 發布）持續普及，手動使用 useMemo、useCallback 正逐漸被視為 legacy 作法。","learning_analysis":{"AI / 機器學習":{"summary":"OpenAI Codex 新增 Plugins 功能整合 MCP Server，Anthropic Claude Code Channels 允許透過 Telegram/Discord 互動，AI 工具鏈與 agentic 整合持續深化。","items":["Anthropic Claude Code Channels：支援 Telegram/Discord 互動（實驗功能）","OpenAI Codex Plugins：打包 MCP Server 成可重複使用工作流","Stripe Projects：CLI 管理完整 AI 堆疊（帳號、計費、Key）"]},"雲端與基礎架構":{"summary":"CISA 警告 Apache ActiveMQ CVE-2026-34197（CVSS 8.8）遭積極利用，聯邦機構 4/30 前須修補。WebAssembly 移至伺服器端成容器輕量替代，在 edge 與 serverless 場景受矚目。","items":["Apache ActiveMQ CVE-2026-34197（CVSS 8.8）被積極利用，需緊急修補","WebAssembly 伺服器端化：edge computing 的輕量容器替代方案"]},"前端開發":{"summary":"React Compiler v1.0（2025/10 發布後）持續普及，手動使用 useMemo/useCallback 和 React.memo 正成為 legacy 作法。WebAssembly 從瀏覽器延伸至伺服器端，前後端邊界持續模糊。","items":["React Compiler v1.0 普及：useMemo/useCallback 正成為 legacy 作法","WebAssembly 伺服器端化：前後端邊界模糊，輕量 runtime 受矚目"]},"後端 / 系統設計":{"summary":"NIST 限制 CVE 深度標注，反映安全資源分配效率問題。後端趨勢以 typed functions（serverless 模式）和 AIOps 自動化監控為主軸，微服務搭配事件驅動架構持續成熟。","items":["NIST 限制 CVE 標注：2020–2025 年 CVE 提交量暴增 263%，資源分配調整","後端走向 typed functions：serverless 模式逐漸取代長駐服務架構"]},"開發者工具 / DevOps":{"summary":"OpenAI 收購 Astral（uv 開發商）是本週最重大的開發者工具訊號，AI 實驗室向基礎設施層延伸；Fyn 作為社群 fork 出現。O'Reilly 指出開發者角色正重組——審核 AI 生成程式碼比撰寫程式碼更關鍵。","items":["OpenAI 收購 Astral（uv Python 套件管理器），AI 實驗室搶進基礎設施","Fyn：uv 社群 fork，延續開源路線","O'Reilly：開發者技能重組——審核/指導 AI 產出比撰寫程式更關鍵","GitHub Trending：OpenClaw 21 萬星，本地 AI 助理跨 50+ 平台整合"]}},"sources":[{"title":"Radar Trends to Watch: April 2026 – O'Reilly","url":"https://www.oreilly.com/radar/radar-trends-to-watch-april-2026/"},{"title":"Apache ActiveMQ Vulnerability Under Active Exploitation – CISA","url":"https://thehackernews.com/"},{"title":"NIST Limits CVE Enrichment – The Hacker News","url":"https://thehackernews.com/"},{"title":"Top 3 GitHub Trending Repos April 2026 – Medium","url":"https://medium.com/@wy921208/top-3-github-trending-repos-april-2026-60k-stars-in-1-week-2a3d64ca13f2"},{"title":"New LLM Releases April 2026 – Fazm Blog","url":"https://fazm.ai/blog/new-llm-releases-april-2026"},{"title":"GitHub Trending","url":"https://github.com/trending"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
