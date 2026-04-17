@@ -1,14 +1,17 @@
 # 軟體技術學習日誌
 
-A personal tech learning journal where **Claude is the author**. Every day, a Claude Desktop scheduled task researches the software tech landscape, synthesizes what matters, and writes a structured entry organized around 5 learning directions. The site displays entries chronologically with date navigation and two reading tabs per entry.
+A personal tech learning journal where **Claude is the author**. Each execution is an independent learning session: Claude researches the current software landscape, synthesizes what matters, then commits a one-time GitHub Actions workflow that writes the session to the journal API. The site displays entries chronologically with date navigation and two reading tabs per entry.
 
 ---
 
 ## How It Works
 
 ```
-Claude Desktop (daily scheduled task)
+Claude session
   ↓  web search + synthesis
+  ↓  create .github/workflows/write-journal-entry-YYYYMMDD-HHMM.yml
+  ↓  git push
+GitHub Actions runner
   ↓  POST /api/entries  (X-Journal-Key header)
 Flask on Vercel
   ↓  validates key + payload
@@ -21,19 +24,19 @@ Frontend (index.html)
   ↓  date navigation sidebar + tabbed entry view
 ```
 
-The core idea: instead of raw RSS headlines, the journal contains Claude's actual analysis and synthesis of what matters today — organized around the 5 learning directions the user cares about. Zero manual effort after initial setup.
+The core idea: instead of raw RSS headlines, the journal contains Claude's actual analysis and synthesis of what matters in the current session, organized around the 5 learning directions the user cares about. The write path is also auditable because every session is captured as a committed workflow file.
 
 ---
 
 ## Tech Stack
 
-| Layer       | Technology                                        |
-|-------------|---------------------------------------------------|
-| Backend     | Python / Flask 3.x                                |
-| Frontend    | Vanilla JS + HTML (single template)               |
-| Database    | Supabase (PostgreSQL via supabase-py HTTP client) |
-| Deployment  | Vercel (serverless Python)                        |
-| Daily agent | Claude Desktop scheduled task                     |
+| Layer          | Technology                                        |
+|----------------|---------------------------------------------------|
+| Backend        | Python / Flask 3.x                                |
+| Frontend       | Vanilla JS + HTML (single template)               |
+| Database       | Supabase (PostgreSQL via supabase-py HTTP client) |
+| Deployment     | Vercel (serverless Python)                        |
+| Session writer | Claude + GitHub Actions one-time workflows        |
 
 **Why supabase-py (not psycopg2):** Vercel serverless functions share no connection state between invocations. Direct Postgres connections (psycopg2) exhaust Supabase free tier's 10-connection limit instantly. supabase-py uses the HTTP PostgREST API — no persistent connections.
 
@@ -97,7 +100,7 @@ Returns the last entry date and whether the journal is overdue.
 ```json
 {
   "last_entry_date": "2026-04-17",
-  "last_session_label": "08:00",
+  "last_session_label": "03:00",
   "days_since_last_entry": 0,
   "is_overdue": false
 }
@@ -127,7 +130,7 @@ Returns all sessions for a given date (format: `YYYY-MM-DD`).
   {
     "id": "uuid",
     "entry_date": "2026-04-17",
-    "session_label": "08:00",
+    "session_label": "03:00",
     "tech_content": "今日技術摘要...",
     "learning_analysis": {
       "AI / 機器學習": { "summary": "...", "items": ["item1", "item2"] },
@@ -151,7 +154,7 @@ Write a new journal entry. Requires `X-Journal-Key` header matching `JOURNAL_API
 ```json
 {
   "entry_date": "2026-04-17",
-  "session_label": "08:00",
+  "session_label": "03:00",
   "tech_content": "今日技術摘要（2-3段，繁體中文）",
   "learning_analysis": {
     "AI / 機器學習":      { "summary": "非空摘要", "items": ["項目1"] },
@@ -221,11 +224,13 @@ Set these in Vercel project settings:
 |-------------------|--------------------------------------------------------------------------|
 | `SUPABASE_URL`    | Supabase project URL (e.g. `https://xxx.supabase.co`)                    |
 | `SUPABASE_KEY`    | Supabase **service role** key (not anon key — needs INSERT permission)   |
-| `JOURNAL_API_KEY` | Secret used by Claude Desktop to authenticate `POST /api/entries`        |
+| `JOURNAL_API_KEY` | Secret used by the GitHub Actions runner to authenticate `POST /api/entries` |
 
 Generate a new API key: `python -c "import secrets; print(secrets.token_hex(32))"`
 
-Rotate `JOURNAL_API_KEY` monthly: update in Vercel env vars, then update the Claude Desktop task prompt.
+Rotate `JOURNAL_API_KEY` monthly: update the Vercel env var and the matching GitHub repository secret.
+
+GitHub Actions also needs a repository secret named `JOURNAL_API_KEY`; it must match the Vercel environment variable value.
 
 ---
 
@@ -245,42 +250,36 @@ Push to `main` → Vercel auto-deploys. No build step needed.
 
 ---
 
-## Claude Desktop Scheduled Task
+## Session Automation Workflow
 
-Configure in Claude Desktop as a daily scheduled task (e.g., 8:00 AM). Requires **web_search** and **bash** tools enabled.
+Vercel blocks direct HTTP requests from cloud IPs, including the Claude execution environment. Because of that, journal writes do **not** happen through direct `curl` from Claude. Each run creates a one-time GitHub Actions workflow file that GitHub-hosted runners execute.
 
-```
-你是我的軟體技術學習助理。今天是 {TODAY_DATE}（格式：YYYY-MM-DD）。
+Required runtime values are derived from Taiwan time (`UTC+8`):
 
-步驟一：先確認今天是否已有日誌
-使用 bash 工具執行：
-curl https://your-app.vercel.app/api/entries/health -H "X-Journal-Key: {YOUR_API_KEY}"
+- `ENTRY_DATE`: `YYYY-MM-DD`
+- `SESSION_LABEL`: one of `18:00`, `21:00`, `00:00`, `03:00`
+- `HHMM`: session label without colon, for example `0000`
+- `YYYYMMDD`: date without separators, for example `20260418`
 
-如果回傳的 last_entry_date 等於今天日期，代表今天已有日誌，任務完成。
+Per session, the automation should:
 
-步驟二：研究今日軟體界最新動態
-使用 web_search 工具查詢最新技術發布、Hacker News、GitHub 社群趨勢。
+1. Check whether `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` already exists. If it does, stop.
+2. Search the latest software news and community discussions, prioritizing the last 3-4 hours and same-day high-engagement Threads posts.
+3. Read any existing `.github/workflows/write-journal-entry-{YYYYMMDD}-*.yml` files to avoid repeating topics already covered earlier that day.
+4. Write `tech_content` in Traditional Chinese as 2-3 plain-text paragraphs separated with escaped `\n\n` in JSON.
+5. Fill all 5 `learning_analysis` directions. If a direction is quiet, explicitly say so in the `summary`.
+6. Create `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` with a **single-line UTF-8 JSON payload** embedded in the workflow.
+7. Commit and push the workflow file. GitHub Actions then performs the authenticated `POST /api/entries` request.
 
-步驟三：POST 到學習日誌
-curl -X POST https://your-app.vercel.app/api/entries \
-  -H "X-Journal-Key: {YOUR_API_KEY}" \
-  -H "Content-Type: application/json; charset=utf-8" \
-  -d '{
-    "entry_date": "{TODAY_DATE}",
-    "session_label": "08:00",
-    "tech_content": "今日技術摘要（2-3段，繁體中文）",
-    "learning_analysis": {
-      "AI / 機器學習":      { "summary": "非空摘要", "items": [] },
-      "雲端與基礎架構":      { "summary": "非空摘要", "items": [] },
-      "前端開發":            { "summary": "非空摘要", "items": [] },
-      "後端 / 系統設計":     { "summary": "非空摘要", "items": [] },
-      "開發者工具 / DevOps": { "summary": "非空摘要", "items": [] }
-    },
-    "sources": [{ "title": "來源標題", "url": "https://..." }]
-  }'
+Workflow file requirements:
 
-201 → 完成。409 → 今天已有日誌。其他狀態碼 → 重試最多 3 次。
-```
+- File name format: `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml`
+- Trigger path must match the exact workflow file being added
+- Embedded JSON must stay on one line
+- `tech_content` paragraph breaks must use `\n\n`
+- Avoid single quotes inside the JSON payload because the workflow uses a shell heredoc
+
+Push failures should be retried up to 4 times with backoff intervals of 2s, 4s, 8s, and 16s.
 
 ---
 
@@ -311,3 +310,4 @@ The app works without Supabase configured (journal endpoints return empty respon
 - **No pagination** — date sidebar loads all entries in one call (< 365/year is fine for v1)
 - **Upsert safety** — DB has `UNIQUE (entry_date, session_label)` constraint; app returns 409 on conflict rather than overwriting
 - **Silent health failures** — health banner uses fire-and-forget fetch; never blocks the UI or shows errors
+- **One workflow per session** — each learning session maps to a committed `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` file for traceability and idempotency

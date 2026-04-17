@@ -2,19 +2,19 @@
 
 ## What This Is
 
-A personal tech learning journal web app. Claude Desktop runs a daily scheduled task that researches today's software tech landscape and writes a structured entry to this app. The site displays entries chronologically with tabs: **技術內容** (Tech Content) and **學習方向分析** (Learning Direction Analysis).
+A personal tech learning journal web app. Each execution is a standalone learning session. Because Vercel blocks direct HTTP requests from cloud IPs, Claude does not post to the journal API directly; it researches the current software landscape, creates a one-time GitHub Actions workflow, and pushes that workflow so a GitHub-hosted runner can write the entry.
 
 **Design doc (approved):** `docs/design.md`
 
 ## Tech Stack
 
-| Layer       | Technology                                                  |
-| ----------- | ----------------------------------------------------------- |
-| Backend     | Python / Flask                                              |
-| Frontend    | Vanilla JS + HTML (single template: `templates/index.html`) |
-| Database    | Supabase (PostgreSQL) — **not yet wired up, next step**     |
-| Deployment  | Vercel (serverless)                                         |
-| Daily agent | Claude Desktop scheduled task                               |
+| Layer          | Technology                                                  |
+| -------------- | ----------------------------------------------------------- |
+| Backend        | Python / Flask                                              |
+| Frontend       | Vanilla JS + HTML (single template: `templates/index.html`) |
+| Database       | Supabase (PostgreSQL via supabase-py HTTP client)           |
+| Deployment     | Vercel (serverless)                                         |
+| Session writer | Claude + GitHub Actions one-time workflows                  |
 
 ## Project Structure
 
@@ -32,24 +32,31 @@ learning-journal/
 
 ## Current State
 
-The app **already works** and is deployed on Vercel. It fetches RSS feeds from:
+The app is deployed on Vercel and the journal endpoints use Supabase. It also fetches live tech feeds from:
 
 - Hacker News, The Verge, InfoQ, Dev.to (via RSS)
 - GitHub Trending (via GitHub API)
 
 And displays them alongside 5 learning directions (defined in `LEARNING_DIRECTIONS` in `app.py`).
 
-## What Needs to Be Built Next
+## Session Workflow
 
-The journal entry feature — see `docs/design.md` for full spec. Summary:
+Every run should follow this workflow:
 
-1. **Supabase connection** — add `supabase` to `requirements.txt`, connect via `SUPABASE_URL` + `SUPABASE_KEY` env vars (use supabase-py, NOT psycopg2 — Vercel serverless exhausts Postgres direct connections)
-2. **4 new Flask endpoints** in `app.py`:
-   - `POST /api/entries` — Claude writes a daily entry (auth via `X-Journal-Key` header)
-   - `GET /api/entries` — list of dates for navigation
-   - `GET /api/entries/<date>` — full entry for a date (format: YYYY-MM-DD)
-   - `GET /api/entries/health` — last entry date + is_overdue flag
-3. **Frontend update** — date navigation sidebar + two-tab entry view in `templates/index.html`
+1. Compute Taiwan time (`UTC+8`) and derive:
+    - `ENTRY_DATE` in `YYYY-MM-DD`
+    - `SESSION_LABEL` as one of `18:00`, `21:00`, `00:00`, `03:00`
+    - `HHMM` without a colon
+    - `YYYYMMDD` without separators
+2. Check whether `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` already exists. If it does, the session is already handled.
+3. Search today's latest software content, prioritizing the last 3-4 hours and same-day high-engagement Threads posts.
+4. Read existing `.github/workflows/write-journal-entry-{YYYYMMDD}-*.yml` files to avoid repeating themes covered by earlier sessions on the same date.
+5. Write Traditional Chinese content:
+    - `tech_content`: 2-3 plain-text paragraphs
+    - `learning_analysis`: all 5 directions required, `summary` cannot be blank
+    - `sources`: array of `{ "title": str, "url": str }`
+6. Create `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` with a single-line UTF-8 JSON payload and push it.
+7. GitHub Actions performs the actual `POST /api/entries` call using the repo secret `JOURNAL_API_KEY`.
 
 ## Key Conventions
 
@@ -58,14 +65,21 @@ The journal entry feature — see `docs/design.md` for full spec. Summary:
 - All API responses: `Content-Type: application/json; charset=utf-8`
 - Auth header for write endpoints: `X-Journal-Key` (matches `JOURNAL_API_KEY` env var)
 - `entry_date` format everywhere: `YYYY-MM-DD`
+- Valid `session_label` values are only `18:00`, `21:00`, `00:00`, `03:00`
+- One workflow file represents exactly one session: `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml`
+- Do not use direct `curl` from the Claude environment to write journal entries; the GitHub Actions runner is the supported write path
+- `tech_content` paragraphs must be separated with escaped `\n\n` inside the JSON payload
+- The embedded workflow JSON must stay on one line and must not contain single quotes
 
-## Environment Variables (Vercel)
+## Secrets and Environment Variables
 
 | Variable          | Purpose                                                            |
 | ----------------- | ------------------------------------------------------------------ |
 | `SUPABASE_URL`    | Supabase project URL (e.g. https://xxx.supabase.co)                |
 | `SUPABASE_KEY`    | Supabase service role key (not anon key — needs INSERT permission) |
-| `JOURNAL_API_KEY` | Secret for Claude Desktop to authenticate POST /api/entries        |
+| `JOURNAL_API_KEY` | Shared secret used by GitHub Actions to authenticate POST /api/entries |
+
+Keep `JOURNAL_API_KEY` synchronized between Vercel environment variables and GitHub repository secrets.
 
 ## Learning Directions (hardcoded in app.py)
 
