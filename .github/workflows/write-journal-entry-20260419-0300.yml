@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-19 03:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260419-0300.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-19","session_label":"03:00","tech_content":"Anthropic 在 4 月 16 日推出 Claude Opus 4.7，這是針對複雜推理與長時間 Agent 工作流優化的最新旗艦模型，支援高達 100 萬 tokens 的上下文視窗。同期，Google 以 Apache 2.0 授權發布 Gemma 4 家族四個變體，其中 31B dense 模型在性能上超越了 20 倍大小的對手模型。今春 AI 模型競爭的核心主軸已從「誰的答案最好」演進為「誰能執行最長的端到端任務鏈」，持久上下文、自主規劃、工具調用與結果驗證成為決勝關鍵。\n\n國際軟體工程頂尖研討會 ICSE 2026 於 4 月 12 至 18 日在里約熱內盧舉辦，本屆剛剛落幕。大會聚焦「軟體工程的未來」，與會者普遍認為 AI 對軟體工程帶來的變革是網際網路問世以來最深遠的一次。系統設計與可維護性架構的價值持續上升，因為隨著 AI 讓寫程式的成本愈來愈低，讓系統保持可讀與可維護反而成為更稀缺的技能。\n\nDevOps 領域正出現兩大趨勢：AIOps 驅動的「自愈基礎架構」加速普及，系統能自動分析遙測數據並調整資源，已有 73% 的企業導入 AIOps 以解決告警疲勞問題；此外，從 Docker 向 Podman 和 containerd 2.0 的遷移也在加速，新一代容器工具移除了需要 root 權限的中央 daemon，安全性更優。AI Agent 同時開始接管 DevOps 流程，可用自然語言驅動 Terraform 變更、安全掃描與成本分析。","learning_analysis":{"AI / 機器學習":{"summary":"Anthropic 發布 Claude Opus 4.7，專注複雜推理與 Agent 工作流；Google Gemma 4 家族以 Apache 2.0 開源，AI 競爭進入長上下文與端到端任務執行新階段","items":["Claude Opus 4.7 支援百萬 token 上下文，針對長時間 Agent 工作流優化","Google Gemma 4 家族四個變體以 Apache 2.0 發布，31B dense 模型性能超越 20 倍大的競爭對手","今春 AI 模型軍備競賽核心：持久上下文、自主規劃、工具調用、結果驗證","OpenAI GPT-5.4-Cyber 面向網路防禦，AI 垂直化應用加速"]},"雲端與基礎架構":{"summary":"AIOps 驅動的自愈基礎架構快速普及，73% 企業已導入；容器生態從 Docker 向 Podman 和 containerd 2.0 遷移加速，安全性顯著提升","items":["AIOps 自愈架構：系統自動分析遙測數據並調整資源，解決告警疲勞","73% 企業導入 AIOps 以改善運維效率","Docker 向 Podman 和 containerd 2.0 遷移加速，移除 root 權限中央 daemon","AI Agent 接管 DevOps 流程，可用自然語言驅動 Terraform 變更和安全掃描"]},"前端開發":{"summary":"TypeScript 成為前端開發基準，React Compiler v1.0 廣泛採用後手動優化逐漸成為歷史；前端框架生態趨於穩定","items":["TypeScript 取代純 JavaScript 成為專業前端開發基準","React Compiler v1.0 廣泛採用，手動 useMemo 和 useCallback 成為過時做法","Next.js 和 Nuxt 等 Meta-framework 成為大多數專業 Web 專案標準入口","前端市場雖競爭激烈，但懂架構與 AI 整合的開發者需求依然強勁"]},"後端 / 系統設計":{"summary":"ICSE 2026 研討會強調系統設計與架構的價值在 AI 時代反而更重要，可維護性成為稀缺技能；後端生態持續演進","items":["ICSE 2026（4/12-18，里約）討論 AI 時代軟體工程師角色轉型","AI 讓寫程式成本降低，但系統架構與可維護性設計的稀缺性反而提升","Node.js 22.x 原生支援 HTTP/3 和 QUIC，後端網路通訊效能提升","Kafka 和 RabbitMQ 與微服務事件驅動架構深度整合，成為後端標配"]},"開發者工具 / DevOps":{"summary":"AI Agent 開始全面接管 DevOps 生命週期，從自然語言驅動基礎架構變更到自動化安全掃描；容器工具生態持續演進","items":["AI Agent 可從自然語言指令執行 Terraform 變更、安全掃描和成本分析","containerd 2.0 和 Podman 取代 Docker 的趨勢加速，安全架構優化","OpenTelemetry 和 Prometheus 成為可觀測性標準工具組合","Self-Healing Infrastructure 自愈基礎架構成為 2026 DevOps 核心趨勢"]}},"sources":[{"title":"AI Updates Today (April 2026) – Latest AI Model Releases","url":"https://llm-stats.com/llm-updates"},{"title":"AI Model Benchmarks April 2026: Comparing GPT-5, Claude 4.6, Gemini 3","url":"https://af.net/realtime/ai-model-benchmarks-april-2026-comparing-gpt-5-claude-4-6-gemini-3/"},{"title":"Week 2 of April 2026 Generative AI News Roundup","url":"https://blog.greeden.me/en/2026/04/16/week-2-of-april-2026-one-week-generative-ai-news-roundup-what-gpt-5-4-cyber-claude-cyber-concerns-and-gemini-notebooks-show-about-what-comes-next-for-practical-ai/"},{"title":"ICSE 2026 Future of Software Engineering","url":"https://conf.researchr.org/track/icse-2026/icse-2026-future-of-software-engineering"},{"title":"The New Frontier: 2026 DevOps Trends","url":"https://dev.to/meena_nukala/the-new-frontier-2026-devops-trends-you-cant-ignore-5g8f"},{"title":"New AI Model Releases News April 2026","url":"https://blog.mean.ceo/new-ai-model-releases-news-april-2026/"},{"title":"GitHub Trending Repositories","url":"https://github.com/trending"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
