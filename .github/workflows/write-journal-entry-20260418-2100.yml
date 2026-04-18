@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-18 21:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260418-2100.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-18","session_label":"21:00","tech_content":"Anthropic 於 4 月 16 日正式發布 Claude Opus 4.7，帶來多項重要升級：首次支援高解析度圖像（最高 3.75MP）、新增 xhigh 推理等級以精細調控深思與延遲的取捨，以及 Task Budgets 功能（測試版），讓模型在長時間代理迴圈中能更有效地規劃和分配 token 預算。Claude Code 環境中也新增 /ultrareview 命令，模擬資深工程師角度進行更深層的邏輯與設計審查。整體而言，Opus 4.7 的軟體工程能力是歷代中最強，並以相同的 API 定價（$5/$25 per M tokens）提供。\n\n本週開源社群引發一場重要討論：排程工具 Cal.com 宣布關閉其原始碼，理由是 AI 使開源對 SaaS 公司而言過於危險，攻擊者可借助 AI 快速掃描開源代碼找出漏洞。對此，社群討論平台 Discourse 發文強調，他們自創立以來始終遵循 GPLv2 授權，且未來不會改變。Discourse 認為安全說法可能是競爭壓力的掩護，並分享其每個發布週期都使用 AI 弱點掃描器先行偵測並修補漏洞，說明開源與安全並非對立。\n\nGitHub Trending 本週顯示，開發者對代理框架與 AI 友善設計系統的興趣急速升溫。obra/superpowers（153.9k stars）主張有效的代理軟體開發方法論；VoltAgent/awesome-design-md（54.7k stars）提供品牌設計系統的 DESIGN.md 模板，讓 AI 代理生成風格一致的介面。與此同時，MCP 已成為 AI 代理工具串接的業界標準，Microsoft 將 Azure MCP 工具直接整合進 Visual Studio 2022，進一步降低採用門檻。","learning_analysis":{"AI / 機器學習":{"summary":"Anthropic 發布 Claude Opus 4.7，帶來高解析度視覺、xhigh 推理等級與 Task Budgets 功能；同期 Google Gemini 3.1 Flash-Lite 強調效率與低成本；AI 模型競爭持續加劇。","items":["Claude Opus 4.7 支援最高 3.75MP 圖像輸入，為 Anthropic 首次高解析度視覺支援","新增 xhigh 推理等級，在 high 與 max 之間提供更精細的推理與延遲取捨控制","Task Budgets（beta）讓模型在長代理迴圈中能自主規劃並控制 token 用量","Google Gemini 3.1 Flash-Lite 提供 2.5 倍速度提升，定價僅 $0.25/M tokens"]},"雲端與基礎架構":{"summary":"Microsoft 將 Azure MCP 工具整合進 Visual Studio 2022，降低雲端 AI 工具採用門檻；平台工程持續取代傳統 DevOps 成為企業基礎架構管理的主流模式。","items":["Azure MCP 工具內建於 Visual Studio 2022 Azure 開發工作負載，無需另外安裝擴充套件","平台工程（Platform Engineering）概念崛起，集中式內部開發者平台提升跨團隊效率",".NET Aspire 13.2 新增 CLI 分離模式，讓 AppHost 可在背景執行，釋放終端給開發者"]},"前端開發":{"summary":"VoltAgent/awesome-design-md 在 GitHub 上爆紅（54.7k stars），代表 AI 代理驅動的 UI 設計模式正在形成；開發者透過 DESIGN.md 讓 AI 生成風格一致的前端介面。","items":["awesome-design-md 蒐集主流品牌設計系統的 DESIGN.md 模板，可直接投入 AI 代理專案","85% 的前端開發者同時涉及後端開發，全端融合趨勢更加明顯","67% 前端開發者現已參與 CI/CD 部署流程，較 2019 年的 42% 大幅增加"]},"後端 / 系統設計":{"summary":"Cal.com 關閉原始碼引發開源社群對 AI 安全威脅的廣泛討論；Discourse 以 GPLv2 堅守開源立場，並提出以 AI 主動防禦漏洞的觀點反駁。","items":["Cal.com 以 AI 使開源對 SaaS 過於危險為由關閉代碼庫，引發社群熱議","Discourse 堅持 GPLv2 開源授權，認為安全問題可透過 AI 弱點掃描主動防禦","開源與閉源之爭在 AI 時代進入新階段，競爭壓力與安全考量交織難分"]},"開發者工具 / DevOps":{"summary":"obra/superpowers（153.9k stars）成為 GitHub 本週最熱門代理開發框架；MCP 協定普及加速代理工具串接標準化；Claude Code 新增 /ultrareview 提升程式碼審查深度。","items":["obra/superpowers 提出代理技能框架與軟體開發方法論，獲得近 154k stars 廣泛認可","MCP（Model Context Protocol）已成業界標準，讓 LLM 能以統一方式串接工具與資料","Claude Code /ultrareview 命令模擬資深工程師思維，偵測設計缺陷與邏輯漏洞","forrestchang/andrej-karpathy-skills（42.8k stars）收錄 Karpathy 觀察，改善 Claude Code 代理行為"]}},"sources":[{"title":"Anthropic releases Claude Opus 4.7, narrowly retaking lead for most powerful generally available LLM","url":"https://venturebeat.com/technology/anthropic-releases-claude-opus-4-7-narrowly-retaking-lead-for-most-powerful-generally-available-llm"},{"title":"What is new in Claude Opus 4.7 - Claude API Docs","url":"https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-7"},{"title":"Discourse is Not Going Closed Source","url":"https://blog.discourse.org/2026/04/discourse-is-not-going-closed-source/"},{"title":"Top 3 GitHub Trending Repos April 2026","url":"https://medium.com/@wy921208/top-3-github-trending-repos-april-2026-60k-stars-in-1-week-2a3d64ca13f2"},{"title":"AI Models in April 2026: Every Major Release","url":"https://renovateqr.com/blog/ai-models-april-2026"},{"title":"Hacker News","url":"https://news.ycombinator.com/"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
