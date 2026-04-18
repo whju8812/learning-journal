@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-19 00:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260419-0000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-19","session_label":"00:00","tech_content":"四月 2026 是近期最密集的 LLM 發布月份：Anthropic 的 Claude Mythos Preview 向約 50 家合作夥伴開放，定位為「遠超 Claude Opus 4.6 的飛躍」；Google 以 Apache 2.0 釋出 Gemma 4 系列（旗艦 31B Dense 在 benchmark 上超越體積大 20 倍的模型）；Arcee AI 推出 400B 開源大模型 Trinity。所有新模型均聚焦 Agent 能力——工具呼叫精度、多步驟規劃、錯誤恢復，成為 2026 年模型競爭的核心差異指標。\n\nnpm 生態再現供應鏈危機：前端常用套件 axios 的 1.14.1 與 0.30.4 版本遭惡意植入程式碼，攻擊者取得 npm 帳號憑證後完成入侵。同期，容器安全話題因 Docker → Podman/containerd 2.0 遷移討論在社群廣泛流傳：移除擁有 root 特權的中央守護程序，可大幅縮小攻擊面，安全意識較強的企業採用率持續上升。\n\n前端生態迎來里程碑：自 React Compiler v1.0（2025 年 10 月）釋出後，手動撰寫 useMemo、useCallback 與 React.memo 逐漸被視為舊時代做法，編譯器在建置時自動處理記憶化。ICSE 2026（4 月 12-18 日，巴西里約熱內盧）剛落幕，研討結論指出 AI 對軟體工程的衝擊是繼網際網路後最深遠的典範轉移，Agent 可靠性研究成為未來重點議題。","learning_analysis":{"AI / 機器學習":{"summary":"四月是 2026 年 LLM 發布最密集的月份，Claude Mythos、Gemma 4、Trinity 相繼亮相，Agent 能力成核心競爭軸。","items":["Anthropic Claude Mythos Preview 向 50 家合作夥伴開放，定位遠超 Claude Opus 4.6","Google Gemma 4 (31B Dense) 以 Apache 2.0 釋出，benchmark 超越體積大 20 倍的模型","Arcee AI Trinity 400B 開源大模型上線，專為企業可自行部署設計","工具呼叫精度、多步驟規劃、錯誤恢復成為 2026 年模型評估主軸"]},"雲端與基礎架構":{"summary":"Docker 向 Podman/containerd 2.0 的遷移因安全優勢持續獲得關注，自我修復基礎架構成新趨勢。","items":["Docker → Podman/containerd 2.0 遷移在社群熱議，移除 root 特權中央守護程序大幅降低攻擊面","AIOps 驅動的自我修復基礎架構讓系統可自動分析遙測資料並回滾部署","OpenTelemetry 與 AI 異常預測整合成雲端監控新標準"]},"前端開發":{"summary":"React Compiler 加速普及使手動記憶化成歷史，TypeScript 與 meta-framework 已是業界基線。","items":["React Compiler (v1.0, Oct 2025) 在建置時自動處理 useMemo/useCallback/React.memo","TypeScript 成 2026 年所有專業前端專案的標準起點，手動 JS 被視為 legacy","Next.js、Nuxt 等 meta-framework 取代手動路由與打包配置，成業界主流進入點"]},"後端 / 系統設計":{"summary":"axios npm 供應鏈遭攻擊提醒後端開發者需嚴格管控相依套件，n8n webhook 濫用問題持續惡化。","items":["axios 1.14.1 與 0.30.4 版本遭惡意植入：攻擊者取得 npm 帳號憑證上傳惡意版本","n8n webhook 被濫用遞送惡意程式，2026 年 3 月相關流量較 2025 年 1 月暴增 686%","微服務架構中 AI 輔助異常預測成系統設計新標準"]},"開發者工具 / DevOps":{"summary":"AI agent 接管 DevOps 生命週期趨勢加速，GitHub Trending 出現大量 AI 編碼輔助工具 repo。","items":["AI agent 可從自然語言執行 Terraform 變更、安全掃描與成本分析一條龍","GitHub Trending：CLAUDE.md 最佳實踐 repo (42.8k 星) 與 DESIGN.md 集合 (54.7k 星) 爆紅","ICSE 2026 閉幕後社群熱議 AI 帶來的軟體工程典範轉移與 Agent 可靠性研究方向"]}},"sources":[{"title":"AI Models in April 2026: Every Major Release","url":"https://renovateqr.com/blog/ai-models-april-2026"},{"title":"Top 3 GitHub Trending Repos April 2026","url":"https://medium.com/@wy921208/top-3-github-trending-repos-april-2026-60k-stars-in-1-week-2a3d64ca13f2"},{"title":"The New Frontier: 2026 DevOps Trends","url":"https://dev.to/meena_nukala/the-new-frontier-2026-devops-trends-you-cant-ignore-5g8f"},{"title":"Frontend Dev Market in 2026","url":"https://medium.com/codetodeploy/the-frontend-dev-market-in-2026-is-weird-but-heres-what-actually-matters-54e1e9beec74"},{"title":"AI郵報 @aiposthub on Threads","url":"https://www.threads.com/@aiposthub"},{"title":"成智遠 Mike @mike_cheng1208 on Threads","url":"https://www.threads.com/@mike_cheng1208/post/DWiWhqnkRUJ"},{"title":"ICSE 2026 Conference","url":"https://conf.researchr.org/home/icse-2026"},{"title":"LLM News Today April 2026","url":"https://llm-stats.com/ai-news"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
