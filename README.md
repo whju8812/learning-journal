@@ -100,7 +100,7 @@ Returns the last entry date and whether the journal is overdue.
 ```json
 {
   "last_entry_date": "2026-04-17",
-  "last_session_label": "03:00",
+  "last_session_label": "10:00",
   "days_since_last_entry": 0,
   "is_overdue": false
 }
@@ -130,7 +130,7 @@ Returns all sessions for a given date (format: `YYYY-MM-DD`).
   {
     "id": "uuid",
     "entry_date": "2026-04-17",
-    "session_label": "03:00",
+    "session_label": "10:00",
     "tech_content": "今日技術摘要...",
     "learning_analysis": {
       "AI / 機器學習": { "summary": "...", "items": ["item1", "item2"] },
@@ -167,7 +167,7 @@ Write a new journal entry. Requires `X-Journal-Key` header matching `JOURNAL_API
 }
 ```
 
-**Valid `session_label` values:** `"18:00"`, `"21:00"`, `"00:00"`, `"03:00"`
+**Valid `session_label` values:** `"01:00"`, `"04:00"`, `"07:00"`, `"10:00"`
 
 **Response codes:**
 - `201` — entry saved
@@ -257,8 +257,8 @@ Vercel blocks direct HTTP requests from cloud IPs, including the Claude executio
 Required runtime values are derived from Taiwan time (`UTC+8`):
 
 - `ENTRY_DATE`: `YYYY-MM-DD`
-- `SESSION_LABEL`: one of `18:00`, `21:00`, `00:00`, `03:00`
-- `HHMM`: session label without colon, for example `0000`
+- `SESSION_LABEL`: one of `01:00`, `04:00`, `07:00`, `10:00`
+- `HHMM`: session label without colon, for example `1000`
 - `YYYYMMDD`: date without separators, for example `20260418`
 
 Per session, the automation should:

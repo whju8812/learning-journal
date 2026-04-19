@@ -9,7 +9,7 @@
     <div class="hero-eyebrow">About this project</div>
     <h1 class="hero-title">我的 AI 驅動<br>軟體學習日誌</h1>
     <p class="hero-desc">
-      這不是一個新聞閱讀器。這是我的私人學習筆記——只不過筆記是由 Claude 每天自動撰寫的。
+      這不是一個新聞閱讀器。這是我的私人學習筆記——只不過筆記是由 Claude 每天自動撰寫的，一天四次。
     </p>
   </div>
 
@@ -22,7 +22,7 @@
         即使看了，也不一定知道「這件事跟我的學習方向有什麼關係？」
       </p>
       <p>
-        這個日誌解決的問題很具體：<strong>每天早上，自動告訴我「今天技術界發生了什麼，對我的 5 個學習方向各自意味著什麼」。</strong>
+        這個日誌解決的問題很具體：<strong>每天台灣時間 01:00、04:00、07:00、10:00，自動告訴我「這幾小時技術界發生了什麼，對我的 5 個學習方向各自意味著什麼」。</strong>
       </p>
       <p>
         不是 RSS 摘要，不是 AI 產生的廢話。是 Claude 真的做了研究、真的看過今天的討論之後，
@@ -39,35 +39,43 @@
     <div class="section-label">如何運作</div>
     <h2 class="section-heading">完全自動化的流程</h2>
     <div class="prose">
-      <p>整個系統每天早上在無人介入的情況下自動完成。</p>
+      <p>整個系統每天四次、在無人介入的情況下自動完成。</p>
     </div>
     <div class="flow">
       <div class="flow-step">
         <div class="flow-node">1</div>
         <div class="flow-body">
-          <div class="flow-heading">Claude Desktop 排程任務啟動</div>
-          <div class="flow-desc">每天早上固定時間，Claude Desktop 自動執行一個預設的 prompt 任務，不需要我手動觸發任何事情。</div>
-          <span class="flow-tag">Claude Desktop Scheduled Task</span>
+          <div class="flow-heading">遠端排程觸發器喚醒 Claude Code</div>
+          <div class="flow-desc">台灣時間 01:00、04:00、07:00、10:00，Claude Agent SDK 的排程觸發器自動啟動一個 Claude Code CLI session，不需要我手動介入任何事情。</div>
+          <span class="flow-tag">Claude Agent SDK · Remote Trigger</span>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-node">2</div>
         <div class="flow-body">
-          <div class="flow-heading">Claude 搜尋今日技術動態</div>
-          <div class="flow-desc">Claude 使用 web search 工具主動查詢今天的技術新聞、社群討論、GitHub 趨勢——等同於幫我把今天該看的東西都看過一遍。</div>
+          <div class="flow-heading">Claude 搜尋最新技術動態</div>
+          <div class="flow-desc">Claude 使用 web search 工具主動查詢最新的技術新聞、社群討論、GitHub 趨勢，並比對當天已有的 session 內容，避免重複主題。</div>
           <span class="flow-tag">web_search tool</span>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-node">3</div>
         <div class="flow-body">
-          <div class="flow-heading">Claude 撰寫結構化日誌</div>
-          <div class="flow-desc">把研究結果整理成固定格式：技術內容摘要，加上按 5 個學習方向分類的分析。寫好之後以 JSON 格式 POST 到這個網站的 API。</div>
-          <span class="flow-tag">POST /api/entries</span>
+          <div class="flow-heading">Claude 建立一次性 GitHub Actions workflow</div>
+          <div class="flow-desc">把研究結果整理成結構化日誌（技術摘要 + 5 方向分析），寫入一個一次性的 <code>.github/workflows/write-journal-entry-{日期}-{時間}.yml</code> 檔案，commit 並 push 到 GitHub。</div>
+          <span class="flow-tag">GitHub · git push</span>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-node">4</div>
+        <div class="flow-body">
+          <div class="flow-heading">GitHub Actions runner 呼叫日誌 API</div>
+          <div class="flow-desc">GitHub runner 讀取 workflow，以 POST 請求把 JSON 日誌寫入網站 API。Vercel 會封鎖雲端 IP 的直接請求，所以 Claude 不直接呼叫——GitHub Actions 才是合法的寫入路徑。</div>
+          <span class="flow-tag">POST /api/entries</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-node">5</div>
         <div class="flow-body">
           <div class="flow-heading">Flask API 驗證並儲存</div>
           <div class="flow-desc">網站後端驗證 API key，檢查資料格式，存入 Supabase（PostgreSQL）。全程無 AI 在伺服器端——只是標準的 REST API 操作。</div>
@@ -75,10 +83,10 @@
         </div>
       </div>
       <div class="flow-step">
-        <div class="flow-node">5</div>
+        <div class="flow-node">6</div>
         <div class="flow-body">
-          <div class="flow-heading">我打開網站，閱讀今天的筆記</div>
-          <div class="flow-desc">日誌頁面顯示日期側欄，可以點選任何一天的紀錄，切換「技術內容」和「學習方向分析」兩個 tab。</div>
+          <div class="flow-heading">我打開網站，閱讀筆記</div>
+          <div class="flow-desc">日誌頁面顯示日期側欄，可以點選任何一天的紀錄，以 session 時間切換，查看「技術內容」和「學習方向分析」兩個 tab。</div>
           <span class="flow-tag">index.html · Vanilla JS</span>
         </div>
       </div>
@@ -122,9 +130,17 @@
       <div class="stack-row">
         <div class="stack-layer">AI Agent</div>
         <div class="stack-value">
-          <span class="stack-tag">Claude Desktop</span>
-          <span class="stack-tag">Scheduled Tasks</span>
+          <span class="stack-tag">Claude Code CLI</span>
+          <span class="stack-tag">Claude Agent SDK</span>
+          <span class="stack-tag">Remote Trigger</span>
           <span class="stack-tag">web_search</span>
+        </div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer">Session writer</div>
+        <div class="stack-value">
+          <span class="stack-tag">GitHub Actions</span>
+          <span class="stack-tag">One-time Workflow</span>
         </div>
       </div>
       <div class="stack-row">
@@ -139,9 +155,10 @@
       </div>
     </div>
     <div class="callout">
-      <strong>為什麼不用 GitHub Actions？</strong>
-      Claude Desktop Scheduled Tasks 不需要在任何地方管理 API key，
-      不需要設定 CI，也不需要付費。Claude Desktop 本身就是 scheduler。
+      <strong>為什麼要繞過 GitHub Actions 才能寫入？</strong>
+      Vercel 封鎖來自雲端 IP 的直接 HTTP 請求，Claude Code 的執行環境就在其中。
+      所以 Claude 不直接 POST API——而是建立一個一次性 GitHub Actions workflow 推送到 repo，
+      由 GitHub runner（使用合法企業 IP）代為呼叫 API 完成寫入。
     </div>
   </div>
 

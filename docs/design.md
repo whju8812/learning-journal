@@ -108,7 +108,7 @@ All endpoints use UTF-8 JSON. Date format for `entry_date` and `<date>` params: 
 # Validation: learning_analysis must contain exactly these 5 keys, each with
 #             { "summary": string, "items": [string, ...] }:
 #   "AI / 機器學習", "雲端與基礎架構", "前端開發", "後端 / 系統設計", "開發者工具 / DevOps"
-# session_label must be one of: "18:00", "21:00", "00:00", "03:00"
+# session_label must be one of: "01:00", "04:00", "07:00", "10:00"
 # Response codes:
 #   201 Created — entry saved successfully
 #   400 Bad Request — invalid JSON or missing/malformed required fields

@@ -22,7 +22,7 @@ if SUPABASE_URL and SUPABASE_KEY:
     except Exception:
         pass
 
-VALID_SESSION_LABELS = {"18:00", "21:00", "00:00", "03:00"}
+VALID_SESSION_LABELS = {"01:00", "04:00", "07:00", "10:00"}
 REQUIRED_DIRECTIONS = {
     "AI / 機器學習",
     "雲端與基礎架構",
