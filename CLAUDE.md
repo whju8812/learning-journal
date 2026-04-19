@@ -56,7 +56,8 @@ Every run should follow this workflow:
     - `learning_analysis`: all 5 directions required, `summary` cannot be blank
     - `sources`: array of `{ "title": str, "url": str }`
 6. Create `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` with a single-line UTF-8 JSON payload and push it.
-7. GitHub Actions performs the actual `POST /api/entries` call using the repo secret `JOURNAL_API_KEY`.
+7. After pushing, immediately create a PR from `{CURRENT_BRANCH}` to `main` and merge it (squash). This is required because GitHub Actions only reliably triggers `push` events from `main`. Do this automatically without asking the user.
+8. GitHub Actions performs the actual `POST /api/entries` call using the repo secret `JOURNAL_API_KEY`.
 
 ## Key Conventions
 
