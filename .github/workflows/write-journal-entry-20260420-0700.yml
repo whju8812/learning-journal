@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-20 07:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260420-0700.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-20","session_label":"07:00","tech_content":"Vercel 於 4 月 19 日確認遭到安全事件：駭客自稱為 ShinyHunters 組織，宣稱已竊取 Vercel 內部系統資料（包含 API 金鑰、NPM tokens、GitHub tokens、Linear 工單及員工帳號），並索價 200 萬美元出售。Vercel 官方公告表示，標記為「敏感」的環境變數未受波及，但一般環境變數可能已外洩，並呼籲所有用戶立即輪換（rotate）相關憑證。此事件突顯現代雲端部署平台已成為高價值攻擊目標，開發者對平台供應鏈安全的依賴風險正在被重新評估。\n\nMeta 於 4 月 5 日正式釋出 Llama 4 系列的首批兩個模型：Llama 4 Scout 與 Llama 4 Maverick。這是 Llama 系列首次採用 Mixture-of-Experts（MoE）架構，也是首個原生多模態（文字、圖片、影片）的開源模型家族。Scout 擁有 17B 活躍參數與 16 個 expert，支援業界最長的 10 million token context window，可在單張 NVIDIA H100 上執行；Maverick 則配備 128 個 expert，在多項基準測試上超越 GPT-4o 和 Gemini 2.0 Flash，兩者均以開源授權釋出並可於 Hugging Face 下載。此次發布使邊緣部署與長文件多模態推理能力大幅民主化。\n\n2026 年的軟體工程師就業市場呈現顯著的 AI 驅動分化：Indeed 上的軟體工程師職缺年增 30%，67,000 個開放職位創下三年新高；但同時 Q1 共發生 52,000 名科技工作者遭裁員，其中近半與 AI 取代有關，入門級職位更年減 20-35%。然而 AI/ML 工程師相關職缺年增高達 85%，MLOps、LLM 微調、RAG 架構等技能需求爆炸性成長。IBM 甚至宣布在美國三倍增加入門級雇用——但要求初階工程師能在 AI 協助下直接承擔過去需要資深工程師才能執行的任務。這標誌著軟體工程職涯路徑正在快速重新定義。","learning_analysis":{"AI / 機器學習":{"summary":"Meta Llama 4 Scout 與 Maverick 帶來開源多模態 MoE 架構重大突破，10M token context window 創業界開源之最；GPT-6 截至今日（4/20）仍未正式發布。","items":["Llama 4 Scout：17B 活躍參數、16 experts、10M token context，可在單張 H100 執行","Llama 4 Maverick：17B 活躍參數、128 experts，超越 GPT-4o 與 Gemini 2.0 Flash","Llama 4 為首個原生支援文字、圖片、影片輸入的開源多模態系列","兩模型均以開源授權釋出於 Hugging Face 及 llama.com","GPT-6（代號 Spud）截至 4/20 仍未發布，業界持續觀望"]},"雲端與基礎架構":{"summary":"Vercel 安全事件震撼雲端部署社群，一般環境變數可能外洩；事件凸顯 PaaS 平台成為高價值攻擊目標，供應鏈安全風險需要重新評估。","items":["Vercel 確認 4/19 安全事件，駭客聲稱竊取 API 金鑰、NPM/GitHub tokens 等內部資料","標記為敏感的環境變數未受波及，一般環境變數建議立即輪換","ShinyHunters 組織開價 200 萬美元出售據稱包含 Vercel 員工帳號與原始碼的資料","事件提醒開發者：雲端平台即為新型供應鏈攻擊面，最小權限原則至關重要","建議立即動作：輪換所有 Vercel 環境中的 API 金鑰與第三方服務憑證"]},"前端開發":{"summary":"Effect v4 Beta 釋出 TypeScript 生態系重大升級：核心 fiber 運行時完全改寫，bundle 大小從 70kB 縮減至 20kB，並引入 17 個 unstable 模組涵蓋 AI、HTTP、RPC 等場景。","items":["Effect v4 beta：bundle 大小從 70kB 降至 20kB，效能大幅提升","全新 unstable/* 模組系統讓團隊可快速出貨新能力而不破壞 semver 保證","17 個 unstable 模組涵蓋 AI、HTTP、Schema、SQL、RPC、CLI、workflows 等","TypeScript 6 Beta 也在 2 月釋出，為後續 Go 語言重寫做準備","Llama 4 多模態能力為前端直接整合視覺 AI 開闢新路徑"]},"後端 / 系統設計":{"summary":"AI 驅動的就業市場分化正在重塑後端工程師職涯：入門級職位縮水、AI/ML 相關後端技能（MLOps、RAG、LLM 微調）需求爆炸性成長，架構師角色向更高層次決策轉移。","items":["AI/ML 工程師職缺年增 85%，MLOps、RAG 架構、LLM 微調技能成搶手資歷","入門級後端職位年減 20-35%，但整體軟體工程師職缺仍年增 30%","IBM 三倍增加入門級雇用，要求初階工程師借助 AI 承擔資深級任務","Llama 4 的 10M token context 讓後端服務整合超長文件分析成為可能","後端開發者 2026 年必備技能：Python AI 生態、Rust 記憶體安全、Go 高併發微服務"]},"開發者工具 / DevOps":{"summary":"Vercel 安全事件提醒 DevOps 工程師重視憑證輪換與 secrets 管理；Effect v4 與 TypeScript 工具鏈持續演進，開發者生產力工具進入 AI 原生整合時代。","items":["Vercel 事件行動清單：立即輪換所有環境中的 API 金鑰、確保敏感變數正確標記","Secrets 管理最佳實踐：使用專用 secrets manager（Vault、AWS Secrets Manager）而非平台環境變數","Effect v4 unstable 模組包含 AI 整合層，TypeScript 後端工具鏈 AI 原生化趨勢明確","GitHub Trending 仍以 AI agent tooling 為主導，開源社群對自動化工作流熱情不減","DevOpsCon Amsterdam 2026 正在進行中，自癒式基礎設施與 AIOps 為現場核心議題"]}},"sources":[{"title":"Vercel Security Breach April 2026: Environment Variables - byteiota","url":"https://byteiota.com/vercel-security-breach-april-2026-environment-variables/"},{"title":"Vercel Breach April 2026: Rotate Credentials Immediately - Threat Landscape Blog","url":"https://threatlandscape.io/blog/vercel-breach-april-2026-rotate-credentials"},{"title":"Vercel confirms breach as hackers claim to be selling stolen data - BleepingComputer","url":"https://www.bleepingcomputer.com/news/security/vercel-confirms-breach-as-hackers-claim-to-be-selling-stolen-data/"},{"title":"The Llama 4 herd: The beginning of a new era of natively multimodal AI - Meta AI Blog","url":"https://ai.meta.com/blog/llama-4-multimodal-intelligence/"},{"title":"Meta Llama 4 Maverick and Scout now available in watsonx.ai - IBM","url":"https://www.ibm.com/new/announcements/meta-llama-4-maverick-and-llama-4-scout-now-available-in-watsonx-ai"},{"title":"Software Engineer Job Listings Are Up 30% - Metaintro","url":"https://www.metaintro.com/blog/software-engineer-job-listings-spike-2026-ai-demand"},{"title":"Tech Job Market 2026: AI Drives 170M New Jobs While 78K Get Cut in Q1 - Second Talent","url":"https://www.secondtalent.com/resources/tech-job-market-trends/"},{"title":"Effect v4 Beta: Rewritten Runtime, Smaller Bundles - InfoQ","url":"https://www.infoq.com/news/2026/04/effect-v4-beta/"},{"title":"GPT-6 Release Date: 3 Days Past April 14, Still Quiet - FindSkill.ai","url":"https://findskill.ai/blog/gpt-6-release-date/"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
