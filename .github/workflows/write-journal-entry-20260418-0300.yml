@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-18 03:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260418-0300.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-18","session_label":"03:00","tech_content":"Anthropic 於台灣時間4月17日正式推出 Claude Opus 4.7，相較於前代 Opus 4.6，在 agentic coding、多學科推理、大規模工具使用等評測上均有顯著提升。最值得開發者關注的是新增的 xhigh 效力等級（介於 high 與 max 之間），讓使用者能更精細地控制推理深度與延遲的取捨。Anthropic 也強化了視覺能力，並內建了針對高風險資安請求的自動偵測機制，定價維持與前代相同（輸入 $5 每百萬 token，輸出 $25 每百萬 token）。\n\n與此同時，阿里巴巴 Qwen 團隊開源了 Qwen3.6-35B-A3B，這是一個稀疏 MoE 架構的多模態模型，雖然總參數量達 350 億，推理時僅啟用 30 億個參數，大幅降低部署成本。在 Terminal-Bench 2.0（測試 AI agent 在真實終端機環境完成任務的能力）上取得 51.5 的業界最高分，並引入「Thinking Preservation」特性，可在多步驟 agent 工作流中保留並重用先前的推理軌跡，採用 Apache 2.0 授權並支援最長約 100 萬 token 的上下文。\n\n一年一度的軟體工程頂級學術會議 ICSE 2026 本週在巴西里約熱內盧進行核心議程（4月15至17日），今年討論重心圍繞「Agentic Era 中的研究方向」、「AI 時代的技術債」以及軟體供應鏈安全三大主題。這標誌著學術界正式認可 AI agent 全面滲透軟體工程流程，意味著下一代軟體工程師的培訓方式即將出現根本性的轉變。","learning_analysis":{"AI / 機器學習":{"summary":"本週最密集的 AI 新聞集中在大模型發布，Claude Opus 4.7 與 Qwen3.6-35B-A3B 先後推出，Agentic 能力成為各家模型的核心競爭指標。","items":["Anthropic 發布 Claude Opus 4.7，新增 xhigh 推理等級與強化視覺能力，可用於 API、Amazon Bedrock、Google Vertex AI 等平台","Alibaba 開源 Qwen3.6-35B-A3B，Terminal-Bench 2.0 評分業界最高（51.5），引入 Thinking Preservation 多步驟推理保存機制","各家模型均將工具呼叫準確率、多步驟規劃與錯誤恢復能力列為主要差異化指標"]},"雲端與基礎架構":{"summary":"AIOps 驅動的自我修復基礎架構趨勢持續加速，73% 的企業已開始實施，邊緣部署成為前端標準架構。","items":["Vercel Fluid Compute 成為新函式的預設部署方式，強化邊緣運算能力","AIOps 平台能預測系統故障並自動調整資源，自我修復基礎架構普及率達 73%","Netlify 轉向信用制計費，前端託管市場商業模式持續演化"]},"前端開發":{"summary":"React Compiler 在 v1.0 發布後持續普及，手動使用 useMemo 已被視為舊式寫法，邊緣優先的 Server Components 成為主流部署架構。","items":["React Compiler 廣泛採用後，手動使用 useMemo、useCallback、React.memo 被視為 legacy 優化方式","前端框架以邊緣部署 Server Components 為主，大幅降低首屏延遲","前後端責任持續融合，TypeScript 成為全端型態安全的核心工具"]},"後端 / 系統設計":{"summary":"微服務架構與事件驅動架構深度整合，可觀測性工具成為標配，ICSE 2026 深入探討 AI 時代技術債管理議題。","items":["ICSE 2026 設立「AI 時代的技術債」專題討論，學術界正式關注 AI 輔助開發帶來的設計風險","後端服務趨向以型別函式表達而非長駐服務，架構更輕量靈活","OpenTelemetry 與 Prometheus 在微服務可觀測性中扮演核心角色"]},"開發者工具 / DevOps":{"summary":"Platform Engineering 持續升溫，AI agent 開始接管部分 DevOps 流程，GitHub 熱門專案中出現多個優化 AI coding agent 行為的工具。","items":["GitHub Trending 出現 andrej-karpathy-skills 等改善 AI coding agent 行為的 CLAUDE.md 最佳化工具","AI agent 能透過自然語言提示執行 Terraform 變更與資安掃描，DevOps 自動化再進化","OpenClaw 短短數天從 9000 星暴增至 21 萬星，成為 2026 年最快速成長的開源專案"]}},"sources":[{"title":"Introducing Claude Opus 4.7 - Anthropic","url":"https://www.anthropic.com/news/claude-opus-4-7"},{"title":"Qwen3.6-35B-A3B: Agentic coding power, now open to all - Hacker News","url":"https://news.ycombinator.com/item?id=47792764"},{"title":"Qwen Team Open-Sources Qwen3.6-35B-A3B - MarkTechPost","url":"https://www.marktechpost.com/2026/04/16/qwen-team-open-sources-qwen3-6-35b-a3b-a-sparse-moe-vision-language-model-with-3b-active-parameters-and-agentic-coding-capabilities/"},{"title":"ICSE 2026 - International Conference on Software Engineering","url":"https://conf.researchr.org/home/icse-2026"},{"title":"Anthropic releases Claude Opus 4.7 - VentureBeat","url":"https://venturebeat.com/technology/anthropic-releases-claude-opus-4-7-narrowly-retaking-lead-for-most-powerful-generally-available-llm"},{"title":"Qwen3.6-35B-A3B release report - GIGAZINE","url":"https://gigazine.net/gsc_news/en/20260417-qwen36-35b-a3b/"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
