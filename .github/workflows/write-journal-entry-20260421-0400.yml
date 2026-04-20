@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-21 04:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260421-0400.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-21","session_label":"04:00","tech_content":"OpenAI 的 GPT-5.4「Thinking」版本於 3 月初正式部署，成為首個在桌面任務基準測試 OSWorld-Verified 拿下 75.0% 得分、正式超越人類水準的主流語言模型。與此同時，Google Gemini 3.1 Ultra 在 GPQA Diamond 推理測試拿下 94.3%，在 Artificial Analysis Intelligence Index 中與 GPT-5.4 Pro 並列最高分 57 點，使本季成為近年來 AI 模型競賽最激烈的時期。更引人矚目的是，OpenAI 下一代模型（內部代號「Spud」）已於 3 月 24 日完成預訓練，預測市場目前給出 78% 的機率在 4 月底前正式發布，屆時是否命名為 GPT-5.5 或 GPT-6 將視效能飛躍幅度而定。\n\n容器執行環境正在悄悄經歷一場大遷移。Docker v29 已將 containerd image store 設為全新安裝的預設選項，標誌著架構的根本性轉變；超過 80% 的工程組織已建立 platform team，並開始標準化採用無守護進程（daemon-free）架構的 Podman 與 containerd。在高密度 Kubernetes 環境中，以 C 語言撰寫的 crun 正逐步取代 Go 語言的 runc，每個節點可節省高達 3GB 記憶體，Microsoft Visual Studio 2026 Insiders 版本也已原生支援 Podman，顯示這股遷移趨勢已獲主流 IDE 認可。\n\nGitHub 本週最受矚目的開源專案是 OpenClaw，一個完全在本機運行的個人 AI 閘道，可連接 AI 模型與 WhatsApp、Telegram、Slack、Discord 等超過 50 種整合服務，短短數日即從 9,000 星暴增至超過 21 萬星，打破 GitHub 史上開源專案最快成長紀錄。另一個值得關注的是 forrestchang/andrej-karpathy-skills 專案，以單一 CLAUDE.md 檔案封裝 Andrej Karpathy 對 LLM 編程陷阱的觀察與最佳實踐，廣受 AI 輔助開發者社群討論。","learning_analysis":{"AI / 機器學習":{"summary":"GPT-5.4 Thinking 首次在桌面任務基準測試中超越人類水準；Gemini 3.1 Ultra 與其並列最強；OpenAI 下一代模型 Spud 完成預訓練，預測市場給出 78% 機率於月底發布","items":["GPT-5.4 Thinking 整合 test-time compute，在 OSWorld-Verified 測試拿下 75.0%，首次正式超越人類桌面操作水準","Gemini 3.1 Ultra 在 GPQA Diamond 得分 94.3%，2M token 上下文視窗支援跨文字、圖像、音訊、影片的原生推理","OpenAI 下一代模型代號 Spud 已完成預訓練，預計月底前以 GPT-5.5 或 GPT-6 之名正式推出"]},"雲端與基礎架構":{"summary":"Docker v29 將 containerd 設為預設架構，容器執行環境大規模從 Docker daemon 遷移至 Podman/containerd，超過八成工程組織已建立 platform team 標準化此轉型","items":["Docker v29.3.1 將 containerd image store 設為新安裝預設選項，標誌最大架構轉變","crun（C 語言）取代 runc（Go）作為高密度環境容器執行工具，每節點節省高達 3GB 記憶體","Microsoft Visual Studio 2026 Insiders 原生支援 Podman，daemon-free 架構獲主流 IDE 認可"]},"前端開發":{"summary":"Web 前端框架持續往效能優先演進，前端市場出現結構分化；TypeScript 生態系趨於穩固，meta-frameworks 成為標準入口","items":["Meta-frameworks（Next.js、Nuxt）已成為大型前端專案的標準入口，直接使用 Vite 的中小型應用也快速成長","Web Components 規範在 2026 年持續推進，有望讓跨框架元件共享變得更加自然","前端開發市場出現結構分化：需 AI 整合能力的資深角色需求增加，純切版工作持續萎縮"]},"後端 / 系統設計":{"summary":"事件驅動架構結合 AI 輔助監控成為後端主流；API-first 設計哲學在微服務普及背景下成為必備能力","items":["微服務架構已與事件驅動設計深度整合，OpenTelemetry 與 Prometheus 成為可觀測性標準配備","API-first 設計方法論持續擴散，要求工程師在實作前先設計完整的 API 文件與版本策略","AI 輔助監控系統能分析 telemetry 資料並自動回滾異常部署，降低人工介入的維運成本"]},"開發者工具 / DevOps":{"summary":"OpenClaw 創下 GitHub 開源最快成長紀錄，本地 AI 閘道需求爆發；AI agent 工具正接管 DevOps 生命週期中的自動化任務","items":["OpenClaw 在數日內從 9K 衝至 21 萬星，成為史上成長最快的 GitHub 開源專案，展現本地 AI 整合市場需求","andrej-karpathy-skills 以 CLAUDE.md 形式封裝 LLM 編程最佳實踐，獲 AI 輔助開發者社群廣泛採納","AI DevOps agent 工具能接受自然語言指令，自動執行 Terraform 變更、安全掃描與成本分析，大幅縮短 DevOps 循環"]}},"sources":[{"title":"Introducing GPT-5.4 | OpenAI","url":"https://openai.com/index/introducing-gpt-5-4/"},{"title":"OpenAI launches GPT-5.4 with Pro and Thinking versions | TechCrunch","url":"https://techcrunch.com/2026/03/05/openai-launches-gpt-5-4-with-pro-and-thinking-versions/"},{"title":"GPT-6 Release Date: 78% Odds by April 30 - TokenMix Blog","url":"https://tokenmix.ai/blog/gpt-6-release-date-features-pricing-2026"},{"title":"Google Gemini 3.1 Ultra Released: 2M Token Context - SEO HQ","url":"https://seohq.github.io/gemini-3-1-ultra-release-2026"},{"title":"Deep Dive: Why Podman and containerd 2.0 are Replacing Docker in 2026 - DEV Community","url":"https://dev.to/dataformathub/deep-dive-why-podman-and-containerd-20-are-replacing-docker-in-2026-32ak"},{"title":"Visual Studio 2026 Insiders: Using Podman for Container Development","url":"https://developer.microsoft.com/blog/visual-studio-2026-insiders-using-podman-for-container-development"},{"title":"Top 3 GitHub Trending Repos (April 2026) - Medium","url":"https://medium.com/@wy921208/top-3-github-trending-repos-april-2026-60k-stars-in-1-week-2a3d64ca13f2"},{"title":"Top 20 GitHub Repositories for AI Agents in 2026 - Fungies.io","url":"https://fungies.io/top-github-repositories-ai-agent-frameworks-2026/"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
