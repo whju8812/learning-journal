@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-21 07:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260421-0700.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-21","session_label":"07:00","tech_content":"Arcee AI 這家不到 50 人的美國新創於本月初發布了 Trinity-Large-Thinking，一個採 Apache 2.0 授權的 400B 參數開源推理模型。採用稀疏混合專家（MoE）架構，每個 token 僅啟動 13B 參數（4-of-256 expert routing），在代理能力基準測試 PinchBench 上排名第二、僅次於 Claude Opus 4.6，同時成本節省高達 96%。262K token 的超長上下文視窗與多輪工具調用設計，使其成為企業無需依賴 API 供應商、可完全自主部署的 frontier 級推理模型。\n\nCisco Talos 研究人員本週揭露，自 2025 年 10 月起，攻擊者持續濫用 AI 自動化平台 n8n 的 webhook 功能作為惡意軟體傳遞管道。由於 n8n 屬於廣受信任的自動化服務，其子網域發出的請求能繞過企業防火牆與郵件安全閘道——2026 年 3 月相關惡意郵件量比 2025 年 1 月暴增 686%。攻擊者引導受害者點擊 n8n webhook 連結後完成假 CAPTCHA，隨即下載偽裝成 RMM 工具的後門，或在 HTML 郵件中嵌入隱藏追蹤像素竊取裝置資訊。\n\n螞蟻集團旗下機器人 AI 公司 Robbyant 開源了 LingBot-Map，這是一個以普通 RGB 攝影機即可運作的串流 3D 場景重建基礎模型。採用 feed-forward 逐幀推理架構，無需等待完整影片即可即時輸出 3D 結構，在 ETH3D 基準測試取得 98.98 的 F1 重建分數（超越第二名逾 21 個百分點），並能以約 20 FPS 持續推理超過 10,000 幀的長序列視訊。此技術路線為機器人、自動駕駛與 AR 裝置的即時空間感知提供了高品質的開源基礎。","learning_analysis":{"AI / 機器學習":{"summary":"Arcee AI 以不到 50 人的新創之力發布 400B 開源推理模型 Trinity-Large-Thinking，稀疏 MoE 架構媲美旗艦模型成本大幅下降；Robbyant LingBot-Map 展示純 RGB 即時 3D 重建的最新水準","items":["Trinity-Large-Thinking 採 4-of-256 稀疏 MoE，每 token 僅啟動 13B 參數，在 PinchBench 代理能力測試排名第二，僅次於 Claude Opus 4.6","Arcee 使用 Muon optimizer 替代 AdamW 完成 17 兆 token 預訓練，展示更高資本效率的訓練路線","LingBot-Map 在 ETH3D 基準測試拿下 98.98 重建 F1 分數，超越第二名逾 21 個百分點，以 20 FPS 即時推理"]},"雲端與基礎架構":{"summary":"開源 frontier 模型興起讓企業得以在私有雲完全自主部署，不受 API 供應商授權限制；邊緣推理能力也為機器人與自動駕駛開創新應用場景","items":["Trinity-Large-Thinking 支援 262K token 超長上下文，可在企業私有雲完全部署，無需依賴 OpenAI 或 Anthropic 等外部 API","LingBot-Map 於邊緣設備以 20 FPS 運作，支援超過 10,000 幀長序列視訊推理，精度幾乎不衰退","Apache 2.0 授權的 frontier 模型數量持續增加，推動 AI 基礎架構從 API 依賴走向自主部署"]},"前端開發":{"summary":"前端技術動態今日較為平靜，社群關注方向轉向 AI 輔助開發流程的規格化與精確化，以減少 AI 生成程式碼的反覆修正成本","items":["SDD（規格驅動開發）方法論在台灣前端社群獲得關注，先撰寫清晰規格再交由 AI 生成程式碼成為新興實踐","n8n webhook 安全事件提醒前端工程師審視所用 AI 自動化工具的存取權限與 webhook 設定","React Server Components 與 meta-framework 生態整合持續推進，前端與後端責任邊界持續演化"]},"後端 / 系統設計":{"summary":"LingBot-Map 的串流逐幀推理架構與 Trinity 的 MoE 系統設計展示當代大規模 AI 系統的不同設計哲學；n8n 事件揭示以受信任第三方服務作為中繼的 webhook 代理攻擊模式","items":["LingBot-Map 的 feed-forward 設計每幀獨立推理，不需全量資料即可串流輸出，是低延遲分散式推理的典型架構","Trinity-Large-Thinking 的 4-of-256 expert routing 在知識容量與推理延遲間取得平衡，是 MoE 系統設計的代表實踐","n8n webhook 被濫用揭示以受信任第三方服務作為中繼的攻擊模式，後端系統需對所有 webhook 來源做完整驗證與速率限制"]},"開發者工具 / DevOps":{"summary":"n8n webhook 濫用事件敲響 AI 自動化工具的安全警鐘；SDD 工具 OpenSpec 展示如何以規格管理為核心建立有序的 AI 輔助開發流程","items":["攻擊者藉 n8n 受信任 subdomain 繞過企業防火牆，開發者應立即審查所有對外 AI 自動化工具的 webhook 設定與存取控制","OpenSpec 1.0 將現有規格（specs）與本次變更（changes）分開管理，讓 Claude Code 等工具在明確邊界內生成程式碼，降低 AI 過度修改的風險","高見龍分享 Sherly 終端模擬器與 Spectra 圖形介面工具的實戰開發心得，展示台灣開發者社群對 AI 輔助工具鏈的深度實踐"]}},"sources":[{"title":"Arcee AI Releases Trinity Large Thinking - MarkTechPost","url":"https://www.marktechpost.com/2026/04/02/arcee-ai-releases-trinity-large-thinking-an-apache-2-0-open-reasoning-model-for-long-horizon-agents-and-tool-use/"},{"title":"Arcee AI Ships 400B Open Model Rivaling Claude at 96% Less Cost","url":"https://www.implicator.ai/arcee-ai-releases-400b-open-reasoning-model-that-rivals-claude-at-96-lower-cost/"},{"title":"TechCrunch: Tiny startup Arcee AI built a 400B open source LLM","url":"https://techcrunch.com/2026/01/28/tiny-startup-arcee-ai-built-a-400b-open-source-llm-from-scratch-to-best-metas-llama/"},{"title":"n8n Webhooks Abused Since October 2025 to Deliver Malware - The Hacker News","url":"https://thehackernews.com/2026/04/n8n-webhooks-abused-since-october-2025.html"},{"title":"Hackers Abuse n8n AI Workflow Automation to Deliver Malware - CyberSecurityNews","url":"https://cybersecuritynews.com/hackers-abuse-n8n-ai-workflow-automation/"},{"title":"Ant Group Robbyant Unveils LingBot-Map - BusinessWire","url":"https://www.businesswire.com/news/home/20260416714351/en/Ant-Groups-Robbyant-Unveils-LingBot-Map-A-Streaming-3D-Reconstruction-Model-for-Real-Time-Spatial-Understanding"},{"title":"OpenSpec 讓 SDD 變簡單的三個指令 - 高見龍","url":"https://kaochenlong.com/openspec"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
