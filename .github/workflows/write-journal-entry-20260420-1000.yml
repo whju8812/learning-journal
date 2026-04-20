@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-20 10:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260420-1000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-20","session_label":"10:00","tech_content":"OpenAI 於 4 月 16-17 日對 Codex 桌面應用程式推出重大更新，新增 Computer Use（直接控制 macOS 操作），同時整合超過 90 個新插件，涵蓋 CircleCI、CodeRabbit、GitLab Issues、Atlassian Rovo 以及 MCP 伺服器支援。更新後的 Codex 已可執行 PR 審查、連接遠端 SSH devboxes、在內建瀏覽器中迭代前端設計，並搭載 AI 圖像生成能力，從單純的程式助手演化為全面的工程代理平台，直接對標 Anthropic 的 Claude Code，引發開發者社群廣泛討論。\n\nAWS 於 4 月 6 日宣布 DevOps Agent 與 Security Agent 正式全面上線（GA）。DevOps Agent 能在 CloudWatch 警報、PagerDuty 或 ServiceNow 工單觸發時自動展開事件調查，預覽期間客戶回報平均 MTTR 降低 75%、解決速度提升 3-5 倍；Security Agent 引入持續的 AI 滲透測試，模擬真實滲透測試方式自動識別可利用漏洞，LG CNS 估計測試速度提升超 50%、成本降約 30%。兩者均支援多雲環境與本地端，並透過 MCP 協定連接 VPC 內部私有服務，標誌著 AIOps 從輔助工具演進為主動自治的運維代理人。\n\nGoogle 正式發布 Agent Development Kit（ADK）for TypeScript，以 code-first 開源框架取代過去依賴複雜 prompt 工程的 agent 建構方式。ADK 讓開發者用熟悉的 TypeScript 生態系定義 agent 邏輯、工具與協調層，模組化設計支援組合多個專業子 agent 成複雜的多 agent 系統，可部署至本地、容器或 Google Cloud Run，並原生支援 Gemini 3 Pro 與 Gemini 3 Flash，設計上為模型無關（model-agnostic），對 TypeScript 全端開發者而言是進入 agentic AI 開發的最低門檻路徑。","learning_analysis":{"AI / 機器學習":{"summary":"OpenAI Codex 演化為全面工程代理平台；AWS Security Agent 引入 AI 自動滲透測試；Google ADK 以 model-agnostic 架構降低多 agent 系統開發門檻。","items":["OpenAI Codex 新增 Computer Use、90+ 插件與 MCP，直接對標 Claude Code","AWS Security Agent 以 AI 模擬真實滲透測試，持續識別可利用漏洞","Google ADK for TypeScript 支援 Gemini 3 Flash/Pro，並相容第三方模型","Manus AI Skills 讓 agentic 工作流可被打包、共享與重用，降低企業採用門檻","GPT-6 截至 4/20 仍未正式發布，預訓練完成後等待上市視窗中"]},"雲端與基礎架構":{"summary":"AWS DevOps Agent 與 Security Agent 正式 GA，自治 AIOps 代理人接管事件調查與滲透測試，改變雲端運維的人機協作模式。","items":["AWS DevOps Agent GA：自動事件調查，MTTR 降低 75%，解決速度提升 3-5 倍","AWS Security Agent GA：AI 滲透測試，LG CNS 成本降 30%、速度提升逾 50%","兩者均支援 AWS、Azure 多雲環境與本地端部署","MCP 協定成為 agent 連接 VPC 私有服務的標準橋樑","AIOps 從輔助工具演進為主動自治代理人，SRE 職責向更高層次架構決策轉移"]},"前端開發":{"summary":"Google ADK for TypeScript 以 code-first 框架讓前端開發者直接進入 multi-agent 系統開發；Codex 內建瀏覽器改變前端迭代流程。","items":["Google ADK for TypeScript：code-first 模組化多 agent 框架，TypeScript 開發者直接上手","ADK 支援 Cloud Run serverless 部署，前端開發者可無縫延伸至 agent 後端","OpenAI Codex 內建瀏覽器可直接迭代前端設計，改變傳統 UI review 工作流","ADK 模組化設計：Agents、Instructions、Tools 取代複雜 prompt 工程","TypeScript 強型別系統讓 multi-agent 資料契約管理更清晰穩健"]},"後端 / 系統設計":{"summary":"AWS DevOps Agent 透過 MCP 橋接多雲與 VPC 私有服務，自治代理人接管 MTTR；後端 SRE 職責轉向更高層次的架構決策與驗證。","items":["AWS DevOps Agent 透過 MCP 連接 VPC 服務，事件調查橫跨 AWS、Azure 多雲","自治 agent 接管 MTTR 管理，後端 SRE 職責向架構決策與驗證轉移","Codex SSH devboxes 支援讓遠端後端開發與 pair programming 工作流升級","Google ADK agents 可組合成複雜後端 pipeline，處理分散式工作流協調","多 agent 架構要求後端工程師掌握 agent 狀態管理與容錯設計新技能"]},"開發者工具 / DevOps":{"summary":"OpenAI Codex 整合 90+ MCP 插件成為全面工程代理平台；Google ADK for TypeScript 開源發布；Manus Skills 推動 agent workflow 標準化。","items":["OpenAI Codex 新增 90+ 插件：CircleCI、CodeRabbit、GitLab Issues、Atlassian Rovo、Render","Codex 可審查 PR、連接 SSH devboxes、使用內建瀏覽器，AI 平台化趨勢明確","Google ADK for TypeScript 開源，code-first agent 開發成為標準工程模式","Manus Skills（SKILL.md）與 AGENTS.md 共同推動 agent workflow 標準化","MCP 在 DevOps 場景落地加速，成為 agent 連接私有服務的通用協定"]}},"sources":[{"title":"OpenAI Codex Desktop Major Update April 2026 - SmartScope","url":"https://smartscope.blog/en/generative-ai/chatgpt/codex-desktop-major-update-april-2026/"},{"title":"OpenAI upgrades Codex with multi-agent workflows and desktop control - The Tech Portal","url":"https://thetechportal.com/2026/04/17/openai-upgrades-codex-with-multi-agent-workflows-and-desktop-app-control-to-challenge-anthropics-claude-code/"},{"title":"AWS DevOps Agent GA - InfoQ","url":"https://www.infoq.com/news/2026/04/aws-devops-agent-ga/"},{"title":"AWS Weekly Roundup: DevOps Agent and Security Agent GA (April 6, 2026) - AWS Blog","url":"https://aws.amazon.com/blogs/aws/aws-weekly-roundup-aws-devops-agent-security-agent-ga-product-lifecycle-updates-and-more-april-6-2026/"},{"title":"Introducing Agent Development Kit for TypeScript - Google Developers Blog","url":"https://developers.googleblog.com/introducing-agent-development-kit-for-typescript-build-ai-agents-with-the-power-of-a-code-first-approach/"},{"title":"Google Launches ADK for TypeScript - DevOps.com","url":"https://devops.com/google-launches-agent-development-kit-for-typescript-a-code-first-approach-to-building-ai-agents/"},{"title":"Manus AI Agent Skills - Manus Blog","url":"https://manus.im/blog/manus-skills"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
