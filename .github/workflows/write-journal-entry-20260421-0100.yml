@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-21 01:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260421-0100.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-21","session_label":"01:00","tech_content":"本週最受關注的安全事件是 Vercel 確認遭遇資安入侵。事件源頭是第三方 AI 工具 Context.ai 在今年三月發生 AWS 環境入侵，攻擊者藉此取得 Vercel 員工的 OAuth token，進而滲透至部分 Vercel 環境與未被標記為「敏感」的環境變數。此次事件提醒開發者：供應鏈安全（Supply Chain Security）絕非選項，所有整合的第三方工具都可能成為攻擊入口，務必謹慎管理 OAuth 授權與 API 金鑰的敏感標記。\n\nGoogle DeepMind 於本月初正式發布 Gemma 4 系列開源模型，共推出四個變體，均採 Apache 2.0 授權。旗艦版 31B 密集模型在 AIME 2026 數學測試的得分從前一代的 20.8% 大幅躍升至 89.2%，程式碼生成能力也從 29.1% 提升至 80.0%。Gemma 4 原生支援視覺與音訊輸入、最高 256K 上下文視窗，並特別針對邊緣設備進行最佳化，標誌著開源模型正快速追平甚至超越大型閉源模型的效能。\n\n甫於里約熱內盧落幕的 ICSE 2026 國際軟體工程研討會，今年議題高度聚焦於 AI 對軟體工程實踐的衝擊。核心討論圍繞著：當 AI 能夠低成本生成程式碼時，工程師真正的核心競爭力為何？多數共識指向系統設計與架構能力、可維護性思維，以及引導 AI 產出正確抽象的判斷力，而非單純的程式碼撰寫技巧。","learning_analysis":{"AI / 機器學習":{"summary":"Google Gemma 4 發布，開源模型效能大幅提升；Anthropic Claude Mythos Preview 限量開放給特定企業夥伴","items":["Google Gemma 4 四個變體均採 Apache 2.0 授權，31B 旗艦版在多項評測大幅超越同規模競爭對手","Gemma 4 原生支援視覺、音訊輸入與 256K 超長上下文，強化 agentic 工作流程能力","Anthropic Claude Mythos Preview 透過 Project Glasswing 計畫限量開放，聚焦資安漏洞偵測與程式碼推理"]},"雲端與基礎架構":{"summary":"Vercel 確認遭受資安入侵，事件源頭為第三方工具 Context.ai 的 OAuth token 外洩，供應鏈安全再次成為焦點","items":["攻擊者取得 Context.ai 的 OAuth token 後，橫向移動至 Vercel 的 Google Workspace 與部分環境變數","未標記為敏感的環境變數遭到洩露，Vercel 建議用戶立即輪換所有 secrets","事件凸顯雲端環境中第三方整合的安全風險，OAuth 授權管理與敏感標記需更加謹慎"]},"前端開發":{"summary":"React Compiler 在 v1.0 後持續普及，TypeScript 已成為前端開發基線標準，手動效能優化逐漸成為過去式","items":["React Compiler 正式版後，開發者不再需要手動撰寫 useMemo 與 useCallback 進行效能優化","TypeScript 已取代純 JavaScript 成為大多數專業前端專案的基礎要求","Next.js、Nuxt 等 meta-framework 成為大型前端項目的標準入口點"]},"後端 / 系統設計":{"summary":"ICSE 2026 研討會聚焦 AI 時代下系統設計能力的重要性，AI 輔助監控與事件驅動架構成為主流討論方向","items":["ICSE 2026 指出當程式碼生成成本趨近於零，系統架構設計能力將成為工程師最核心的競爭力","AI 輔助監控系統整合 OpenTelemetry 能預測系統故障並即時偵測異常行為","後端服務正從長期運行的 server 轉向以 typed functions 為核心的輕量表達方式"]},"開發者工具 / DevOps":{"summary":"AI DevOps agent 能直接執行基礎架構變更與安全掃描；自我修復基礎架構成為新興趨勢","items":["AI agent 工具可接受自然語言指令，自動執行 Terraform 變更、成本分析與安全掃描","自我修復基礎架構系統分析 telemetry 資料後，能自動調整資源限制或回滾部署","GitHub Trending 出現大量 Context Engineering 相關儲存庫，顯示開發者對 AI agent 設計的高度興趣"]}},"sources":[{"title":"Vercel April 2026 Security Incident","url":"https://vercel.com/kb/bulletin/vercel-april-2026-security-incident"},{"title":"Vercel Breach Tied to Context AI Hack - The Hacker News","url":"https://thehackernews.com/2026/04/vercel-breach-tied-to-context-ai-hack.html"},{"title":"App host Vercel says it was hacked - TechCrunch","url":"https://techcrunch.com/2026/04/20/app-host-vercel-confirms-security-incident-says-customer-data-was-stolen-via-breach-at-context-ai/"},{"title":"Gemma 4 - Google DeepMind","url":"https://deepmind.google/models/gemma/gemma-4/"},{"title":"Gemma 4: Byte for byte, the most capable open models - Google Blog","url":"https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/"},{"title":"ICSE 2026 - International Conference on Software Engineering","url":"https://conf.researchr.org/home/icse-2026"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
