@@ -45,7 +45,7 @@ Every run should follow this workflow:
 
 1. Compute Taiwan time (`UTC+8`) and derive:
     - `ENTRY_DATE` in `YYYY-MM-DD`
-    - `SESSION_LABEL` as one of `01:00`, `04:00`, `07:00`, `10:00`
+    - `SESSION_LABEL` as one of `01:00`, `04:00`, `07:00`, `10:00`, `18:00`, `21:00`, `00:00`, `03:00`
     - `HHMM` without a colon
     - `YYYYMMDD` without separators
 2. Check whether `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` already exists. If it does, the session is already handled.
@@ -66,7 +66,7 @@ Every run should follow this workflow:
 - All API responses: `Content-Type: application/json; charset=utf-8`
 - Auth header for write endpoints: `X-Journal-Key` (matches `JOURNAL_API_KEY` env var)
 - `entry_date` format everywhere: `YYYY-MM-DD`
-- Valid `session_label` values are only `01:00`, `04:00`, `07:00`, `10:00`
+- Valid `session_label` values are `01:00`, `04:00`, `07:00`, `10:00`, `18:00`, `21:00`, `00:00`, `03:00`
 - One workflow file represents exactly one session: `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml`
 - Do not use direct `curl` from the Claude environment to write journal entries; the GitHub Actions runner is the supported write path
 - `tech_content` paragraphs must be separated with escaped `\n\n` inside the JSON payload

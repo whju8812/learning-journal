@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-21 18:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260421-1800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-21","session_label":"18:00","tech_content":"Anthropic 在 4 月 7 日悄然發布了 Claude Mythos Preview，並同步啟動 Project Glasswing——一項限制性存取計畫，邀請 AWS、Apple、Google、Microsoft、NVIDIA、CrowdStrike 等逾 40 家科技與資安企業以防禦目的使用這個新模型。Mythos Preview 的資安能力已引發業界震撼：它能自主發現並利用軟體漏洞，在研究期間已識別出所有主流作業系統與瀏覽器中的數千個零日漏洞，更曾獨立發現 FreeBSD 一個存在 17 年、可取得 root 權限的遠端代碼執行漏洞。Anthropic 評估 Mythos 的進攻能力過於強大，刻意不進行公開發布，而是以「用 AI 保護 AI 時代的關鍵軟體」為使命，將其定位為純防禦工具。\n\nOpenAI 的 GPT-6（內部代號 Spud）正在開發社群中引發高度期待。預訓練已於 3 月 24 日完成，Sam Altman 描述其為「非常強大的模型，能真正加速經濟」，並透露發布時程在數週之內。原本外洩的 4 月 14 日發布日期已悄然過去，AI 預測市場普遍認為發布窗口落在 4 月 21 日至 5 月底之間，今天正處於這個窗口的起始。延遲讓競爭對手先行，但也預示著 OpenAI 正在謹慎打磨——GPT-6 若如期發布，將與 Claude Opus 4.6、Gemini 3.1 Ultra 形成本世代三強 AI 的全面對決格局。\n\n開發者社群對「如何正確使用 AI 寫程式碼」的討論持續升溫。Forrest Chang 根據 Andrej Karpathy 對大型語言模型程式碼缺陷的系統性觀察，創建了 forrestchang/andrej-karpathy-skills——一個單一 CLAUDE.md 檔案，在 4 月 13 日一天內獲得近 6,000 顆 GitHub 星星，最終累積逾 15,000 顆，曾一度成為全球第二多星的倉庫。核心原則包括：明確聲明假設（若有多種解讀需列出並詢問）、禁止過度工程化、遵循現有代碼風格。這個專案的爆紅說明開發者對 AI 助手在大型代碼庫中過度行事的不滿已達臨界點，且正在以工具化的方式系統性地解決。","learning_analysis":{"AI / 機器學習":{"summary":"Claude Mythos Preview 在資安攻防領域展現超人能力，成為首個被 Anthropic 刻意限制公開存取的前沿模型；GPT-6 進入最可能的發布窗口，三強 AI 格局即將成形","items":["Claude Mythos Preview 自主發現 FreeBSD 存在 17 年的遠端代碼執行漏洞（NFS root 提權），並在數週研究中識別出所有主流 OS 與瀏覽器的數千個零日漏洞","Anthropic 評估 Mythos 進攻能力過強，刻意不公開發布，以 Project Glasswing 計畫進行防禦用途的受控存取","GPT-6（Spud）預訓練於 3 月 24 日完成，今天（4 月 21 日）正處預測市場認為最可能的發布窗口起始點"]},"雲端與基礎架構":{"summary":"Project Glasswing 是首個以前沿 AI 主動保護全球關鍵基礎設施的大規模計畫，Anthropic 與九大科技巨頭合作強化零日漏洞防禦，標誌著 AI 成為雲端安全的核心工具","items":["Project Glasswing 合作方涵蓋 AWS、Apple、Broadcom、Cisco、CrowdStrike、Google、JPMorganChase、Microsoft、NVIDIA，覆蓋全球最關鍵的雲端與資安基礎設施","以 AI 主動發現並修補零日漏洞的防禦模式，將從根本上改變雲端服務商與 OS 廠商的安全運營流程","FreeBSD 17 年舊漏洞被 AI 自主發現，說明長期被忽視的遺留系統在 AI 對手面前將面臨系統性風險"]},"前端開發":{"summary":"今日前端領域無重大框架發布，社群焦點轉向 AI 輔助前端開發的行為邊界——andrej-karpathy-skills 的原則在前端開發者中引發廣泛共鳴","items":["forrestchang/andrej-karpathy-skills 的核心原則（禁止過度工程化、遵循現有風格）對前端社群尤其有感，直指 AI 工具修改 React 或 Vue 組件時「重寫整個檔案」的痛點","CLAUDE.md 作為專案配置的概念，可能發展成類似 .eslintrc 的標準化前端工具，推動 AI 協作規範的基礎設施化","Karpathy CLAUDE.md 的爆紅反映前端開發者對 AI 工具自主行事邊界的高度關注，是 AI 輔助開發體驗設計的重要社群訊號"]},"後端 / 系統設計":{"summary":"Claude Mythos 自主發現 17 年舊漏洞的事實，迫使後端系統設計師重新審視「依賴複雜性保護系統」的假設；AI 作為常態性系統對手的時代已到來","items":["Mythos 識別 FreeBSD NFS root RCE 漏洞的過程，說明依賴模糊性或歷史複雜度的後端安全設計已不再可靠，縱深防禦是唯一解","所有主流 OS 與瀏覽器均被 Mythos 識別出零日漏洞，後端系統設計必須假設存在能自主探索攻擊面的 AI 對手","Project Glasswing 的防禦架構提供新思路：以 AI 對抗 AI、以自動化漏洞發現對抗自動化攻擊，主動掃描取代被動等待"]},"開發者工具 / DevOps":{"summary":"forrestchang/andrej-karpathy-skills 的爆紅標誌著社群開始系統性解決 AI 編碼助手過度干預的問題；CLAUDE.md 正在成為 AI 時代的新型開發工具基礎設施","items":["andrej-karpathy-skills 在一天內獲得近 6,000 顆 GitHub 星星，最終累積 15,000+ 顆，成為 AI 編碼最佳實踐的社群標準參考","四大核心原則：明確聲明假設、禁止過度工程化、遵循現有代碼風格、不確定時立即詢問——針對 LLM 在大型代碼庫中的常見失誤系統性設計","CLAUDE.md 的概念可能推動開發者工具鏈演化：未來 AI 助手的行為邊界將以聲明式配置檔管理，類似 lint 規則的可審計、可版本控制方式"]}},"sources":[{"title":"Claude Mythos Preview — Anthropic Red Team","url":"https://red.anthropic.com/2026/mythos-preview/"},{"title":"Anthropic is giving some firms early access to Claude Mythos to bolster cybersecurity defenses — Fortune","url":"https://fortune.com/2026/04/07/anthropic-claude-mythos-model-project-glasswing-cybersecurity/"},{"title":"Anthropic Claude Mythos Preview Changes Cyber Calculus — Foreign Policy","url":"https://foreignpolicy.com/2026/04/20/claude-mythos-preview-anthropic-project-glasswing-cybersecurity-ai-hacking-danger/"},{"title":"Project Glasswing — Anthropic","url":"https://www.anthropic.com/project/glasswing"},{"title":"GPT-6 Release Date: 3 Days Past April 14, Still Quiet — FindSkill.ai","url":"https://findskill.ai/blog/gpt-6-release-date/"},{"title":"GitHub - forrestchang/andrej-karpathy-skills","url":"https://github.com/forrestchang/andrej-karpathy-skills"},{"title":"Karpathy CLAUDE.md Template: 5,800 Stars and What It Does — DEV Community","url":"https://dev.to/max_quimby/karpathys-claudemd-template-5800-stars-and-what-it-does-4a09"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
