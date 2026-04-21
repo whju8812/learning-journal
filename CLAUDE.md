@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A personal tech learning journal web app. Claude Desktop runs a daily scheduled task that researches today's software tech landscape and writes a structured entry to this app. The site displays entries chronologically with tabs: **技術內容** (Tech Content) and **學習方向分析** (Learning Direction Analysis).
+A personal tech learning journal web app. Claude Code CLI runs a daily script at 08:00 and 20:00 (Taiwan time) that researches today's software tech landscape, writes a structured entry, and pushes a GitHub Actions workflow that POSTs the entry to this app. The site displays entries chronologically with tabs: **技術內容** (Tech Content) and **學習方向分析** (Learning Direction Analysis).
 
 **Design doc (approved):** `docs/design.md`
 
@@ -14,7 +14,7 @@ A personal tech learning journal web app. Claude Desktop runs a daily scheduled 
 | Frontend    | Vanilla JS + HTML (single template: `templates/index.html`) |
 | Database    | Supabase (PostgreSQL) — **not yet wired up, next step**     |
 | Deployment  | Vercel (serverless)                                         |
-| Daily agent | Claude Desktop scheduled task                               |
+| Daily agent | Claude Code CLI + GitHub Actions (每天 08:00 / 20:00 台灣時間) |
 
 ## Project Structure
 
@@ -58,6 +58,8 @@ The journal entry feature — see `docs/design.md` for full spec. Summary:
 - All API responses: `Content-Type: application/json; charset=utf-8`
 - Auth header for write endpoints: `X-Journal-Key` (matches `JOURNAL_API_KEY` env var)
 - `entry_date` format everywhere: `YYYY-MM-DD`
+- Valid `session_label` values: `"08:00"` (morning), `"20:00"` (evening) — Taiwan time UTC+8
+- `tech_application` field: 1–2 application scenarios (tool name + who/context + how to start)
 
 ## Environment Variables (Vercel)
 

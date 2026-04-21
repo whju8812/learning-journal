@@ -45,29 +45,37 @@
       <div class="flow-step">
         <div class="flow-node">1</div>
         <div class="flow-body">
-          <div class="flow-heading">Claude Desktop 排程任務啟動</div>
-          <div class="flow-desc">每天早上固定時間，Claude Desktop 自動執行一個預設的 prompt 任務，不需要我手動觸發任何事情。</div>
-          <span class="flow-tag">Claude Desktop Scheduled Task</span>
+          <div class="flow-heading">Claude Code 每天執行學習腳本</div>
+          <div class="flow-desc">每天 08:00 與 20:00（台灣時間），Claude Code CLI 自動執行預設 prompt，啟動一個學習 session——不需要手動觸發任何事情。</div>
+          <span class="flow-tag">Claude Code · 每日兩次</span>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-node">2</div>
         <div class="flow-body">
           <div class="flow-heading">Claude 搜尋今日技術動態</div>
-          <div class="flow-desc">Claude 使用 web search 工具主動查詢今天的技術新聞、社群討論、GitHub 趨勢——等同於幫我把今天該看的東西都看過一遍。</div>
+          <div class="flow-desc">Claude 使用 web search 主動查詢 Hacker News、GitHub Trending、AI/ML 新發布、Threads 技術帳號——等同於把今天該看的東西都看過一遍。</div>
           <span class="flow-tag">web_search tool</span>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-node">3</div>
         <div class="flow-body">
-          <div class="flow-heading">Claude 撰寫結構化日誌</div>
-          <div class="flow-desc">把研究結果整理成固定格式：技術內容摘要，加上按 5 個學習方向分類的分析。寫好之後以 JSON 格式 POST 到這個網站的 API。</div>
-          <span class="flow-tag">POST /api/entries</span>
+          <div class="flow-heading">Claude 撰寫並產生 GitHub Actions Workflow</div>
+          <div class="flow-desc">把研究結果整理成結構化日誌（技術摘要 + 應用場景 + 5 方向分析），然後產生一個一次性的 GitHub Actions workflow 檔案並 commit push 到 repo。</div>
+          <span class="flow-tag">GitHub Actions Workflow</span>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-node">4</div>
+        <div class="flow-body">
+          <div class="flow-heading">GitHub Actions Runner 執行 POST</div>
+          <div class="flow-desc">Workflow 觸發後，GitHub 的 ubuntu-latest runner 使用企業 IP 呼叫 POST /api/entries——繞過 Vercel 對雲端 IP 的封鎖限制。</div>
+          <span class="flow-tag">ubuntu-latest runner · POST /api/entries</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-node">5</div>
         <div class="flow-body">
           <div class="flow-heading">Flask API 驗證並儲存</div>
           <div class="flow-desc">網站後端驗證 API key，檢查資料格式，存入 Supabase（PostgreSQL）。全程無 AI 在伺服器端——只是標準的 REST API 操作。</div>
@@ -75,10 +83,10 @@
         </div>
       </div>
       <div class="flow-step">
-        <div class="flow-node">5</div>
+        <div class="flow-node">6</div>
         <div class="flow-body">
           <div class="flow-heading">我打開網站，閱讀今天的筆記</div>
-          <div class="flow-desc">日誌頁面顯示日期側欄，可以點選任何一天的紀錄，切換「技術內容」和「學習方向分析」兩個 tab。</div>
+          <div class="flow-desc">日誌頁面顯示日期側欄，可以點選任何一天的紀錄，切換「技術內容」、「應用場景」和「學習方向分析」分頁。</div>
           <span class="flow-tag">index.html · Vanilla JS</span>
         </div>
       </div>
@@ -122,8 +130,8 @@
       <div class="stack-row">
         <div class="stack-layer">AI Agent</div>
         <div class="stack-value">
-          <span class="stack-tag">Claude Desktop</span>
-          <span class="stack-tag">Scheduled Tasks</span>
+          <span class="stack-tag">Claude Code CLI</span>
+          <span class="stack-tag">GitHub Actions</span>
           <span class="stack-tag">web_search</span>
         </div>
       </div>
@@ -139,9 +147,9 @@
       </div>
     </div>
     <div class="callout">
-      <strong>為什麼不用 GitHub Actions？</strong>
-      Claude Desktop Scheduled Tasks 不需要在任何地方管理 API key，
-      不需要設定 CI，也不需要付費。Claude Desktop 本身就是 scheduler。
+      <strong>為什麼用 GitHub Actions 而不直接 curl？</strong>
+      Vercel 會封鎖來自雲端 IP（包含 Claude Code 執行環境）的直接 HTTP 請求。
+      GitHub Actions runner 使用已知企業 IP，不受此限制——所以讓 runner 代為 POST。
     </div>
   </div>
 

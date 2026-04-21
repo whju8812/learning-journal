@@ -33,7 +33,7 @@ The core idea: instead of raw RSS headlines, the journal contains Claude's actua
 | Frontend    | Vanilla JS + HTML (single template)               |
 | Database    | Supabase (PostgreSQL via supabase-py HTTP client) |
 | Deployment  | Vercel (serverless Python)                        |
-| Daily agent | Claude Desktop scheduled task                     |
+| Daily agent | Claude Code CLI + GitHub Actions                  |
 
 **Why supabase-py (not psycopg2):** Vercel serverless functions share no connection state between invocations. Direct Postgres connections (psycopg2) exhaust Supabase free tier's 10-connection limit instantly. supabase-py uses the HTTP PostgREST API — no persistent connections.
 
@@ -153,6 +153,7 @@ Write a new journal entry. Requires `X-Journal-Key` header matching `JOURNAL_API
   "entry_date": "2026-04-17",
   "session_label": "08:00",
   "tech_content": "今日技術摘要（2-3段，繁體中文）",
+  "tech_application": "應用場景一（工具、情境、操作步驟）\n\n應用場景二",
   "learning_analysis": {
     "AI / 機器學習":      { "summary": "非空摘要", "items": ["項目1"] },
     "雲端與基礎架構":      { "summary": "非空摘要", "items": [] },
@@ -164,7 +165,7 @@ Write a new journal entry. Requires `X-Journal-Key` header matching `JOURNAL_API
 }
 ```
 
-**Valid `session_label` values:** `"18:00"`, `"21:00"`, `"00:00"`, `"03:00"`
+**Valid `session_label` values:** `"08:00"`, `"20:00"`
 
 **Response codes:**
 - `201` — entry saved
@@ -193,6 +194,7 @@ CREATE TABLE IF NOT EXISTS journal_entries (
   entry_date        date        NOT NULL,
   session_label     text        NOT NULL,
   tech_content      text        NOT NULL,
+  tech_application  text,
   learning_analysis jsonb       NOT NULL,
   sources           jsonb,
   created_at        timestamptz DEFAULT now(),
@@ -245,42 +247,26 @@ Push to `main` → Vercel auto-deploys. No build step needed.
 
 ---
 
-## Claude Desktop Scheduled Task
+## Automated Agent (Claude Code + GitHub Actions)
 
-Configure in Claude Desktop as a daily scheduled task (e.g., 8:00 AM). Requires **web_search** and **bash** tools enabled.
+每天 **08:00** 與 **20:00**（台灣時間 UTC+8）各執行一次。
 
+**為什麼用 GitHub Actions 而不直接 curl：** Vercel 封鎖來自雲端 IP 的直接請求（包含 Claude Code 執行環境）。GitHub Actions runner 使用已知企業 IP，不受此限制。
+
+**流程：**
+1. Claude Code 執行學習腳本，使用 `web_search` 查詢今日技術動態
+2. 撰寫結構化日誌（`tech_content`、`tech_application`、`learning_analysis`）
+3. 產生 `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml`，內含 curl POST
+4. `git commit` + `git push` → GitHub Actions 自動觸發 → runner 執行 POST
+
+**Workflow 檔案命名：**
 ```
-你是我的軟體技術學習助理。今天是 {TODAY_DATE}（格式：YYYY-MM-DD）。
-
-步驟一：先確認今天是否已有日誌
-使用 bash 工具執行：
-curl https://your-app.vercel.app/api/entries/health -H "X-Journal-Key: {YOUR_API_KEY}"
-
-如果回傳的 last_entry_date 等於今天日期，代表今天已有日誌，任務完成。
-
-步驟二：研究今日軟體界最新動態
-使用 web_search 工具查詢最新技術發布、Hacker News、GitHub 社群趨勢。
-
-步驟三：POST 到學習日誌
-curl -X POST https://your-app.vercel.app/api/entries \
-  -H "X-Journal-Key: {YOUR_API_KEY}" \
-  -H "Content-Type: application/json; charset=utf-8" \
-  -d '{
-    "entry_date": "{TODAY_DATE}",
-    "session_label": "08:00",
-    "tech_content": "今日技術摘要（2-3段，繁體中文）",
-    "learning_analysis": {
-      "AI / 機器學習":      { "summary": "非空摘要", "items": [] },
-      "雲端與基礎架構":      { "summary": "非空摘要", "items": [] },
-      "前端開發":            { "summary": "非空摘要", "items": [] },
-      "後端 / 系統設計":     { "summary": "非空摘要", "items": [] },
-      "開發者工具 / DevOps": { "summary": "非空摘要", "items": [] }
-    },
-    "sources": [{ "title": "來源標題", "url": "https://..." }]
-  }'
-
-201 → 完成。409 → 今天已有日誌。其他狀態碼 → 重試最多 3 次。
+.github/workflows/write-journal-entry-20260421-0800.yml   # 08:00 session
+.github/workflows/write-journal-entry-20260421-2000.yml   # 20:00 session
 ```
+
+**GitHub Secret 設定：**
+在 repo Settings → Secrets → `JOURNAL_API_KEY`（與 Vercel 環境變數相同值）。
 
 ---
 

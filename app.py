@@ -22,7 +22,7 @@ if SUPABASE_URL and SUPABASE_KEY:
     except Exception:
         pass
 
-VALID_SESSION_LABELS = {"18:00", "21:00", "00:00", "03:00"}
+VALID_SESSION_LABELS = {"08:00", "20:00"}
 REQUIRED_DIRECTIONS = {
     "AI / 機器學習",
     "雲端與基礎架構",
@@ -324,6 +324,7 @@ def api_journal_post():
     entry_date        = (data.get("entry_date") or "").strip()
     session_label     = (data.get("session_label") or "").strip()
     tech_content      = (data.get("tech_content") or "").strip()
+    tech_application  = (data.get("tech_application") or "").strip()
     learning_analysis = data.get("learning_analysis")
     sources           = data.get("sources", [])
 
@@ -358,6 +359,7 @@ def api_journal_post():
             "entry_date":        entry_date,
             "session_label":     session_label,
             "tech_content":      tech_content,
+            "tech_application":  tech_application,
             "learning_analysis": learning_analysis,
             "sources":           sources,
         }).execute()
