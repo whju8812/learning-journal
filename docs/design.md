@@ -8,7 +8,7 @@ Mode: Builder
 
 ## Problem Statement
 
-A personal tech learning journal that receives a daily entry written by Claude. Every morning, a Claude Desktop scheduled task researches today's software tech landscape — what's new, what the community is discussing, what's trending — and writes a structured entry to the journal. The website displays entries chronologically with two tabs per entry: **技術內容** (Tech Content) and **學習方向分析** (Learning Direction Analysis).
+A personal tech learning journal that receives session-based entries written by Claude. Each run is a standalone learning session: Claude researches today's software tech landscape — what's new, what the community is discussing, what's trending — then creates and pushes a one-time GitHub Actions workflow. The GitHub-hosted runner performs the authenticated write to the journal API. The website displays entries chronologically with two tabs per entry: **技術內容** (Tech Content) and **學習方向分析** (Learning Direction Analysis).
 
 The gap: no existing daily digest is organized around the user's specific learning directions (AI/ML, Cloud, Frontend, Backend, DevOps). This journal is built exactly for that.
 
@@ -16,20 +16,20 @@ The gap: no existing daily digest is organized around the user's specific learni
 
 - Claude is the author, not the aggregator. Instead of displaying raw RSS headlines, the journal contains Claude's actual analysis and synthesis of what matters today.
 - Organized by the 5 learning directions the user already defined — each entry tells you "what happened today in _your_ learning areas."
-- Fully automated via Claude Desktop scheduled tasks — zero manual effort after setup.
+- Session writes are automated through committed GitHub Actions workflows, which also leave an audit trail of what was written and when.
 
 ## Constraints
 
 - Deployed on Vercel (serverless Flask)
 - No paid infrastructure beyond Supabase free tier
-- Claude Desktop is the scheduler — no GitHub Actions, no API key management in code
+- Vercel blocks direct HTTP requests from many cloud IPs, so the write path must go through GitHub-hosted runners rather than direct `curl` from Claude's environment
 - This is a personal side project — simplicity wins over scale
 
 ## Premises
 
 1. The core problem is signal-to-noise — too much tech news, need a "what actually matters today" view
 2. The summary must be organized by the 5 learning directions (AI/ML, Cloud, Frontend, Backend, DevOps)
-3. No paid AI API needed in the Flask app itself — Claude Desktop handles the agent work
+3. No paid AI API needed in the Flask app itself — Claude handles the research, GitHub Actions only transports the finished payload
 4. The existing Flask app works and is deployed — this is a feature addition, not a rebuild
 
 ## Approaches Considered
@@ -38,48 +38,53 @@ The gap: no existing daily digest is organized around the user's specific learni
 
 Daily Python script on GitHub Actions calls Anthropic API, writes to Supabase. Full automation but requires API key management in CI secrets.
 
-### Approach B: Manual trigger + Claude API + Supabase
+### Approach B: Direct POST from Claude Environment + Supabase
 
-Flask endpoint triggers generation on demand. Simple MVP but manual daily step.
+Claude researches the session and calls `POST /api/entries` directly. This is simpler on paper, but fails in practice because Vercel blocks direct requests from cloud IPs used by the Claude execution environment.
 
-### Approach C: Claude Desktop Scheduled Tasks (Chosen)
+### Approach C: Claude Session + One-Time GitHub Actions Workflow (Chosen)
 
-Claude Desktop runs a daily scheduled task, researches today's tech with web search, POSTs a structured entry to a Flask API endpoint. Flask stores in Supabase. No API keys in code, no CI setup.
+Claude researches the session, writes a one-time workflow file under `.github/workflows/`, and pushes it. The GitHub runner performs the `POST /api/entries` call with the shared secret. Flask stores in Supabase.
 
 ## Recommended Approach
 
-**Claude Desktop Scheduled Task → Flask POST API → Supabase → Flask Display**
+**Claude Session → Commit One-Time Workflow → GitHub Actions POST API → Supabase → Flask Display**
 
 ### Architecture
 
 ```
-Claude Desktop (daily agent)
-  ↓ runs scheduled task prompt
+Claude session
+  ↓ computes Taiwan time session label
   ↓ web search + synthesis
-  ↓ POST /api/entries  (with API key header)
+  ↓ creates .github/workflows/write-journal-entry-YYYYMMDD-HHMM.yml
+  ↓ git push
+GitHub Actions runner
+  ↓ POST /api/entries  (with X-Journal-Key header)
 Flask on Vercel
   ↓ validates API key
   ↓ INSERT into Supabase
 Supabase (PostgreSQL)
-  ↓ stored entries by date
+  ↓ stored entries by date + session
 Flask on Vercel
   ↓ GET /api/entries
   ↓ GET /api/entries/:date
 Frontend (index.html)
   ↓ date navigation sidebar
-  ↓ tabs: 技術內容 | 學習方向分析
+  ↓ session view + tabs: 技術內容 | 學習方向分析
 ```
 
 ### Database Schema (Supabase)
 
 ```sql
 CREATE TABLE journal_entries (
-  id          uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  entry_date  date NOT NULL UNIQUE,
-  tech_content     text NOT NULL,         -- prose summary of today's tech news
-  learning_analysis jsonb NOT NULL,       -- per-direction breakdown
-  sources     jsonb,                      -- list of {title, url} Claude cited
-  created_at  timestamptz DEFAULT now()
+  id                uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  entry_date        date NOT NULL,
+  session_label     text NOT NULL,
+  tech_content      text NOT NULL,
+  learning_analysis jsonb NOT NULL,
+  sources           jsonb,
+  created_at        timestamptz DEFAULT now(),
+  UNIQUE (entry_date, session_label)
 );
 
 -- learning_analysis shape:
@@ -97,24 +102,25 @@ All endpoints use UTF-8 JSON. Date format for `entry_date` and `<date>` params: 
 ```python
 # POST /api/entries
 # Auth: X-Journal-Key header must match JOURNAL_API_KEY env var
-# Required fields: entry_date (string YYYY-MM-DD), tech_content (string),
+# Required fields: entry_date (string YYYY-MM-DD), session_label (string), tech_content (string),
 #                  learning_analysis (object with exactly the 5 directions below)
 # Optional fields: sources (array of {title, url}; defaults to [])
 # Validation: learning_analysis must contain exactly these 5 keys, each with
 #             { "summary": string, "items": [string, ...] }:
 #   "AI / 機器學習", "雲端與基礎架構", "前端開發", "後端 / 系統設計", "開發者工具 / DevOps"
+# session_label must be one of: "01:00", "04:00", "07:00", "10:00"
 # Response codes:
 #   201 Created — entry saved successfully
 #   400 Bad Request — invalid JSON or missing/malformed required fields
 #   401 Unauthorized — missing or invalid X-Journal-Key
-#   409 Conflict — entry for entry_date already exists
+#   409 Conflict — entry for entry_date + session_label already exists
 
 # GET /api/entries
 # Returns: [ { entry_date, created_at }, ... ] sorted desc by date (for date nav)
 # Response: 200 OK
 
 # GET /api/entries/<date>
-# Returns: full entry { id, entry_date, tech_content, learning_analysis, sources, created_at }
+# Returns: all sessions for the date, sorted by session label
 # Response: 200 OK | 404 Not Found
 
 # GET /api/entries/health
@@ -122,51 +128,26 @@ All endpoints use UTF-8 JSON. Date format for `entry_date` and `<date>` params: 
 # If no entries exist: { last_entry_date: null, days_since_last_entry: null, is_overdue: true }
 ```
 
-**API key rotation policy:** Rotate `JOURNAL_API_KEY` monthly via `python -c "import secrets; print(secrets.token_hex(32))"`, update Vercel env var, re-enter in Claude Desktop task prompt.
+**API key rotation policy:** Rotate `JOURNAL_API_KEY` monthly via `python -c "import secrets; print(secrets.token_hex(32))"`, update the Vercel env var and the matching GitHub repository secret.
 
-### Claude Desktop Scheduled Task Prompt
+### Session Execution Workflow
 
-**Prerequisites:** Claude Desktop must have **web_search** and **bash** tools enabled.
+**Prerequisites:** Claude must be able to search the web and modify the repository. Do not rely on direct HTTP writes from the Claude execution environment.
 
-Configure in Claude Desktop as a daily scheduled task (e.g., 8:00 AM):
+Per run, the workflow should follow these rules:
 
 ```
-你是我的軟體技術學習助理。今天是 {TODAY_DATE}（格式：YYYY-MM-DD）。
-
-步驟一：先確認今天是否已有日誌
-使用 bash 工具執行：
-curl https://your-app.vercel.app/api/entries/health -H "X-Journal-Key: {YOUR_API_KEY}"
-
-如果回傳的 last_entry_date 等於今天日期，代表今天已有日誌，任務完成，不需要繼續。
-
-步驟二：研究今日軟體界最新動態
-請使用 web_search 工具查詢：
-- 最新技術發布或重大更新
-- 社群（Hacker News、Twitter/X、GitHub）正在討論什麼
-- 開源社群有什麼新趨勢
-
-步驟三：POST 到學習日誌（如果步驟一沒有今天的日誌）
-注意：JSON 所有字串必須是繁體中文。所有 5 個學習方向都必須包含，每個方向的 summary 不可為空，items 可以是 []。
-
-curl -X POST https://your-app.vercel.app/api/entries \
-  -H "X-Journal-Key: {YOUR_API_KEY}" \
-  -H "Content-Type: application/json; charset=utf-8" \
-  -d '{
-    "entry_date": "{TODAY_DATE}",
-    "tech_content": "今日技術摘要（2-3段，繁體中文）",
-    "learning_analysis": {
-      "AI / 機器學習": { "summary": "一段摘要（不可空白）", "items": ["具體項目1", "具體項目2"] },
-      "雲端與基礎架構": { "summary": "一段摘要（不可空白）", "items": ["具體項目1"] },
-      "前端開發": { "summary": "一段摘要（不可空白）", "items": [] },
-      "後端 / 系統設計": { "summary": "一段摘要（不可空白）", "items": ["具體項目1"] },
-      "開發者工具 / DevOps": { "summary": "一段摘要（不可空白）", "items": ["具體項目1"] }
-    },
-    "sources": [{ "title": "來源標題", "url": "https://..." }]
-  }'
-
-如果 curl 回傳 201，任務完成。
-如果回傳 409，表示今天已有日誌，不需要重複寫入。
-如果回傳其他狀態碼，請重試一次（最多 3 次）。若持續失敗，請告訴我錯誤內容。
+1. 計算台灣時間（UTC+8），得出 ENTRY_DATE、SESSION_LABEL、HHMM、YYYYMMDD。
+2. 若 .github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml 已存在，直接結束。
+3. 搜尋今天最新的軟體技術內容，優先找過去 3-4 小時內的新資訊，並檢查指定 Threads 帳號的當日高互動貼文。
+4. 列出 .github/workflows/write-journal-entry-{YYYYMMDD}-*.yml，讀取既有 session 的 tech_content，避免重複深入分析同一主題。
+5. 產出繁體中文內容：
+   - tech_content：2-3 段純文字，以 \n\n 作為 JSON 內的段落分隔
+   - learning_analysis：5 個方向都必填，summary 不可空白
+   - sources：[{"title": "...", "url": "https://..."}]
+6. 建立 .github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml，內含單行 UTF-8 JSON。
+7. git add / commit / push；由 GitHub Actions runner 執行 POST /api/entries。
+8. push 失敗時最多重試 4 次，backoff 為 2s / 4s / 8s / 16s。
 ```
 
 ### Frontend Changes
@@ -423,7 +404,7 @@ These are concrete gotchas to address during implementation — not design decis
 
 5. **Wrap all DB calls in try/except:** Return 503 if Supabase is unreachable. The health endpoint must return `{ last_entry_date: null, is_overdue: true }` when the table is empty (not crash).
 
-6. **Upsert strategy:** The Claude Desktop prompt already handles 409 by stopping. At the DB level, use `INSERT ... ON CONFLICT (entry_date) DO NOTHING` or the Supabase `upsert` method to be safe against simultaneous requests.
+6. **Upsert strategy:** The session workflow already handles 409 by stopping. At the DB level, use `INSERT ... ON CONFLICT (entry_date, session_label) DO NOTHING` or the Supabase `upsert` method to be safe against simultaneous requests.
 
 7. **Supabase init once at module level:** `supabase = create_client(SUPABASE_URL, SUPABASE_KEY)` at module top. The client is stateless/thread-safe.
 
@@ -441,9 +422,10 @@ These are concrete gotchas to address during implementation — not design decis
 
 ## Success Criteria
 
-- Claude Desktop scheduled task runs daily with zero manual intervention
-- Entry appears in the journal within minutes of the scheduled run
+- Session workflow can be created once per time slot without duplicating work
+- Entry appears in the journal within minutes of the workflow push
 - Date navigation lets you browse past entries
+- Same-day sessions can coexist without overwriting each other
 - Each entry's Learning Direction Analysis maps content to your 5 directions
 - Supabase free tier: 500MB storage, 100k requests/month — well within personal use limits
 
@@ -452,17 +434,16 @@ These are concrete gotchas to address during implementation — not design decis
 - Flask app stays on Vercel (existing pipeline)
 - Supabase: free project at supabase.com
 - Add to Vercel env vars: `SUPABASE_URL`, `SUPABASE_KEY` (service role key), `JOURNAL_API_KEY`
+- Add GitHub repository secret: `JOURNAL_API_KEY`
 - Use `supabase-py` (HTTP-based) NOT `psycopg2` — Vercel serverless exhausts Postgres direct connections (Supabase free tier: 10 connection limit)
-- Claude Desktop: configure scheduled task manually
+- Session runner: commit and push one-time workflow files under `.github/workflows/`
 
 ## Next Steps
 
-1. **Create Supabase project** — run `journal_entries` schema SQL, get SUPABASE_URL + service role key
-2. **Update requirements.txt** — add `supabase>=2.0.0` (supabase-py; pin to >=2.0.0 to avoid 1.x/2.x breaking changes)
-3. **Add 4 new Flask endpoints** — POST /api/entries, GET /api/entries, GET /api/entries/\<date\>, GET /api/entries/health
-4. **Update index.html** — date navigation sidebar + tabbed entry view
-5. **Set up Claude Desktop scheduled task** — configure daily prompt with real URL + API key
-6. **Test end-to-end** — manually trigger one entry, verify it appears
+1. **Keep Vercel + GitHub secrets synchronized** — `JOURNAL_API_KEY` must match in both places
+2. **Create one workflow per session** — use `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml`
+3. **Avoid topic duplication within the same day** — inspect earlier session workflows before writing new analysis
+4. **Push and verify** — confirm the workflow run returns `201` or `409`
 
 ## GSTACK REVIEW REPORT
 

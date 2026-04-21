@@ -1,14 +1,17 @@
 # 軟體技術學習日誌
 
-A personal tech learning journal where **Claude is the author**. Every day, a Claude Desktop scheduled task researches the software tech landscape, synthesizes what matters, and writes a structured entry organized around 5 learning directions. The site displays entries chronologically with date navigation and two reading tabs per entry.
+A personal tech learning journal where **Claude is the author**. Each execution is an independent learning session: Claude researches the current software landscape, synthesizes what matters, then commits a one-time GitHub Actions workflow that writes the session to the journal API. The site displays entries chronologically with date navigation and two reading tabs per entry.
 
 ---
 
 ## How It Works
 
 ```
-Claude Desktop (daily scheduled task)
+Claude session
   ↓  web search + synthesis
+  ↓  create .github/workflows/write-journal-entry-YYYYMMDD-HHMM.yml
+  ↓  git push
+GitHub Actions runner
   ↓  POST /api/entries  (X-Journal-Key header)
 Flask on Vercel
   ↓  validates key + payload
@@ -21,14 +24,14 @@ Frontend (index.html)
   ↓  date navigation sidebar + tabbed entry view
 ```
 
-The core idea: instead of raw RSS headlines, the journal contains Claude's actual analysis and synthesis of what matters today — organized around the 5 learning directions the user cares about. Zero manual effort after initial setup.
+The core idea: instead of raw RSS headlines, the journal contains Claude's actual analysis and synthesis of what matters in the current session, organized around the 5 learning directions the user cares about. The write path is also auditable because every session is captured as a committed workflow file.
 
 ---
 
 ## Tech Stack
 
 | Layer       | Technology                                        |
-|-------------|---------------------------------------------------|
+| ----------- | ------------------------------------------------- |
 | Backend     | Python / Flask 3.x                                |
 | Frontend    | Vanilla JS + HTML (single template)               |
 | Database    | Supabase (PostgreSQL via supabase-py HTTP client) |
@@ -57,33 +60,36 @@ learning-journal/
 ## Features
 
 ### Live Tech Feed (existing)
+
 Aggregates RSS and API sources in parallel on page load:
 
-| Source         | Type   | Category     |
-|----------------|--------|--------------|
-| Hacker News    | RSS    | 社群技術討論  |
-| The Verge      | RSS    | 科技新聞      |
-| InfoQ          | RSS    | 軟體工程      |
-| Dev.to         | RSS    | 開發者文章    |
-| GitHub Trending | GitHub API | 開源趨勢 |
+| Source          | Type       | Category     |
+| --------------- | ---------- | ------------ |
+| Hacker News     | RSS        | 社群技術討論 |
+| The Verge       | RSS        | 科技新聞     |
+| InfoQ           | RSS        | 軟體工程     |
+| Dev.to          | RSS        | 開發者文章   |
+| GitHub Trending | GitHub API | 開源趨勢     |
 
 Fetched concurrently via `ThreadPoolExecutor` with a 10s timeout per source.
 
 ### Learning Journal (Claude-authored entries)
+
 Each entry contains:
+
 - **技術內容** — 2–3 paragraph prose summary of today's tech news
 - **學習方向分析** — per-direction breakdown across all 5 directions
 - **來源** — list of sources Claude cited
 
 The 5 hardcoded learning directions:
 
-| Icon | Direction              |
-|------|------------------------|
-| 🤖   | AI / 機器學習           |
-| ☁️   | 雲端與基礎架構           |
-| 🎨   | 前端開發                |
-| ⚙️   | 後端 / 系統設計          |
-| 🛠️   | 開發者工具 / DevOps      |
+| Icon | Direction           |
+| ---- | ------------------- |
+| 🤖   | AI / 機器學習       |
+| ☁️   | 雲端與基礎架構      |
+| 🎨   | 前端開發            |
+| ⚙️   | 後端 / 系統設計     |
+| 🛠️   | 開發者工具 / DevOps |
 
 ---
 
@@ -92,12 +98,13 @@ The 5 hardcoded learning directions:
 All responses: `Content-Type: application/json; charset=utf-8`
 
 ### `GET /api/entries/health`
+
 Returns the last entry date and whether the journal is overdue.
 
 ```json
 {
   "last_entry_date": "2026-04-17",
-  "last_session_label": "08:00",
+  "last_session_label": "10:00",
   "days_since_last_entry": 0,
   "is_overdue": false
 }
@@ -108,6 +115,7 @@ Returns `is_overdue: true` when the DB is empty or unreachable.
 ---
 
 ### `GET /api/entries`
+
 Returns all entry dates for the date navigation sidebar, sorted descending.
 
 ```json
@@ -120,6 +128,7 @@ Returns all entry dates for the date navigation sidebar, sorted descending.
 ---
 
 ### `GET /api/entries/<date>`
+
 Returns all sessions for a given date (format: `YYYY-MM-DD`).
 
 ```json
@@ -127,7 +136,7 @@ Returns all sessions for a given date (format: `YYYY-MM-DD`).
   {
     "id": "uuid",
     "entry_date": "2026-04-17",
-    "session_label": "08:00",
+    "session_label": "10:00",
     "tech_content": "今日技術摘要...",
     "learning_analysis": {
       "AI / 機器學習": { "summary": "...", "items": ["item1", "item2"] },
@@ -145,20 +154,22 @@ Returns `404` if no entry exists for that date. Returns `400` on invalid date fo
 ---
 
 ### `POST /api/entries`
+
 Write a new journal entry. Requires `X-Journal-Key` header matching `JOURNAL_API_KEY` env var.
 
 **Request body:**
+
 ```json
 {
   "entry_date": "2026-04-17",
-  "session_label": "08:00",
+  "session_label": "03:00",
   "tech_content": "今日技術摘要（2-3段，繁體中文）",
   "tech_application": "應用場景一（工具、情境、操作步驟）\n\n應用場景二",
   "learning_analysis": {
-    "AI / 機器學習":      { "summary": "非空摘要", "items": ["項目1"] },
-    "雲端與基礎架構":      { "summary": "非空摘要", "items": [] },
-    "前端開發":            { "summary": "非空摘要", "items": [] },
-    "後端 / 系統設計":     { "summary": "非空摘要", "items": ["項目1"] },
+    "AI / 機器學習": { "summary": "非空摘要", "items": ["項目1"] },
+    "雲端與基礎架構": { "summary": "非空摘要", "items": [] },
+    "前端開發": { "summary": "非空摘要", "items": [] },
+    "後端 / 系統設計": { "summary": "非空摘要", "items": ["項目1"] },
     "開發者工具 / DevOps": { "summary": "非空摘要", "items": [] }
   },
   "sources": [{ "title": "來源標題", "url": "https://..." }]
@@ -168,6 +179,7 @@ Write a new journal entry. Requires `X-Journal-Key` header matching `JOURNAL_API
 **Valid `session_label` values:** `"08:00"`, `"20:00"`
 
 **Response codes:**
+
 - `201` — entry saved
 - `400` — missing/malformed fields or invalid date
 - `401` — missing or wrong `X-Journal-Key`
@@ -179,9 +191,11 @@ Write a new journal entry. Requires `X-Journal-Key` header matching `JOURNAL_API
 ---
 
 ### `GET /api/news`
+
 Returns the aggregated RSS + GitHub feed. Called by the frontend on load.
 
 ### `GET /api/learning`
+
 Returns the 5 hardcoded learning directions with topics and resources.
 
 ---
@@ -203,12 +217,13 @@ CREATE TABLE IF NOT EXISTS journal_entries (
 ```
 
 `learning_analysis` shape:
+
 ```json
 {
-  "AI / 機器學習":      { "summary": "string", "items": ["string"] },
-  "雲端與基礎架構":      { "summary": "string", "items": ["string"] },
-  "前端開發":            { "summary": "string", "items": [] },
-  "後端 / 系統設計":     { "summary": "string", "items": ["string"] },
+  "AI / 機器學習": { "summary": "string", "items": ["string"] },
+  "雲端與基礎架構": { "summary": "string", "items": ["string"] },
+  "前端開發": { "summary": "string", "items": [] },
+  "後端 / 系統設計": { "summary": "string", "items": ["string"] },
   "開發者工具 / DevOps": { "summary": "string", "items": ["string"] }
 }
 ```
@@ -219,15 +234,17 @@ CREATE TABLE IF NOT EXISTS journal_entries (
 
 Set these in Vercel project settings:
 
-| Variable          | Description                                                              |
-|-------------------|--------------------------------------------------------------------------|
-| `SUPABASE_URL`    | Supabase project URL (e.g. `https://xxx.supabase.co`)                    |
-| `SUPABASE_KEY`    | Supabase **service role** key (not anon key — needs INSERT permission)   |
-| `JOURNAL_API_KEY` | Secret used by Claude Desktop to authenticate `POST /api/entries`        |
+| Variable          | Description                                                                  |
+| ----------------- | ---------------------------------------------------------------------------- |
+| `SUPABASE_URL`    | Supabase project URL (e.g. `https://xxx.supabase.co`)                        |
+| `SUPABASE_KEY`    | Supabase **service role** key (not anon key — needs INSERT permission)       |
+| `JOURNAL_API_KEY` | Secret used by the GitHub Actions runner to authenticate `POST /api/entries` |
 
 Generate a new API key: `python -c "import secrets; print(secrets.token_hex(32))"`
 
-Rotate `JOURNAL_API_KEY` monthly: update in Vercel env vars, then update the Claude Desktop task prompt.
+Rotate `JOURNAL_API_KEY` monthly: update the Vercel env var and the matching GitHub repository secret.
+
+GitHub Actions also needs a repository secret named `JOURNAL_API_KEY`; it must match the Vercel environment variable value.
 
 ---
 
@@ -254,12 +271,14 @@ Push to `main` → Vercel auto-deploys. No build step needed.
 **為什麼用 GitHub Actions 而不直接 curl：** Vercel 封鎖來自雲端 IP 的直接請求（包含 Claude Code 執行環境）。GitHub Actions runner 使用已知企業 IP，不受此限制。
 
 **流程：**
+
 1. Claude Code 執行學習腳本，使用 `web_search` 查詢今日技術動態
 2. 撰寫結構化日誌（`tech_content`、`tech_application`、`learning_analysis`）
 3. 產生 `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml`，內含 curl POST
 4. `git commit` + `git push` → GitHub Actions 自動觸發 → runner 執行 POST
 
 **Workflow 檔案命名：**
+
 ```
 .github/workflows/write-journal-entry-20260421-0800.yml   # 08:00 session
 .github/workflows/write-journal-entry-20260421-2000.yml   # 20:00 session
@@ -297,3 +316,4 @@ The app works without Supabase configured (journal endpoints return empty respon
 - **No pagination** — date sidebar loads all entries in one call (< 365/year is fine for v1)
 - **Upsert safety** — DB has `UNIQUE (entry_date, session_label)` constraint; app returns 409 on conflict rather than overwriting
 - **Silent health failures** — health banner uses fire-and-forget fetch; never blocks the UI or shows errors
+- **One workflow per session** — each learning session maps to a committed `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` file for traceability and idempotency

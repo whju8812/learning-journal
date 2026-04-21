@@ -8,12 +8,12 @@ A personal tech learning journal web app. Claude Code CLI runs a daily script at
 
 ## Tech Stack
 
-| Layer       | Technology                                                  |
-| ----------- | ----------------------------------------------------------- |
-| Backend     | Python / Flask                                              |
-| Frontend    | Vanilla JS + HTML (single template: `templates/index.html`) |
-| Database    | Supabase (PostgreSQL) — **not yet wired up, next step**     |
-| Deployment  | Vercel (serverless)                                         |
+| Layer       | Technology                                                     |
+| ----------- | -------------------------------------------------------------- |
+| Backend     | Python / Flask                                                 |
+| Frontend    | Vanilla JS + HTML (single template: `templates/index.html`)    |
+| Database    | Supabase (PostgreSQL) — **not yet wired up, next step**        |
+| Deployment  | Vercel (serverless)                                            |
 | Daily agent | Claude Code CLI + GitHub Actions (每天 08:00 / 20:00 台灣時間) |
 
 ## Project Structure
@@ -32,24 +32,32 @@ learning-journal/
 
 ## Current State
 
-The app **already works** and is deployed on Vercel. It fetches RSS feeds from:
+The app is deployed on Vercel and the journal endpoints use Supabase. It also fetches live tech feeds from:
 
 - Hacker News, The Verge, InfoQ, Dev.to (via RSS)
 - GitHub Trending (via GitHub API)
 
 And displays them alongside 5 learning directions (defined in `LEARNING_DIRECTIONS` in `app.py`).
 
-## What Needs to Be Built Next
+## Session Workflow
 
-The journal entry feature — see `docs/design.md` for full spec. Summary:
+Every run should follow this workflow:
 
-1. **Supabase connection** — add `supabase` to `requirements.txt`, connect via `SUPABASE_URL` + `SUPABASE_KEY` env vars (use supabase-py, NOT psycopg2 — Vercel serverless exhausts Postgres direct connections)
-2. **4 new Flask endpoints** in `app.py`:
-   - `POST /api/entries` — Claude writes a daily entry (auth via `X-Journal-Key` header)
-   - `GET /api/entries` — list of dates for navigation
-   - `GET /api/entries/<date>` — full entry for a date (format: YYYY-MM-DD)
-   - `GET /api/entries/health` — last entry date + is_overdue flag
-3. **Frontend update** — date navigation sidebar + two-tab entry view in `templates/index.html`
+1. Compute Taiwan time (`UTC+8`) and derive:
+   - `ENTRY_DATE` in `YYYY-MM-DD`
+   - `SESSION_LABEL` as one of `01:00`, `04:00`, `07:00`, `10:00`, `18:00`, `21:00`, `00:00`, `03:00`
+   - `HHMM` without a colon
+   - `YYYYMMDD` without separators
+2. Check whether `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` already exists. If it does, the session is already handled.
+3. Search today's latest software content, prioritizing the last 3-4 hours and same-day high-engagement Threads posts.
+4. Read existing `.github/workflows/write-journal-entry-{YYYYMMDD}-*.yml` files to avoid repeating themes covered by earlier sessions on the same date.
+5. Write Traditional Chinese content:
+   - `tech_content`: 2-3 plain-text paragraphs
+   - `learning_analysis`: all 5 directions required, `summary` cannot be blank
+   - `sources`: array of `{ "title": str, "url": str }`
+6. Create `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` with a single-line UTF-8 JSON payload and push it.
+7. After pushing, immediately create a PR from `{CURRENT_BRANCH}` to `main` and merge it (squash). This is required because GitHub Actions only reliably triggers `push` events from `main`. Do this automatically without asking the user.
+8. GitHub Actions performs the actual `POST /api/entries` call using the repo secret `JOURNAL_API_KEY`.
 
 ## Key Conventions
 
@@ -61,13 +69,15 @@ The journal entry feature — see `docs/design.md` for full spec. Summary:
 - Valid `session_label` values: `"08:00"` (morning), `"20:00"` (evening) — Taiwan time UTC+8
 - `tech_application` field: 1–2 application scenarios (tool name + who/context + how to start)
 
-## Environment Variables (Vercel)
+## Secrets and Environment Variables
 
-| Variable          | Purpose                                                            |
-| ----------------- | ------------------------------------------------------------------ |
-| `SUPABASE_URL`    | Supabase project URL (e.g. https://xxx.supabase.co)                |
-| `SUPABASE_KEY`    | Supabase service role key (not anon key — needs INSERT permission) |
-| `JOURNAL_API_KEY` | Secret for Claude Desktop to authenticate POST /api/entries        |
+| Variable          | Purpose                                                                |
+| ----------------- | ---------------------------------------------------------------------- |
+| `SUPABASE_URL`    | Supabase project URL (e.g. https://xxx.supabase.co)                    |
+| `SUPABASE_KEY`    | Supabase service role key (not anon key — needs INSERT permission)     |
+| `JOURNAL_API_KEY` | Shared secret used by GitHub Actions to authenticate POST /api/entries |
+
+Keep `JOURNAL_API_KEY` synchronized between Vercel environment variables and GitHub repository secrets.
 
 ## Learning Directions (hardcoded in app.py)
 

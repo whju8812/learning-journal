@@ -220,6 +220,24 @@ function applyDayColor() {
 - 選中日期：`--bg3` 背景 + `--text` 文字 + `font-weight: 500`
 - 未選中：`--text-secondary`
 
+### Session Chips
+
+當同一天有多個學習 session 時，日期仍是第一層導航，session 是第二層上下文，不可搶走日期標題的視覺權重。
+
+```
+┌──────────────────────────────────────┐
+│ 2026年04月18日 技術日誌              │
+│ [01:00] [04:00] [07:00] [10:00]      │
+└──────────────────────────────────────┘
+```
+
+- 固定只使用 4 個 session label：`01:00`、`04:00`、`07:00`、`10:00`
+- 以膠囊按鈕呈現，使用 `--radius-md`、`--space-2` 間距、`--text-small`
+- Active session：`--accent-light` 背景、`--accent` 邊框、`font-weight: 700`
+- Inactive session：`--bg2` 背景、`--border` 邊框、`--text-secondary`
+- 時間文字建議使用 `--font-mono`，強化「時段紀錄」感
+- 同日只有一個 session 時可隱藏整排 chips，避免多餘噪音
+
 ### Learning Direction Section (垂直堆疊)
 
 ```
@@ -266,6 +284,7 @@ function applyDayColor() {
 ### Content Formatting
 
 - 日誌內容是純文字，`\n\n` 分段渲染為 `<p>`
+- 每個 session 的 `tech_content` 以 2-3 段為上限，維持單次閱讀節奏
 - 技術名詞不加 code block，保持閱讀流暢
 - Sources 區塊預設收合，點擊展開
 

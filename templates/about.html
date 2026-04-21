@@ -9,7 +9,7 @@
     <div class="hero-eyebrow">About this project</div>
     <h1 class="hero-title">我的 AI 驅動<br>軟體學習日誌</h1>
     <p class="hero-desc">
-      這不是一個新聞閱讀器。這是我的私人學習筆記——只不過筆記是由 Claude 每天自動撰寫的。
+      這不是一個新聞閱讀器。這是我的私人學習筆記——只不過筆記是由 Claude 每天自動撰寫的，一天四次。
     </p>
   </div>
 
@@ -22,7 +22,7 @@
         即使看了，也不一定知道「這件事跟我的學習方向有什麼關係？」
       </p>
       <p>
-        這個日誌解決的問題很具體：<strong>每天早上，自動告訴我「今天技術界發生了什麼，對我的 5 個學習方向各自意味著什麼」。</strong>
+        這個日誌解決的問題很具體：<strong>每天台灣時間 01:00、04:00、07:00、10:00，自動告訴我「這幾小時技術界發生了什麼，對我的 5 個學習方向各自意味著什麼」。</strong>
       </p>
       <p>
         不是 RSS 摘要，不是 AI 產生的廢話。是 Claude 真的做了研究、真的看過今天的討論之後，
@@ -39,7 +39,7 @@
     <div class="section-label">如何運作</div>
     <h2 class="section-heading">完全自動化的流程</h2>
     <div class="prose">
-      <p>整個系統每天早上在無人介入的情況下自動完成。</p>
+      <p>整個系統每天四次、在無人介入的情況下自動完成。</p>
     </div>
     <div class="flow">
       <div class="flow-step">
@@ -83,6 +83,7 @@
         </div>
       </div>
       <div class="flow-step">
+        <div class="flow-node">6</div>
         <div class="flow-node">6</div>
         <div class="flow-body">
           <div class="flow-heading">我打開網站，閱讀今天的筆記</div>
@@ -133,6 +134,13 @@
           <span class="stack-tag">Claude Code CLI</span>
           <span class="stack-tag">GitHub Actions</span>
           <span class="stack-tag">web_search</span>
+        </div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer">Session writer</div>
+        <div class="stack-value">
+          <span class="stack-tag">GitHub Actions</span>
+          <span class="stack-tag">One-time Workflow</span>
         </div>
       </div>
       <div class="stack-row">

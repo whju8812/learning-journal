@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS journal_entries (
   id            uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   entry_date    date NOT NULL,
-  session_label varchar(5) NOT NULL,          -- "18:00" | "21:00" | "00:00" | "03:00"
+  session_label varchar(5) NOT NULL,          -- "01:00" | "04:00" | "07:00" | "10:00"
   tech_content  text NOT NULL,                -- prose summary for this session
   learning_analysis jsonb NOT NULL,           -- per-direction breakdown
   sources       jsonb DEFAULT '[]'::jsonb,    -- [{title, url}, ...]

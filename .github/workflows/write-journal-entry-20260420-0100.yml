@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-20 01:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260420-0100.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-20","session_label":"01:00","tech_content":"Anthropic 於 4 月 16 日正式釋出 Claude Opus 4.7，同時其更強大的 Claude Mythos Preview 因具備自動發現 Linux kernel 零日漏洞並串接成完整攻擊鏈的能力，被嚴格限制僅開放給 12 家關鍵基礎設施夥伴（包含 AWS、Apple、Microsoft 等）。這標誌著 AI 安全治理進入新階段：連 AI 廠商自身也開始對過於強大的模型採取受控釋出策略，而非一律公開上市。\n\nGoogle 於 4 月 2 日以 Apache 2.0 授權釋出 Gemma 4 模型家族（2B～31B），內建原生 function calling、JSON 結構化輸出及 agent 工作流支援，並於 Android 上實現完全離線執行。此次開源釋出顯示本地端 agentic AI 能力正快速追近閉源旗艦模型，對邊緣運算與隱私敏感場景的本地部署生態影響深遠，GitHub 社群也可見相關 agent 工具化專案持續主導 Trending 排行。\n\n今日 DevOpsCon Amsterdam 2026（4 月 20～24 日）正式開幕，DevOps 社群討論焦點集中在容器生態的重大遷移——從 Docker 轉向 Podman 與 containerd 2.0（移除 root 權限 daemon，安全性大幅提升），以及 AIOps 驅動的自癒式基礎設施（self-healing infrastructure）正從概念走向實際落地，能自動分析遙測資料、辨識問題並自動回滾部署。","learning_analysis":{"AI / 機器學習":{"summary":"Anthropic 雙線並進：Opus 4.7 正式公開上市，Mythos Preview 因資安顧慮採受控釋出；Google Gemma 4 開源家族以 Apache 2.0 釋出，強化 agentic 本地化能力。","items":["Claude Opus 4.7 正式上線，為目前最強的公開可用 Anthropic 模型","Claude Mythos Preview 能自動發現 Linux kernel 零日漏洞，僅開放 12 家關鍵夥伴","Google Gemma 4（2B～31B）以 Apache 2.0 釋出，支援 function calling 與 agent 工作流","Gemma 4 在 Android 上實現完全離線執行，推動邊緣 AI 應用","GitHub Trending 顯示 AI agent tooling 專案仍主導開源社群"]},"雲端與基礎架構":{"summary":"DevOpsCon Amsterdam 2026 今日開幕，AIOps 自癒式基礎設施從概念走向落地，Google Cloud 同步提供 Gemma 4 服務加速企業採用。","items":["DevOpsCon Amsterdam 2026（4/20～4/24）今日開幕，聚焦 AIOps 與自動化","AIOps 自癒系統可自動分析遙測、辨識問題並自動回滾部署","Google Cloud 同步提供 Gemma 4 服務，加速企業採用開源模型","Alibaba Qwen 3.6-Plus 提供 100 萬 token context，專為大型 codebase 設計"]},"前端開發":{"summary":"TypeScript 已成為前端專業開發的基準標配，meta-framework 為標準入場券，AI-first 開發模式正改變前端工程師的日常工作流程。","items":["TypeScript 取代 vanilla JS 成為業界基準，plain JavaScript 被視為 legacy","Next.js、Nuxt 等 meta-framework 成為大多數專業前端專案的標準起點","AI-first 開發流程讓工程師從機械性工作中解放，轉向更高層次設計","前端與 DevOps 職責邊界持續模糊，full-stack 能力需求上升"]},"後端 / 系統設計":{"summary":"後端開發者被期望具備基本部署知識；event-driven 微服務整合可觀測性與 AI 輔助監控，成為 2026 年主流架構模式。","items":["後端開發者需具備 server、hosting、cloud 基本部署知識","微服務架構與 event-driven 架構整合可觀測性及 AI 輔助監控","Rust 與 Go 在後端持續升溫，Node.js 仍為主流選擇","長 context 模型（如 Qwen 3.6-Plus）正改變大型系統 code review 方式"]},"開發者工具 / DevOps":{"summary":"容器生態加速從 Docker 遷移到 Podman 與 containerd 2.0；n8n webhook 安全事件提醒自動化工具鏈的資安風險；GitHub Trending 呈現 AI agent 工具化浪潮。","items":["Docker 向 Podman、containerd 2.0 遷移加速，移除 root daemon 大幅提升安全性","n8n webhooks 自 2025 年 10 月起遭濫用於釣魚郵件攻擊，需注意自動化工具資安","GitHub Trending：heygen-com/hyperframes（HTML 轉影片，為 agent 設計）走紅","forrestchang/andrej-karpathy-skills（CLAUDE.md 最佳化）獲 54.7k 星，顯示 Claude Code 生態熱度","AI agent 自然語言驅動基礎設施變更，DevOps 生命週期管理趨向自動化"]}},"sources":[{"title":"Anthropic Releases Claude Mythos Preview - InfoQ","url":"https://www.infoq.com/news/2026/04/anthropic-claude-mythos/"},{"title":"Anthropic Rolls Out Claude Opus 4.7 - CNBC","url":"https://www.cnbc.com/2026/04/16/anthropic-claude-opus-4-7-model-mythos.html"},{"title":"Gemma 4: Byte for byte, the most capable open models - Google Blog","url":"https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/"},{"title":"Gemma 4 on Android - Android Developers Blog","url":"https://android-developers.googleblog.com/2026/04/gemma-4-new-standard-for-local-agentic-intelligence.html"},{"title":"The New Frontier: 2026 DevOps Trends - DEV Community","url":"https://dev.to/meena_nukala/the-new-frontier-2026-devops-trends-you-cant-ignore-5g8f"},{"title":"n8n Webhooks Abused Since October 2025 - The Hacker News","url":"https://thehackernews.com/2026/04/n8n-webhooks-abused-since-october-2025.html"},{"title":"GitHub Trending - Trendshift","url":"https://trendshift.io"},{"title":"LLM Releases April 2026 - Fazm Blog","url":"https://fazm.ai/blog/llm-releases-april-2026"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi

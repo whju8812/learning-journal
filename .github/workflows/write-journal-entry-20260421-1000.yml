@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-21 10:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260421-1000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-21","session_label":"10:00","tech_content":"Tim Cook 昨晚（台灣時間 4 月 21 日凌晨）正式宣布將於 2026 年 9 月 1 日卸任 Apple CEO，由硬體工程資深副總裁 John Ternus 接任，Cook 本人轉任執行董事長。Ternus 自 2001 年加入 Apple，主導了 iPhone、AirPods 等多項核心產品的工程研發，此次接班確立了 Apple 以「硬體創新工程師文化」為核心的下一章。此消息公告後，Hacker News 討論迅速突破千點，科技社群對 Apple 產品策略走向的分析討論熱度極高——包括 Vision Pro 後續、Apple Silicon 路線圖，以及 Ternus 在 AI 軟硬體整合方面的佈局意圖。\n\nNVIDIA 於本月 14 日（世界量子日）正式發布 Ising，全球首個專為量子電腦加速設計的開源 AI 模型系列。Ising Calibration 是 350 億參數的視覺語言模型，用於量子位元校準自動化，在新設 QCalEval 基準上超越 Gemini 3.1 Pro、Claude Opus 4.6 與 GPT-5.4；Ising Decoding 則是基於 3D CNN 的即時量子錯誤糾正框架，解碼速度提升 2.5 倍、精度提升 3 倍，量子股應聲大漲。這標誌著 AI 正式成為量子電腦的「作業系統」：不再是兩個平行領域，而是深度互依的技術棧。\n\nHeyGen 開源了 HyperFrames，一個以 HTML 為原語、面向 AI 代理的影片渲染框架。開發者只需撰寫帶有資料屬性的標準 HTML 檔案，透過 npx hyperframes render 即可輸出 MP4，無需視覺編輯器或任何專有 DSL。最引人注目的是其 AI agent 原生設計：在 Claude Code 中，slash command 讓 AI 代理直接撰寫符合規範的 GSAP 動畫構圖；同樣支援 Cursor、Gemini CLI 等工具。程式化影片創作門檻降至幾近於零，是 agent-native 多媒體工作流程的一大突破。","learning_analysis":{"AI / 機器學習":{"summary":"NVIDIA Ising 開源 AI 量子電腦加速模型，首次讓 AI 與量子運算深度整合，在校準與錯誤糾正任務上超越主流大型語言模型；AI 正成為量子機器的核心系統層","items":["Ising Calibration（35B VLM）在 QCalEval 量子校準基準超越 Gemini 3.1 Pro、Claude Opus 4.6 與 GPT-5.4，是目前量子校準最強 AI 工具","Ising Decoding（3D CNN）實現即時量子錯誤糾正，解碼速度提升 2.5 倍、邏輯錯誤率下降 3 倍，可擴展至不同量子碼距離與錯誤率","Academia Sinica、Fermilab、哈佛等頂尖機構已採用 Ising，AI 輔助量子運算正式從研究走向企業與國家實驗室"]},"雲端與基礎架構":{"summary":"量子雲端運算基礎架構迎來 AI 驅動的加速拐點；EU 手機電池可拆換規定正倒逼全球手機製造商重新設計硬體，影響整個行動裝置供應鏈","items":["NVIDIA Ising 開源授權使量子電腦廠商可在私有環境部署 AI 錯誤糾正，降低量子運算雲端服務的基礎設施門檻","EU 2023/1542 法規要求 2027 年 8 月起所有在歐盟銷售的手機必須配備可輕易更換電池，全球製造商預計以統一設計因應，此將成為新的硬體工程標準","Apple 新任 CEO John Ternus 的工程背景意味著 Apple Silicon 與硬體平台整合路線圖可能將加速推進，影響雲端工作負載在 Apple 生態中的佈局"]},"前端開發":{"summary":"HyperFrames 將 HTML 提升為影片創作的第一公民語法，開發者可用熟悉的 HTML 語義直接生成 MP4；AI 代理原生整合讓程式化影片生產進入前端工作流程","items":["HyperFrames 使用標準 HTML 資料屬性定義影片構圖，結合 GSAP 動畫，無需學習任何專有 API，大幅降低影片自動化門檻","原生支援 Claude Code slash command、Cursor、Gemini CLI 等 AI 代理工具，讓 AI 直接生成符合規範的影片構圖","支援 PDF 轉影片簡報、CSV 轉動畫長條圖、TikTok 字幕影片等應用場景，前端能力邊界延伸至多媒體內容自動化生產"]},"後端 / 系統設計":{"summary":"量子錯誤糾正的即時解碼需求是一個典型的低延遲後端系統設計挑戰；Apple CEO 交棒給工程師文化領導人，預示蘋果軟硬體系統整合架構將進入新的演化週期","items":["Ising Decoding 的 3D CNN 架構針對低延遲量子錯誤糾正設計，可根據量子處理器的碼距離與錯誤率進行客製化，是分散式即時推理系統設計的新型態應用","John Ternus 接任 Apple CEO 後，Johny Srouji 擴大負責全硬體技術，Apple 系統設計將更以晶片為核心向上整合，對 macOS 與 iOS 服務層架構有深遠影響","HyperFrames 的伺服端渲染架構展示了以 Web 技術棧為後端影片處理引擎的可行路線，headless HTML to MP4 是新興的多媒體後端模式"]},"開發者工具 / DevOps":{"summary":"HyperFrames 是目前 AI 代理原生工具設計最具代表性的案例之一，CLAUDE.md 與 slash command 整合讓 AI 工具鏈能力直接嵌入創作流程；Apple 新領導層對開發者生態的態度值得持續關注","items":["HyperFrames 在 repo 中內建 CLAUDE.md，教導 Claude Code 如何正確撰寫影片構圖與 GSAP 動畫，是 AI 原生工具設計的標竿實踐","npx hyperframes init / preview / render 的三步驟 CLI 工作流程，體現了現代開發者工具以最低摩擦快速上手的設計哲學","Ternus 主導 Apple Silicon 期間建立了緊密的硬軟整合工程文化，開發者社群期待他接任後加速 Xcode AI 功能與 Apple Developer Tools 的現代化"]}},"sources":[{"title":"Tim Cook to become Apple Executive Chairman, John Ternus to become CEO - Apple Newsroom","url":"https://www.apple.com/newsroom/2026/04/tim-cook-to-become-apple-executive-chairman-john-ternus-to-become-apple-ceo/"},{"title":"Apple taps John Ternus as CEO to replace Tim Cook - CNBC","url":"https://www.cnbc.com/2026/04/20/apple-names-john-ternus-ceo-replacing-tim-cook-who-becomes-chairman.html"},{"title":"NVIDIA Launches Ising, the World's First Open AI Models to Accelerate Quantum Computers - NVIDIA Newsroom","url":"https://nvidianews.nvidia.com/news/nvidia-launches-ising-the-worlds-first-open-ai-models-to-accelerate-the-path-to-useful-quantum-computers"},{"title":"NVIDIA Ising Introduces AI-Powered Workflows for Quantum Systems - NVIDIA Technical Blog","url":"https://developer.nvidia.com/blog/nvidia-ising-introduces-ai-powered-workflows-to-build-fault-tolerant-quantum-systems/"},{"title":"Quantum stocks surge on Nvidia AI model announcement - CNBC","url":"https://www.cnbc.com/2026/04/16/quantum-stocks-nvidia-ai-models.html"},{"title":"GitHub - heygen-com/hyperframes: Write HTML. Render video.","url":"https://github.com/heygen-com/hyperframes"},{"title":"EU to force replaceable batteries in phones from 2027 - The Olive Press","url":"https://www.theolivepress.es/spain-news/2026/04/20/eu-to-force-replaceable-batteries-in-phones-and-tablets-from-2027/"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi

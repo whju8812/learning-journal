@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-20 04:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260420-0400.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-20","session_label":"04:00","tech_content":"Z.ai（前身 Zhipu AI）於 4 月 7 日以 MIT 授權釋出 GLM-5.1，這是一個 754 億參數的 MoE 架構模型，在 SWE-Bench Pro 奪下 58.4 分，成為首個登頂全球排行榜的開源模型，超越 GPT-5.4（57.7）與 Claude Opus 4.6（57.3）。GLM-5.1 可連續自主工作長達 8 小時，完整執行規劃、執行、測試、修正、最佳化的迴圈，Z.ai 示範中讓它從零建構完整 Linux 桌面環境，執行超過 655 次迭代。身為全球首家公開上市的基礎模型公司（今年一月完成港股 IPO），Z.ai 此次開源行動標誌著中國 AI 在全球開源競爭中首次奪得 SWE 評測桂冠。\n\nOpenAI 下一代旗艦模型 GPT-6（內部代號 Spud）的預訓練已於 3 月 24 日在德州 Stargate 資料中心完成，但目前尚未公開發布。Polymarket 預測市場顯示該模型在 4 月 30 日前發布的機率已達 72%，Sam Altman 也表示「再幾週」即將推出。業界廣泛預期 GPT-6 將整合 ChatGPT、Codex 與 Atlas 瀏覽器成為一個超級應用，並在代理任務與多模態推理上帶來重大升級，使 4 月份成為 AI 模型競賽中備受矚目的關鍵視窗期。\n\nReact Compiler 1.0 自 2025 年 10 月 React Conf 正式發布後，2026 年的採用規模顯著擴大——Next.js 16、Vite 與 Expo 已將其整合進預設工具鏈，新建專案可直接啟用。編譯器在 build time 自動執行細粒度記憶化，讓開發者告別手動撰寫 useMemo、useCallback 與 React.memo 的繁瑣工作；Meta Quest Store 的實測數據顯示初次載入速度提升 12%、使用者互動速度提升 2.5 倍。在 2026 年，手動進行這些優化已被社群視為過時做法。","learning_analysis":{"AI / 機器學習":{"summary":"Z.ai 的 GLM-5.1 以 MIT 授權開源並首次讓開源模型登頂 SWE-Bench Pro；GPT-6 預訓練完成但尚未發布，4 月份成為 AI 旗艦競賽最關鍵的視窗期。","items":["GLM-5.1（754B MoE，MIT 授權）在 SWE-Bench Pro 以 58.4 分超越 GPT-5.4 與 Claude Opus 4.6","GLM-5.1 能連續自主工作 8 小時，執行完整工程任務迴圈不需人工介入","Z.ai 為全球首家公開上市的基礎模型公司，今年一月完成港股 IPO","GPT-6（代號 Spud）預訓練於 3 月 24 日完成，Polymarket 預測 4 月底前發布機率達 72%","MLcon Amsterdam 2026 今日開幕，生成式 AI 與代理工作流為核心議題"]},"雲端與基礎架構":{"summary":"MLcon Amsterdam 2026 今日啟動，MLOps 與 LLMOps 成為焦點；OpenAI Stargate 資料中心完成 GPT-6 預訓練，超大規模 AI 訓練基礎設施的戰略地位持續凸顯。","items":["MLcon Amsterdam 2026（4/20-4/24）今日開幕，含 MLOps、LLMOps、AI Strategy 等多個議程軌","OpenAI Stargate（德州 Abilene）完成 GPT-6 預訓練，體現自建超大規模運算設施的必要性","LLMOps 工作流（模型版本管理、推論成本監控、A/B 評測）正成為企業 AI 落地的新標配","邊緣端 AI 部署持續推動低延遲雲端與端側協調架構的需求增長"]},"前端開發":{"summary":"React Compiler 1.0 在 2026 年進入主流採用期，Next.js 16 與 Vite 預設整合帶來量化效能提升，手動 memoization 優化正式走入歷史。","items":["React Compiler 1.0（2025 年 10 月發布）已整合進 Next.js 16、Vite、Expo 預設工具鏈","Meta Quest Store 實測：初次載入速度提升 12%、使用者互動速度提升 2.5 倍","useMemo、useCallback 與 React.memo 手動優化在 2026 年被視為過時做法","React Server Components 持續成熟，與 Compiler 共同構成 2026 前端架構的兩大技術支柱"]},"後端 / 系統設計":{"summary":"GLM-5.1 示範 AI 可自主執行長達 8 小時的複雜工程任務，長程自主代理架構對後端系統的狀態管理與容錯設計提出新挑戰。","items":["GLM-5.1 示範自主完成 655 次迭代、將向量資料庫吞吐量提升 6.9 倍的工程任務","長程 agentic 系統（8 小時無人介入）對任務狀態持久化、容錯與自動回滾提出新要求","Qwen 3.6-Plus 的百萬 token context 針對大型 codebase 的自動化重構場景持續優化","AI 驅動的後端系統設計讓架構師職責開始向更高層次的決策與驗證轉移"]},"開發者工具 / DevOps":{"summary":"OpenClaw 突破 21 萬 GitHub 星成為史上增長最快的開源 AI 工具，Task Brain 架構與 Active Memory 插件代表個人 AI 助手的下一代設計方向。","items":["OpenClaw 開源 AI 助手累計超過 21 萬 GitHub 星，支援 WhatsApp、Telegram、Slack 等 50+ 平台","OpenClaw 2026.3.31 beta 引入 Task Brain 統一任務管理層，為最重要的架構升級","Active Memory 插件讓 AI 助手自動提取歷史偏好與上下文，告別手動觸發記憶指令","MLcon LLMOps 議程軌展示模型版本管理、推論監控與評測自動化的工程實踐","AI agent tooling 持續主導 GitHub Trending，反映開發者對 AI 工作流自動化的高度熱情"]}},"sources":[{"title":"GLM-5.1 Just Beat GPT-5.4 and Claude Opus - Medium","url":"https://medium.com/the-ai-studio/glm-5-1-just-beat-gpt-5-4-and-claude-opus-and-its-free-and-open-source-049312ed1836"},{"title":"Zhipu Unveils GLM-5.1 with 8-Hour Autonomous Task Capability - Pandaily","url":"https://pandaily.com/zhipu-unveils-glm-5-1-its-most-advanced-open-source-model-with-8-hour-autonomous-task-capability"},{"title":"GPT-6 Release Date: 3 Days Past April 14, Still Quiet - FindSkill.ai","url":"https://findskill.ai/blog/gpt-6-release-date/"},{"title":"GPT-6 Polymarket Prediction Market 2026","url":"https://polymarket.com/event/gpt-6-released-by"},{"title":"React Compiler Adoption Trends 2026 - LogRocket Blog","url":"https://blog.logrocket.com/8-trends-web-dev-2026/"},{"title":"React Compiler in Next.js 16 and Vite - XB Software","url":"https://xbsoftware.com/blog/react-trends/"},{"title":"OpenClaw Open-Source AI Agent Guide 2026 - Petronella Tech","url":"https://petronellatech.com/blog/openclaw-ai-agent-guide-2026"},{"title":"MLcon Amsterdam 2026 Program","url":"https://mlconference.ai/amsterdam/program-amsterdam/"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
