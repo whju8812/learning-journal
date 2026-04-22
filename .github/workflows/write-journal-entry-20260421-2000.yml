@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-21 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260421-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-21","session_label":"20:00","tech_content":"Framework Computer 今日舉辦 Next Gen 發表活動，以 Linux 優先設計為最大亮點。活動頁面同步展示 Ubuntu、Fedora、Arch、CachyOS、Bazzite 五大發行版標誌，宣示新款模組化筆電將以 Linux 為一等公民，而非事後補丁。Framework 強調個人電腦主權的理念：可替換零件、無焊接記憶體、原廠 Linux 驅動支援，並同步宣佈擴展至紐西蘭、挪威、瑞士與新加坡四個新市場，標誌著模組化硬體正式走向國際主流。\n\n卡內基梅隆大學等研究機構在 ICSE 2026 發表調查報告，分析 20TB GitHub 元數據後確認約 600 萬顆可疑假星分佈於 18,617 個倉庫，背後約有 30 萬個操控帳號。每顆星售價僅 0.03 至 0.85 美元，新創只需花費不到 300 美元即可偽造出符合種子輪融資水準的星星數。更嚴峻的是，多數假星活動倉庫同時散布惡意軟體，偽裝成破解工具或遊戲外掛，開源生態的信任機制面臨嚴峻挑戰。\n\nAtlassian 宣布自 2026 年 8 月 17 日起預設開啟 Jira 與 Confluence 的元數據及應用內資料收集，用以訓練公司 AI 模型。政策最具爭議之處在於差別化退出權：免費版與標準版用戶無法關閉元數據收集，唯有企業版客戶才能完全退出。此舉逆轉 Atlassian 過去承諾的不以客戶資料訓練 AI 立場，在 Hacker News 引發逾千則批評留言，議題涵蓋智財保護、去識別化可信度，以及免費方案以隱私換取服務的商業邏輯。","tech_application":"DuckDB 是一款嵌入式分析資料庫，適合需要在應用程式內執行快速分析查詢但不想維護獨立資料倉儲的後端工程師或資料工程師。上手方式：以 pip install duckdb 安裝後，可直接用 SQL 查詢 Parquet、CSV 或 Pandas DataFrame；搭配 dbt-duckdb adapter 更可在本機完成複雜資料轉換，無需任何額外基礎架構，MotherDuck、Evidence.dev 等公司已在生產環境成功部署。\n\n在引入任何開源依賴或工具之前，建議使用 Socket Security 等工具驗證 GitHub 倉庫的真實活躍度。具體做法：觀察星星數增長曲線是否出現短期異常爆增，並交叉比對 npm 下載量、Issue 回應率與真實貢獻者數量；在 CI/CD 流程中加入 Socket 掃描，可偵測依賴鏈中的惡意套件，作為選型的第二道防線。","learning_analysis":{"AI / 機器學習":{"summary":"Atlassian 將 Jira 與 Confluence 用戶資料納入 AI 訓練，反映 SaaS 平台以自有業務數據強化 AI 模型的趨勢，同時引發企業客戶對資料所有權的深層疑慮。","items":["Atlassian 自 8 月起預設開啟資料收集訓練 AI，免費及標準版用戶無法退出","企業版差異化隱私保護引發開發者對 SaaS 資料治理的廣泛質疑","此舉代表 SaaS 巨頭以規模化業務數據訓練垂直 AI 模型的指標性轉變"]},"雲端與基礎架構":{"summary":"Framework Computer 發布 Linux 優先的 Next Gen 模組化硬體，為開發者提供強調硬體主權的工作站選擇，首次在活動中以 Linux 發行版為核心賣點。","items":["Next Gen 活動展示 Ubuntu、Fedora、Arch、CachyOS、Bazzite 五大發行版官方支援","模組化設計支援自主替換零件，降低對單一硬體供應商的依賴","產品同步擴展至紐西蘭、挪威、瑞士、新加坡四個新市場"]},"前端開發":{"summary":"前端框架領域今日無重大發布，但 HyperFrames 開源專案（以 HTML 語法渲染影片）在 GitHub Trending 引發關注，顯示前端與影音媒體整合的趨勢持續升溫。","items":["HyperFrames 允許開發者撰寫 HTML 並直接渲染為影片，已登上 GitHub 趨勢榜","前端社群注意力逐步轉向 AI 代理 UI 設計與邊緣端渲染架構","React、Vue、Svelte 等主流框架本週無重大版本更新，生態相對穩定"]},"後端 / 系統設計":{"summary":"DuckDB 1.5.2 搭配 DuckLake 1.0 在 2026 年進入生產就緒階段，成為後端工程師執行嵌入式分析查詢的首選工具，正逐步取代 Pandas 等傳統方案。","items":["DuckDB 支援直接查詢 Parquet、CSV 與 DataFrame，無需獨立資料倉儲","dbt-duckdb adapter 讓本地 ELT 流程成為現實，大幅降低基礎架構成本","MotherDuck 提供雲端托管 DuckDB 服務，Evidence.dev 與 dbt Labs 已在生產環境部署"]},"開發者工具 / DevOps":{"summary":"ICSE 2026 研究揭露 GitHub 假星經濟規模達 600 萬顆，多數假星倉庫同時散布惡意軟體，開源工具選型的信任機制亟需依賴品質指標而非星星數。","items":["CMU 等機構分析 20TB 元數據，確認 18,617 個倉庫約 600 萬顆假星由 30 萬帳號操控","假星市場每顆 0.03 至 0.85 美元，新創可輕易偽造符合融資水準的開源聲譽","Socket Security 可掃描 GitHub 倉庫惡意套件，建議納入 CI/CD 選型評估流程"]}},"sources":[{"title":"Framework [Next Gen] Event is live on April 21","url":"https://frame.work/blog/framework-next-gen-event-is-live-on-april-21"},{"title":"Framework Laptop Next Gen: Linux-First Design and Modular PC Sovereignty","url":"https://vucense.com/tech-reviews/industry-business/framework-laptop-next-gen-april-21-linux-2026/"},{"title":"Inside GitHub Fake Star Economy","url":"https://awesomeagents.ai/news/github-fake-stars-investigation/"},{"title":"GitHub Fake Star Economy - Hacker News","url":"https://news.ycombinator.com/item?id=47831621"},{"title":"Atlassian to train AI on user data unless law or cash say no - The Register","url":"https://www.theregister.com/2026/04/18/atlassians_new_data_collection_policy/"},{"title":"Atlassian Enables Default Data Collection to Train AI - Hacker News","url":"https://news.ycombinator.com/item?id=47833247"},{"title":"DuckDB 2026: In-Process Analytics Database","url":"https://www.programming-helper.com/tech/duckdb-2026-in-process-analytics-database-python"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
