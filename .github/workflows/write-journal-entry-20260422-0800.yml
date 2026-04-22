@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-22 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260422-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-22","session_label":"08:00","tech_content":"Apple 執行長傳承震撼科技界，現任 CEO 提姆庫克宣布轉任執行董事長，由硬體工程資深副總裁約翰特努斯接任新一任執行長，生效日訂於 2026 年 9 月 1 日。特努斯在 Apple 任職 25 年，主導 iPhone、iPad、AirPods 等硬體開發，為工程導向的領導者；外界最關注其如何重振 Apple 長期被批評落後的 AI 策略，此人事消息已成為本週全球科技圈最熱議話題。\n\n歐盟電池法規（EU Battery Regulation 2023/1542）將於 2027 年 2 月 18 日生效，要求在歐盟境內販售的手機與平板電腦，必須讓使用者無需專業工具即可自行更換電池。這項維修權法規迫使 Apple、Samsung 等廠商改變黏合式機殼設計，重新思考硬體模組化架構；雖針對歐盟市場，但全球化供應鏈效應預計將帶動全球硬體設計走向調整。\n\n2026 年 4 月 AI 模型競爭持續加速。Google 推出 Gemini 3.1 Ultra，支援 200 萬 token 上下文並內建沙盒程式碼執行環境；Meta 的 Llama 4 Maverick（4000 億參數、1000 萬 token 上下文）與中國 MiniMax M2.7 的自我進化訓練法，使開放權重模型能力快速追近頂尖商業模型，開源 AI 生態成熟度再次躍進。","tech_application":"Biome 工具適合正在使用 ESLint 加 Prettier 組合的前端開發者。Biome 以 Rust 開發，是統一的程式碼格式化與 lint 工具，速度比 ESLint 快 100 倍，可大幅縮短 CI 流程。上手方式：執行 npm install --save-dev @biomejs/biome，再執行 npx @biomejs/biome init 初始化設定，即可取代現有 .eslintrc 與 .prettierrc 配置，讓整個前端工具鏈更輕量化。\n\n使用 CLAUDE.md 優化 Claude Code 工作流程，適合日常以 Claude Code 輔助開發的工程師。GitHub 熱門專案 forrestchang/andrej-karpathy-skills 提供精心整理的 CLAUDE.md 範本，內含 Andrej Karpathy 歸納的 LLM 編碼最佳實踐。做法：在專案根目錄建立 CLAUDE.md，說明技術堆疊、命名規範與測試策略，Claude Code 每次 session 啟動都會讀取，能有效提升互動品質與一致性。","learning_analysis":{"AI / 機器學習":{"summary":"本日焦點為多款頂尖模型更新：Google Gemini 3.1 Ultra 支援 200 萬 token 上下文並內建程式碼執行沙盒，Meta Llama 4 Maverick 以 4000 億參數達成 1000 萬 token 長上下文，開放權重模型實力全面提升。","items":["Google Gemini 3.1 Ultra 支援 200 萬 token 上下文視窗","Meta Llama 4 Maverick 400B 參數、1000 萬 token 上下文","MiniMax M2.7 自我進化訓練法在 SWE-Pro 達 56.22%","Anthropic Claude Mythos Preview 針對合作夥伴開放安全與編碼領域測試"]},"雲端與基礎架構":{"summary":"Meta 持續推進自研 MTIA 晶片部署以降低對 NVIDIA 依賴；NVIDIA GTC 2026 轉向企業 Agentic AI 部署場景，基礎設施競賽從算力擴展轉為實際應用落地。","items":["Meta MTIA 400 晶片測試中，效能宣稱媲美商業頂規產品","NVIDIA GTC 2026 聚焦 NeMoCLAW 與 OpenCLAW 編排框架","企業 AI 部署重心從 benchmark 轉向真實工作負載"]},"前端開發":{"summary":"EU 電池法規將促使手機硬體走向模組化設計，影響開發者面對的裝置形態；Biome 以 Rust 統一 lint 與格式化工具，為前端 CI 流程帶來顯著加速。","items":["Biome 取代 ESLint 加 Prettier 組合，速度提升 100 倍","EU 電池法規促使手機走向可拆換電池的模組化硬體設計","Chrome Manifest V3 全面執行，擴充功能開發規範已定型"]},"後端 / 系統設計":{"summary":"Microsoft 開源 Agent Governance Toolkit 提供 AI agent 執行期安全管控能力；n8n 在 AI agent 自動化工作流程中持續獲得採用，後端架構需因應 Agentic 模式演進。","items":["Microsoft Agent Governance Toolkit 開源，提供 AI agent 執行期安全防護","n8n 成為 AI agent 自動化工作流的主流整合工具","後端系統設計需考量 AI agent 的狀態管理與工具呼叫介面"]},"開發者工具 / DevOps":{"summary":"Claude Code 最佳實踐資源豐富，CLAUDE.md 為投資報酬率最高的初始設定；GitHub 熱門 CL4R1T4S 收錄各大 AI 系統提示範本，開發者工具生態圍繞 AI 輔助持續演進。","items":["forrestchang/andrej-karpathy-skills 展示高效 CLAUDE.md 範本","elder-plinius/CL4R1T4S 收錄 ChatGPT、Claude、Gemini 等系統提示洩漏版本","Claude Code 自訂指令（.claude/commands/）顯著提升重複任務效率"]}},"sources":[{"title":"Tim Cook to Become Apple Executive Chairman, John Ternus to Become Apple CEO","url":"https://www.apple.com/newsroom/2026/04/tim-cook-to-become-apple-executive-chairman-john-ternus-to-become-apple-ceo/"},{"title":"EU Battery Regulation: User-Replaceable Batteries Mandatory from 2027","url":"https://www.business-standard.com/technology/tech-news/eu-battery-rule-removable-batteries-smartphones-tablets-impacted-devices-126042100432_1.html"},{"title":"LLM News Today April 2026 - AI Model Releases","url":"https://llm-stats.com/ai-news"},{"title":"Introducing the Agent Governance Toolkit: Open-source runtime security for AI agents","url":"https://opensource.microsoft.com/blog/2026/04/02/introducing-the-agent-governance-toolkit-open-source-runtime-security-for-ai-agents/"},{"title":"GitHub Trending - forrestchang/andrej-karpathy-skills","url":"https://github.com/forrestchang/andrej-karpathy-skills"},{"title":"10 Open-Source Projects You Will Actually Use in 2026","url":"https://dev.to/sonotommy/10-open-source-projects-youll-actually-use-in-2026-2ig9"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
