@@ -1,6 +1,8 @@
 import os
 import secrets
 import time
+from dotenv import load_dotenv
+load_dotenv()
 import xml.etree.ElementTree as ET
 import requests
 from datetime import datetime, timezone, date as date_type

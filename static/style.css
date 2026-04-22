@@ -350,7 +350,7 @@ header {
   position: relative;
   line-height: 1.6;
 }
-.direction-items li::before { content: '•'; position: absolute; left: var(--space-4); color: var(--accent); }
+.direction-items li::before { content: '•'; position: absolute; left: -3px; color: var(--accent); }
 
 /* Sources */
 .sources-section { margin-top: var(--space-6); border-top: 1px solid var(--border); padding-top: var(--space-4); }
