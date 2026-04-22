@@ -45,14 +45,15 @@ Every run should follow this workflow:
 
 1. Compute Taiwan time (`UTC+8`) and derive:
    - `ENTRY_DATE` in `YYYY-MM-DD`
-   - `SESSION_LABEL` as one of `01:00`, `04:00`, `07:00`, `10:00`, `18:00`, `21:00`, `00:00`, `03:00`
-   - `HHMM` without a colon
+   - `SESSION_LABEL` as `08:00` (morning) or `20:00` (evening)
+   - `HHMM` without a colon (`0800` or `2000`)
    - `YYYYMMDD` without separators
 2. Check whether `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` already exists. If it does, the session is already handled.
 3. Search today's latest software content, prioritizing the last 3-4 hours and same-day high-engagement Threads posts.
 4. Read existing `.github/workflows/write-journal-entry-{YYYYMMDD}-*.yml` files to avoid repeating themes covered by earlier sessions on the same date.
 5. Write Traditional Chinese content:
    - `tech_content`: 2-3 plain-text paragraphs
+   - `tech_application`: 1–2 application scenarios (tool name + who/context + how to start)
    - `learning_analysis`: all 5 directions required, `summary` cannot be blank
    - `sources`: array of `{ "title": str, "url": str }`
 6. Create `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` with a single-line UTF-8 JSON payload and push it.

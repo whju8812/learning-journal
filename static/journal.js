@@ -199,11 +199,15 @@ function renderEntry() {
 
   const techHtml = currentSessions.map((s, i) => {
     const paras = s.tech_content.split('\n\n').map(p => `<p>${escHtml(p)}</p>`).join('');
-    if (!multi) return `<div class="tech-content">${paras}</div>`;
+    const appHtml = s.tech_application
+      ? `<div class="tech-application"><div class="tech-application-label">💡 技術應用場景</div><p>${escHtml(s.tech_application)}</p></div>`
+      : '';
+    if (!multi) return `<div class="tech-content">${paras}</div>${appHtml}`;
     return `
       <div class="session-block">
         <span class="session-time-label">${escHtml(s.session_label)}</span>
         <div class="tech-content">${paras}</div>
+        ${appHtml}
       </div>
       ${i < currentSessions.length - 1 ? '<hr class="session-divider">' : ''}
     `;

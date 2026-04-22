@@ -285,6 +285,23 @@ header {
 .tech-content p         { margin-bottom: var(--space-4); line-height: 1.7; color: var(--text); }
 .tech-content p:last-child { margin-bottom: 0; }
 
+/* Tech application callout */
+.tech-application {
+  margin-top: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  background: var(--accent-light);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--accent);
+  max-width: 700px;
+}
+.tech-application-label {
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: var(--space-2);
+}
+.tech-application p { color: var(--text); line-height: 1.7; margin: 0; }
+
 /* Multi-session */
 .session-block      { margin-bottom: var(--space-5); }
 .session-time-label {
@@ -333,7 +350,7 @@ header {
   position: relative;
   line-height: 1.6;
 }
-.direction-items li::before { content: '•'; position: absolute; left: var(--space-2); color: var(--accent); }
+.direction-items li::before { content: '•'; position: absolute; left: var(--space-4); color: var(--accent); }
 
 /* Sources */
 .sources-section { margin-top: var(--space-6); border-top: 1px solid var(--border); padding-top: var(--space-4); }
