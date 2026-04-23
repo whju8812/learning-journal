@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-23 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260423-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+{"entry_date":"2026-04-23","session_label":"08:00","tech_content":"Anthropic 於 4 月 18 日正式發布 Claude Opus 4.7，帶來多項對開發者重要的改動。最受矚目的是「任務預算（Task Budget）」功能：透過在 API 呼叫中加入 beta header task-budgets-2026-03-13，可為模型設定 token 用量目標，讓 agentic loop 在思考、工具呼叫與輸出等環節維持可預測的成本控制。Opus 4.7 同時將最大圖片解析度提升至 2576px / 3.75MP，成為首個支援高解析度視覺的 Claude 模型，可應用於圖表辨識、設計稿分析等場景；新推出的 Claude Design 工具更可直接從自然語言描述生成 UI 視覺稿。\n\nAI Agent 架構方面，ReAct（Reasoning + Acting）仍是 2026 年業界最廣泛採用的入門模式。其核心是一個推理迴圈：模型接收輸入後規劃步驟、呼叫外部工具（資料庫查詢、API 呼叫等）、評估結果，再決定是否繼續執行。記憶體管理是 agent 開發的關鍵挑戰：短期記憶通常放在 context window，長期記憶則以 Supabase pgvector 或 Pinecone 向量資料庫儲存，支援跨 session 的語意搜索。主流框架包含 LangChain、AutoGen 與 CrewAI，但對於單一用途 agent，直接使用 Anthropic tool use API 往往比引入完整框架更輕量實用。\n\n系統架構選擇上，2026 年業界普遍認為大多數成長中的新創應先從「模組化單體（Modular Monolith）」出發：在單一部署單元內以領域邊界切割模組、模組間以事件驅動通訊，可獲得 80% 微服務優勢而只承擔 20% 的運維成本，未來需拆分為微服務時遷移阻力也較小。CI/CD 工具方面，Argo CD 搭配 GitOps 模式（Git repo 狀態即叢集目標狀態）已成 Kubernetes 環境的標準實踐；OpenTofu（Terraform 的開源分支）持續成長，在 HCL 語法與 provider 生態完全相容的前提下，解決了商業版 Terraform BSL 授權的顧慮。","tech_application":"【Claude Opus 4.7 Task Budget API 實作】適合需要控制 AI agent 推理成本的後端工程師。在多步驟自動化任務中，透過 task budget 為模型設定 token 用量目標，可避免 agentic loop 無限膨脹。Python 範例如下：\n\nimport anthropic\nclient = anthropic.Anthropic()\nresponse = client.messages.create(\n    model=\"claude-opus-4-7\",\n    max_tokens=4096,\n    betas=[\"task-budgets-2026-03-13\"],\n    output_config={\"task_budget\": {\"tokens\": 2000}},\n    messages=[{\"role\": \"user\", \"content\": \"研究 2026 年最熱門的後端框架\"}]\n)\nprint(response.content)\n\n設定 output_config 後，模型會在指定 token 預算內自我調整推理深度，適合需要嚴格控制 API 成本的大量 agent 並發場景。\n\n【Argo CD GitOps 快速部署】適合管理 Kubernetes 叢集的 DevOps 工程師。安裝後只需將 k8s manifest push 到 Git repo，Argo CD 即自動偵測差異並同步至叢集：\n\nkubectl create namespace argocd\nkubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml\nkubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=\"{.data.password}\" | base64 -d\n\n執行後在 Argo CD UI 新增 Application，指定 Git repo URL 與目標 namespace，即可建立自動同步的 GitOps pipeline，大幅降低手動 kubectl apply 的操作失誤風險。","learning_analysis":{"AI / 機器學習":{"summary":"Claude Opus 4.7 帶來 Task Budget 與高解析度視覺能力，AI agent 以 ReAct 模式為主流架構，向量資料庫管理長期記憶已成標配實踐","items":["Claude Opus 4.7 task-budgets beta：agentic loop token 成本控制機制","ReAct pattern：推理迴圈 + 工具呼叫的 agent 架構設計原則","長期記憶管理：Supabase pgvector、Pinecone 向量資料庫跨 session 語意搜索","AI agent 框架比較：LangChain、AutoGen、CrewAI 的適用場景差異"]},"雲端與基礎架構":{"summary":"OpenTofu 持續取代商業版 Terraform 成為 IaC 首選，Argo CD GitOps 在 Kubernetes 環境已成標準，AWS CI/CD pipeline 架構趨於成熟穩定","items":["OpenTofu：Terraform 開源替代方案，HCL 語法與 provider 生態完全相容","Argo CD GitOps：Git repo 狀態即叢集目標狀態，聲明式部署管理","AWS CI/CD：CodePipeline + CodeBuild + ECR + ECS 完整自動化流程","IaC 工具生態比較：Pulumi（多語言）vs OpenTofu（HCL）的選擇依據"]},"前端開發":{"summary":"Claude Design 工具可從自然語言描述生成 UI 視覺稿，esbuild 取代 webpack 加速建構流程，Frontend System Design 方法論持續完善","items":["Claude Design：自然語言描述轉 UI 視覺稿、設計稿、行銷素材","esbuild：取代 webpack/Babel 的高速建構引擎，@wordpress/build 已採用","Frontend System Design：元件架構、狀態管理、效能優化完整方法論","WebAssembly：瀏覽器端高效能運算場景持續擴展，值得追蹤的底層技術"]},"後端 / 系統設計":{"summary":"模組化單體（Modular Monolith）被視為多數新創的最佳架構起點，事件驅動通訊搭配領域邊界切割已成標準實踐，微服務適用於已規模化的大型系統","items":["Modular Monolith：單一部署單元、領域邊界切割模組、事件驅動通訊","微服務 vs 模組化單體：運維成本與系統複雜度的取捨決策框架","Middleware Pattern：request pipeline 消除重複邏輯的後端設計模式","API 設計最佳實踐：冪等性設計、版本管理策略、統一錯誤回應格式"]},"開發者工具 / DevOps":{"summary":"AI Copilot 已成開發工具標配功能，IDP（內部開發者平台）概念加速落地，GitHub Actions 仍是個人與開源專案 CI/CD 的首選工具","items":["GitHub Actions：個人與開源專案最廣泛採用的 CI/CD 自動化平台","Argo CD：Kubernetes GitOps 標準工具，聲明式、自動同步的部署管理","OpenTofu：開源 IaC 工具，解決 Terraform BSL 授權問題的社群替代方案","IDP（Internal Developer Platform）：自助式基礎架構入口，加速開發者自主部署"]}},"sources":[{"title":"Claude Opus 4.7 Developer Guide: API Setup, Claude Code & Migration (2026)","url":"https://www.nxcode.io/resources/news/claude-opus-4-7-developer-guide-api-claude-code-migration-2026"},{"title":"How to Build an AI Agent Step-by-Step: Complete Beginner Guide 2026 - DEV Community","url":"https://dev.to/nova_gg/how-to-build-an-ai-agent-step-by-step-complete-beginners-guide-2026-4ln7"},{"title":"Best CI/CD Tools for 2026: What the Data Actually Shows | JetBrains TeamCity Blog","url":"https://blog.jetbrains.com/teamcity/2026/03/best-ci-tools/"},{"title":"Backend Architecture Patterns — A Practical Guide for 2026","url":"https://codelit.io/blog/backend-architecture-patterns-guide"},{"title":"Anthropic Launches Claude Opus 4.7 + Claude Design — What Changed","url":"https://www.abhs.in/blog/anthropic-claude-opus-4-7-design-tool-launch-april-2026-developer-guide"}]}
+JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
