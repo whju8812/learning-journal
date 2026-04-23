@@ -1,0 +1,39 @@
+name: Write Journal Entry (2026-04-22 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260422-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          cat > entry.json << 'JSONEOF'
+          {"entry_date":"2026-04-22","session_label":"20:00","tech_content":"RAG（Retrieval-Augmented Generation，檢索增強生成）是解決大型語言模型幻覺問題的主流架構。LLM 訓練資料有截止日期且不涵蓋企業私有資料，RAG 在推論階段動態從外部向量資料庫檢索相關片段，再將結果注入 prompt，讓模型基於真實文件作答。2026 年基準測試顯示，採用 512 token 遞迴字元分割、50-100 token 重疊的分塊策略，端到端準確率可達 69%，是目前成本效益最佳的預設方案。現在是學習 RAG 的好時機：向量資料庫（Chroma、Pinecone、Weaviate）已趨成熟，搭配 LangChain 可在數小時內建立完整 pipeline。\n\nTemporal 是專為分散式系統設計的持久化工作流程編排平台，解決長時間執行流程的可靠性問題。傳統方案依賴訊息佇列搭配複雜狀態機，重試與容錯邏輯分散各處難以維護；Temporal 將工作流程視為程式碼一等公民，自動持久化執行狀態，任一步驟失敗後能從中斷點繼續，無需手動復原。以電商訂單流程為例：收款、佈建帳號、寄送歡迎信、更新 CRM，中途任一服務崩潰，Temporal 都會自動重試直到成功。Temporal 2.0 於 2025 年底釋出，支援 Go、Python、TypeScript、Java，已成為現代後端架構不可忽視的選擇。\n\nMeta 工程部落格於 4 月初揭露了 KernelEvolve：一個將 AI Agent 應用於底層基礎架構最佳化的系統。KernelEvolve 把核心調校問題轉化為搜索問題，在數小時內自動探索數百種替代實作，結果常常媲美甚至超越人類專家耗費數週的成果，展示了 AI Agent 在基礎架構層級的實際潛力。同期，JetBrains 部落格發表了 ACP（Agent Communication Protocol）與 Deep Agents 的結合實踐，顯示 Agent 間協作正成為工程新標準。這兩項進展都指向同一個結論：工程師需要更深入理解 AI Agent 的架構與邊界，才能有效駕馭這波浪潮。","tech_application":"使用 LangChain 與 ChromaDB 快速搭建企業文件問答系統。適合後端工程師或 AI 應用開發者，想讓 LLM 能回答公司內部文件或技術手冊的問題。具體步驟：第一，安裝依賴 pip install langchain chromadb openai；第二，使用 RecursiveCharacterTextSplitter 切割文件，設定 chunk_size=512、chunk_overlap=75；第三，呼叫 Chroma.from_documents(docs, embeddings) 建立向量索引；第四，以 RetrievalQA.from_chain_type(llm, retriever=db.as_retriever()) 串接問答鏈後呼叫 chain.invoke 傳入問題字串，即可取得基於文件的回答，有效降低模型幻覺率。\n\n使用 Temporal Python SDK 建立可靠的多步驟業務流程。適合需要處理電商訂單、帳號開通等多步驟流程且對可靠性要求高的後端團隊。操作步驟：先用 Docker 啟動本地 Temporal 服務：docker run -d -p 7233:7233 temporalio/auto-setup:latest；再安裝 SDK：pip install temporalio；接著定義 @activity.defn 函式（單一業務步驟）與 @workflow.defn 類別（整體流程），以 asyncio.run(worker.run()) 啟動 Worker，Temporal 即自動持久化每個步驟的執行狀態，服務重啟後從中斷點繼續執行，無需手動撰寫複雜的重試與補償邏輯。","learning_analysis":{"AI / 機器學習":{"summary":"RAG 架構持續成熟，分塊策略已有明確基準；AI Agent 應用場域從程式碼生成擴展至基礎架構最佳化，工程師需理解 Agent 三層架構以有效運用。","items":["RAG 分塊基準：RecursiveCharacterTextSplitter、chunk_size=512、overlap=75，端到端準確率達 69%","向量資料庫選型：Chroma 適合原型開發，Pinecone 適合託管生產，Weaviate 支援混合搜索","Meta KernelEvolve 展示 AI Agent 在核心最佳化的工程潛力，媲美人類專家週級工作量","RAGAS 評估框架：以 faithfulness、answer relevancy、context recall 衡量 RAG 品質"]},"雲端與基礎架構":{"summary":"GitHub Actions 主導 CI/CD 市場，邊緣計算改變前端部署架構，Temporal 為分散式工作流程提供持久化可靠性保障。","items":["GitHub Actions 無縫整合 GitHub 倉庫，marketplace 提供數千個預建 action，成 CI/CD 首選","CI/CD 採 main/develop/feature/* 分支策略，自動觸發建置、測試與安全掃描","邊緣優先部署（Vercel、Cloudflare Workers）將運算邏輯靠近使用者，降低請求延遲","Temporal 持久化執行解決分散式長時間流程可靠性，支援 Go、Python、TypeScript、Java"]},"前端開發":{"summary":"Vite 實質取代 Webpack 成為主流建置工具，CSS Container Queries 與 Tailwind CSS 4 提升樣式工程能力，Figma 導入 AI Agent 直接操作設計稿。","items":["Vite 利用原生 ES Module 達到毫秒級熱重載，2026 年已成前端建置預設選擇","Tailwind CSS 4 引入變數式 utility，搭配 CSS Layers 提升大型專案可維護性","CSS Container Queries 讓元件根據父容器尺寸自適應，不再依賴全域 breakpoint","Figma AI Agent 可直接操作 canvas 與真實設計系統元件，加速設計工作流程"]},"後端 / 系統設計":{"summary":"模組化單體結合事件驅動通訊是 2026 年推薦的入門架構，Temporal 解決長時間業務流程可靠性，BFF 模式持續在多端應用中普及。","items":["模組化單體：以 80% 微服務效益、20% 運維成本為目標的折衷起點架構","Temporal workflow 視為一等公民，自動處理重試、逾時、補償，簡化分散式流程","Backend for Frontend（BFF）模式：針對不同客戶端聚合資料，業務邏輯留在核心服務","Circuit Breaker 模式在分散式環境中防止失敗級聯擴散至整個系統"]},"開發者工具 / DevOps":{"summary":"GitHub Actions 主導 CI/CD，安全左移將漏洞掃描嵌入 pipeline 早期階段，AI 輔助工具覆蓋率已達約九成開發者。","items":["GitHub Actions 成 CI/CD 首選：與 GitHub 無縫整合，workflow syntax 簡潔直觀","安全左移（Shift Left Security）：在 PR 階段執行 SAST 掃描，早期發現漏洞降低修復成本","掌握 CI/CD 的團隊部署頻率提升 208 倍，前置時間縮短 106 倍（DORA 指標研究結果）","約 92% 開發者在 2026 年使用 AI 輔助工具於編碼、除錯與自動化工作流程"]}},"sources":[{"title":"RAG Pipeline Tutorial: Build Retrieval-Augmented Generation From Scratch (2026)","url":"https://effloow.hashnode.dev/rag-pipeline-tutorial-build-retrieval-augmented-generation-from-scratch-2026"},{"title":"Temporal Workflow Engine: The Reliability Layer Your Distributed System Is Missing [2026 Guide]","url":"https://dev.to/kunal_d6a8fea2309e1571ee7/temporal-workflow-engine-the-reliability-layer-your-distributed-system-is-missing-2026-guide-1ia9"},{"title":"KernelEvolve: How Meta Ranking Engineer Agent Optimizes AI Infrastructure","url":"https://engineering.fb.com/2026/04/02/developer-tools/kernelevolve-how-metas-ranking-engineer-agent-optimizes-ai-infrastructure/"},{"title":"Using ACP + Deep Agents to Demystify Modern Software Engineering","url":"https://blog.jetbrains.com/ai/2026/04/using-acp-deep-agents-to-demystify-modern-software-engineering/"},{"title":"Vite vs Webpack: Build Tool Comparison for Modern Web Development (2026)","url":"https://dev.to/_d7eb1c1703182e3ce1782/vite-vs-webpack-build-tool-comparison-for-modern-web-development-2026-3793"},{"title":"Building a Production-Ready CI/CD Pipeline: The Complete 2026 Guide","url":"https://medium.com/@krishnafattepurkar/building-a-production-ready-ci-cd-pipeline-the-complete-2026-guide-b3d6a661ecd8"},{"title":"Figma Made a Huge Step Forward in AI Design (April 2026)","url":"https://dev.to/spookuspookus/figma-made-a-huge-step-forward-in-ai-design-april-2026-1cin"}]}
+          JSONEOF
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
