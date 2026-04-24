@@ -28,6 +28,35 @@ function escHtml(str) {
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function renderInline(str) {
+  return escHtml(str).replace(/\*\*(.+?)\*\*[ \t]*/g, '<strong>$1</strong><br>');
+}
+
+function renderRichText(str) {
+  const parts = [];
+  const re = /```(\w*)\n([\s\S]*?)```/g;
+  let last = 0;
+  let m;
+  while ((m = re.exec(str)) !== null) {
+    if (m.index > last) {
+      str.slice(last, m.index).trim().split(/\n\n+/).filter(p => p.trim())
+        .forEach(p => parts.push(`<p>${renderInline(p.trim())}</p>`));
+    }
+    const lang = escHtml(m[1] || '');
+    parts.push(
+      `<div class="code-block">` +
+      (lang ? `<span class="code-lang">${lang}</span>` : '') +
+      `<pre><code>${escHtml(m[2])}</code></pre></div>`
+    );
+    last = m.index + m[0].length;
+  }
+  if (last < str.length) {
+    str.slice(last).trim().split(/\n\n+/).filter(p => p.trim())
+      .forEach(p => parts.push(`<p>${renderInline(p.trim())}</p>`));
+  }
+  return parts.join('');
+}
+
 function todayStr() {
   const t = new Date();
   return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
@@ -198,9 +227,9 @@ function renderEntry() {
   const multi   = currentSessions.length > 1;
 
   const techHtml = currentSessions.map((s, i) => {
-    const paras = s.tech_content.split('\n\n').map(p => `<p>${escHtml(p)}</p>`).join('');
+    const paras = s.tech_content.split('\n\n').map(p => `<p>${renderInline(p)}</p>`).join('');
     const appHtml = s.tech_application
-      ? `<div class="tech-application"><div class="tech-application-label">💡 技術應用場景</div><p>${escHtml(s.tech_application)}</p></div>`
+      ? `<div class="tech-application"><div class="tech-application-label">💡 技術應用場景</div>${renderRichText(s.tech_application)}</div>`
       : '';
     if (!multi) return `<div class="tech-content">${paras}</div>${appHtml}`;
     return `
