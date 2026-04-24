@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-04-24 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260424-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-04-24","session_label":"08:00","tech_content":"**OpenCode：開源終端 AI 程式助理的崛起** OpenCode 是一套以 Go 語言撰寫、以終端為主戰場的開源 AI 編程代理，目前在 GitHub 上已累積逾 14 萬顆星，每月活躍使用者超過 650 萬。核心賣點是「模型無關」：同時支援 75 種以上大型語言模型，且不儲存任何使用者程式碼。內建兩種工作模式——Build（具備完整讀寫工具存取，適合正式開發）與 Plan（唯讀分析，先規劃再執行）——大幅降低誤改生產程式庫的風險。與 IDE 外掛不同，終端原生介面讓它天然適合 CI/CD 環境、遠端伺服器或純文字情境，對後端工程師與 DevOps 團隊特別實用。\n\n**Cloudflare Workflows v2：為大規模 AI 代理設計的持久化執行引擎** Cloudflare 在 2026 年 Agents Week 期間發表 Workflows v2，大幅重構工作流程控制平面以因應 AI 代理時代的高並行需求。V1 的核心瓶頸是單一帳號 Durable Object 成為集中式序列化點；V2 引入兩個新元件——SousChef（分散管理各子集工作流程的元資料與生命週期）與 Gatekeeper（跨 SousChef 分配並行槽位）——每帳號同時執行的 Workflow 實例上限從 4,500 飛升至 50,000，建立速率從每秒 100 提升至 300 件。此次重構的深層意義在於：現代 Workflow 觸發者已從人工操作轉變為 AI 代理以機器速度持續建立，Cloudflare 等同於為自主 AI 基礎設施提供了無縫的持久非同步執行引擎。\n\n**GitHub 供應鏈安全強化：Immutable OIDC Claims 與 Python 傳遞依賴圖譜** GitHub 於 4 月 23 日同步推出兩項供應鏈安全功能。其一是 GitHub Actions OIDC Token 的 Immutable Subject Claim 格式：2026 年 6 月 18 日後建立的新 Repository 將自動採用不可竄改的 sub 聲明格式，有效防止 OIDC 憑證遭重放或欺騙攻擊，現有 Repo 可在 Settings 介面提前啟用。其二是基於 Dependabot 的 Python 傳遞依賴圖譜：以往 Python 專案在依賴圖與 SBOM 中的傳遞依賴資訊不完整，現在 Dependabot 直接解析真實依賴樹，讓安全掃描不再遺漏間接引入的脆弱套件。兩項功能共同反映出 GitHub 正將供應鏈安全深度整合到每位工程師的日常工作流程中。","tech_application":"**① OpenCode 終端 AI 代理快速入門** 適合對象：希望在 CI/CD 環境、遠端伺服器或無 GUI 情境下使用 AI 輔助開發的後端工程師與 DevOps 工程師。安裝只需一行指令即可完成，支援 75 種以上 LLM 模型。\n\n```bash\n# 安裝 OpenCode\ncurl -fsSL https://opencode.ai/install | bash\n# 設定 LLM API 金鑰（以 Gemini 為例）\nexport GEMINI_API_KEY=\"your-gemini-api-key\"\n# 在當前專案目錄啟動（預設 Build 模式，具備完整讀寫存取）\nopencode\n# 唯讀規劃模式，分析建議但不修改任何檔案\nopencode --agent plan\n```\n\n啟動後進入 TUI 介面，可直接輸入自然語言指令，例如「幫我替這個函式補上單元測試」，OpenCode 會讀取當前 Repo 脈絡後自動修改相關檔案。\n\n**② 為 GitHub Actions 啟用 Immutable OIDC Subject Claim** 適合對象：使用 GitHub Actions OIDC 向 AWS、GCP 或 Azure 取得短命憑證的工程師。2026 年 6 月 18 日後新建的 Repo 強制採用新格式，建議提前在測試環境驗證，避免生產流水線中斷。\n\n```yaml\n# .github/workflows/deploy.yml 關鍵設定片段\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    permissions:\n      id-token: write\n      contents: read\n    steps:\n      - name: Configure AWS credentials via OIDC\n        uses: aws-actions/configure-aws-credentials@v4\n        with:\n          role-to-assume: arn:aws:iam::123456789012:role/GitHubActionsRole\n          aws-region: ap-northeast-1\n```\n\n啟用步驟：前往 Repository Settings → Code Security → GitHub Actions → OpenID Connect，開啟 Immutable subject claims 開關，並同步更新 AWS IAM Trust Policy 中的 StringEquals 條件以符合新的 sub 格式。","learning_analysis":{"AI / 機器學習":{"summary":"AI 代理的執行時期安全風險持續升溫，提示詞注入、工具濫用與過度授權成為 2026 年最迫切的 LLM 安全議題，Runtime Security 正逐漸成為 AI 工程師的必修能力。","items":["提示詞注入（Prompt Injection）被列為 OWASP LLM Top 10 首要漏洞：代理透過惡意網頁、郵件正文、第三方 API 回應等間接輸入遭到操控，影響面遠大於傳統注入攻擊","過度授權（Excessive Agency）問題：AI 代理持有生產資料庫讀寫、郵件發送與財務系統存取等超量權限，一旦遭注入即可能造成嚴重資料外洩事件","企業 AI 安全就緒度仍低：僅 34% 企業部署 AI 專屬安全控制，卻有近半資安專家將 Agentic AI 列為首要新興攻擊面，防禦能力嚴重落後於部署速度"]},"雲端與基礎架構":{"summary":"Cloudflare Workflows v2 以全新分散式架構支撐 AI 代理時代的高並行工作流程需求，同時示範了如何在不中斷服務的前提下完成大規模架構遷移。","items":["V2 引入 SousChef 與 Gatekeeper 元件，同時執行實例上限從 4,500 提升至 50,000，建立速率從每秒 100 提升至 300","零停機遷移策略：將既有 Account Durable Objects 轉換為 SousChef 行為，新請求路由至新元件，舊狀態逐步遷移，全程無服務中斷","工作流程觸發模式典範轉移：從人工觸發轉變為 AI 代理以機器速度持續建立，持久非同步執行引擎成為 Agentic Infrastructure 的核心元件"]},"前端開發":{"summary":"本次 session 前端領域無重大技術突破，GitHub 推出的 Copilot 改善屬輔助性工具更新。建議複習 CSS Container Queries 與 Web Components 等已穩定的現代瀏覽器 API，作為基礎能力強化。","items":["GitHub Copilot 網頁版新增 Stack Trace 根因分析：貼上錯誤堆疊後自動結合 Repository 程式碼脈絡提供結構化分析建議","GitHub Copilot BYOK 正式在 VS Code 推出：Business 及 Enterprise 用戶可攜帶 Anthropic、Gemini、OpenAI、OpenRouter 及 Azure 的自有 API 金鑰，降低供應商鎖定風險","Global Pull Requests Dashboard 轉為預設開啟的公開預覽版，可跨 Repo 集中追蹤多個 PR 狀態，適合同時維護多個前端專案的工程師"]},"後端 / 系統設計":{"summary":"Temporal 工作流程引擎在 2026 年持續成熟，以事件溯源原理為分散式系統提供可靠的長流程執行能力，Python SDK 讓後端工程師可快速上手複雜的跨服務業務流程設計。","items":["Temporal 核心機制：以 Event Sourcing 持久化每個 Workflow 步驟，Worker 崩潰後可在新實例上從事件歷史中完整重播並恢復執行，無需額外設計斷點續傳邏輯","Continue-As-New 機制解決超長流程的 Event History 膨脹問題：適合週期性資料處理任務，保持相同 Workflow ID 的同時清除歷史記錄，類似無堆疊遞迴","Modular Monolith 架構在 2026 年受到更廣泛推薦：具備微服務的模組邊界與介面定義，但維持單一部署單元，以較低運維成本換取大部分微服務架構好處"]},"開發者工具 / DevOps":{"summary":"GitHub 本週密集推出供應鏈安全功能，Immutable OIDC Claims 與 Python 傳遞依賴圖譜雙管齊下，工程師應儘早在測試環境驗證 OIDC 格式相容性以避免 6 月 18 日強制切換後的流水線中斷。","items":["GitHub Actions OIDC Immutable Subject Claim：2026/06/18 後新建 Repo 自動啟用，防止 sub 欄位遭重放攻擊，現有 Repo 可在 Settings 的 OpenID Connect 設定頁面提前啟用","Dependabot 現支援 Python 傳遞依賴解析，SBOM 與依賴圖中不再遺漏間接引入的脆弱套件，提升 Python 專案的供應鏈可視度","OpenCode 開源終端 AI 代理（GitHub 逾 14 萬星）支援 75+ LLM、不儲存程式碼，curl 一行安裝，特別適合在 CI 環境或無 GUI 伺服器進行 AI 輔助開發"]}},"sources":[{"title":"OpenCode — AI Coding Agent Built for the Terminal","url":"https://opencode.ai/"},{"title":"OpenCode GitHub Repository","url":"https://github.com/opencode-ai/opencode"},{"title":"Cloudflare Blog: Rearchitecting the Workflows control plane for the agentic era","url":"https://blog.cloudflare.com/workflows-v2/"},{"title":"GitHub Changelog: Dependabot-based dependency graphs for Python","url":"https://github.blog/changelog/2026-04-23-dependabot-graphs-for-python/"},{"title":"GitHub Changelog: Immutable subject claims for GitHub Actions OIDC tokens","url":"https://github.blog/changelog/2026-04-23-immutable-subject-claims-for-github-actions-oidc-tokens/"},{"title":"AI Agents Hacking in 2026: Defending the New Execution Boundary","url":"https://www.penligent.ai/hackinglabs/ai-agents-hacking-in-2026-defending-the-new-execution-boundary/"},{"title":"Temporal Workflow Engine: The Reliability Layer (2026 Guide)","url":"https://dev.to/kunal_d6a8fea2309e1571ee7/temporal-workflow-engine-the-reliability-layer-your-distributed-system-is-missing-2026-guide-1ia9"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi

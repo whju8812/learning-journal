@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-04-23 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260423-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-04-23","session_label":"20:00","tech_content":"**MCP 成為 AI Agent 的通訊骨幹**\n\nModel Context Protocol（MCP）是 Anthropic 於 2024 年底開源的標準協議，目的是統一 AI 應用程式與外部工具、資料庫、API 的連接方式——可以把它想像成 AI 世界的 USB-C：只要遵循此標準，任何 AI 應用都能即插即用地串接任意外部系統。截至 2026 年 3 月，MCP 已累積超過 9,700 萬次安裝，OpenAI、Google DeepMind 等主要廠商也紛紛跟進支援，正式從實驗性標準演進為 agentic 基礎架構的核心。MCP 架構圍繞三個角色：Host（AI 模型運行環境）、Client（連接 Host 與外部系統的橋接器）、Server（將工具、資料庫或服務能力暴露給 AI 的包裝層）。對開發者而言，今天就能用 Python MCP SDK 在幾分鐘內建立自定義的 MCP Server，讓 Claude 或其他 AI 應用直接呼叫你的內部 API。\n\n**Astro 6 Islands 架構與 Server Islands**\n\nAstro 6 帶來了幾項對前端工程師重要的改變。最值得注意的是 Dev Server 現在跑在 Cloudflare 開源的 workerd 執行環境上，這表示本地開發環境與 Cloudflare Pages/Workers 的正式環境完全一致，大幅減少「本地可跑、部署後壞掉」的問題。Islands Architecture 的核心思想是：頁面絕大部分輸出為純靜態 HTML，只有需要互動的局部區域才載入 JavaScript——這使初始載入幾乎不執行 JS。Astro 6 新增的 Server Islands 更進一步：可將昂貴的伺服器端運算（如即時資料、個人化內容）從主要渲染流程中拆出，作為獨立的伺服器元件串流回來，兼顧靜態頁面的極速載入與動態個人化需求。對於 SEO 敏感或內容型網站，Astro 6 是 2026 年最值得評估的前端選項之一。\n\n**uv 取代 pip 成為 Python 標準工具鏈**\n\nuv 是由 Astral（ruff 的開發團隊）以 Rust 寫成的 Python 套件管理器，設計目標是單一工具替代整個 Python 工具鏈：pip、virtualenv、pip-tools、pyenv、poetry、twine 全部可用 uv 處理。效能差距相當顯著：從暖快取安裝 23 個套件，pip 需 6.6 秒，uv 僅需 0.15 秒；建立虛擬環境比 python -m venv 快 50 倍。更重要的是，uv 自動管理虛擬環境，執行 uv add requests 時會自動建立或啟用 .venv，無需手動 activate。2026 年，uv 已成為 Python 新專案的事實標準，許多開源專案與 CI 腳本也正陸續從 pip install 遷移過來。","tech_application":"**① 用 uv 初始化新 Python 專案（取代 pip + virtualenv）**\n\n適合所有 Python 開發者，無論是建立新後端服務、數據分析腳本或 CLI 工具。uv 安裝後，以下指令即可完成整個專案初始化流程：\n\n```bash\n# 安裝 uv（macOS/Linux）\ncurl -LsSf https://astral.sh/uv/install.sh | sh\n\n# 建立新專案（自動建立 .venv 與 pyproject.toml）\nuv init my-project && cd my-project\n\n# 新增相依套件（自動更新 pyproject.toml 與 uv.lock）\nuv add flask supabase httpx\n\n# 執行腳本（自動使用 .venv 內的 Python）\nuv run python app.py\n\n# 從現有 requirements.txt 遷移\nuv pip install -r requirements.txt\n```\n\nuv 的 lockfile（uv.lock）確保跨環境安裝完全一致，適合加入 git 版控。CI 中以 uv sync 取代 pip install -r requirements.txt 可顯著加速 pipeline。\n\n**② 建立 MCP Server 讓 Claude 呼叫自定義工具**\n\n適合想讓 Claude 或其他 AI 應用存取內部 API 或資料庫的後端工程師。以 Python MCP SDK 建立一個最小可運行的 MCP Server：\n\n```bash\n# 安裝 MCP Python SDK\nuv add mcp\n```\n\n```python\n# server.py\nfrom mcp.server.fastmcp import FastMCP\n\nmcp = FastMCP(\"my-tools\")\n\n@mcp.tool()\ndef get_user_count() -> int:\n    # 回傳系統目前的使用者數量（實際場景可替換為 DB 查詢）\n    return 42\n\nif __name__ == \"__main__\":\n    mcp.run()\n```\n\n在 Claude Code 的 MCP 設定中加入此 server，Claude 即可在對話中直接呼叫 get_user_count 工具。FastMCP 會自動從 Python function 的型別標記與註解產生工具描述，無需手動撰寫 schema。","learning_analysis":{"AI / 機器學習":{"summary":"MCP 跨越 9,700 萬次安裝里程碑，成為 agentic 基礎架構的事實標準，OpenAI 與 Google DeepMind 已跟進支援，開發者今天即可用 FastMCP 快速建立自定義工具伺服器","items":["MCP 三大角色：Host / Client / Server 的分層架構設計","FastMCP Python SDK：從函式型別標記自動產生 MCP 工具 schema","MCP 生態擴展：Claude Code、Cursor、VS Code 等主流工具均已支援","Agentic AI Foundation（Linux Foundation）：MCP 標準化治理架構"]},"雲端與基礎架構":{"summary":"Neon serverless Postgres 以內建 PgBouncer 解決 serverless 函式短暫連線爆炸問題，transaction mode 連線池讓每筆交易結束後即釋放連線，支援最高萬級並發","items":["Neon 內建 PgBouncer：pooled 連線字串（-pooler 後綴）vs 直連字串的使用場景","PgBouncer transaction mode：transaction 結束後釋放連線，適合無狀態 serverless 函式","Neon 冷啟動優化：pooled 連線掩蔽 compute 喚醒延遲，後續查詢降至 100ms 以內","Serverless DB 設計原則：避免長時間 session-level lock，偏好短交易與冪等寫入"]},"前端開發":{"summary":"Astro 6 的 Server Islands 允許將昂貴的伺服器運算從主渲染流程拆出，Dev Server 改用 Cloudflare workerd 確保開發與生產環境一致；Qwik 的 resumability 模式以接近 1KB JS 實現互動，持續吸引 eCommerce 場景採用","items":["Astro 6 Server Islands：靜態頁面主體 + 動態元件串流，兼顧 SEO 與個人化","Astro Dev Server on workerd：本地開發環境與 Cloudflare Pages 生產環境完全對齊","Qwik resumability：伺服器狀態序列化後在客戶端恢復，消除傳統 hydration 重新執行成本","Islands Architecture 選型：Astro（內容型/SEO）vs Qwik（高互動 eCommerce）的適用場景"]},"後端 / 系統設計":{"summary":"資料庫連線管理在 serverless 架構下成為顯學，PgBouncer transaction mode 是解決 max_connections 瓶頸的標準方案，Neon 已將其內建為預設配置","items":["PgBouncer session/transaction/statement mode 比較：serverless 場景首選 transaction mode","連線池設計原則：應用層連線數遠超 DB max_connections 時的緩衝策略","Neon 直連 vs pooled 連線：migration 腳本必須用直連，應用查詢用 pooled","Prepared statement 限制：transaction mode 下需改用 simple query protocol 或配置白名單"]},"開發者工具 / DevOps":{"summary":"uv 以 Rust 實作，成為 2026 年 Python 新專案的事實標準工具鏈，整合 pip、virtualenv、pyenv、poetry 功能；GitHub Actions 新增 service container 進階控制與 OIDC token 自定義 claims","items":["uv 核心指令：uv init / uv add / uv run / uv sync，取代傳統 pip + venv 工作流","uv 效能：暖快取安裝比 pip 快 44 倍；建立 .venv 比 python -m venv 快 50 倍","GitHub Actions service container：新增 entrypoint / command 覆寫，語法對齊 Docker Compose","GitHub Actions OIDC：repository custom properties 現可作為 token claims，支援更細粒度的信任政策"]}},"sources":[{"title":"The Complete Guide to Model Context Protocol (MCP): Building AI-Native Applications in 2026 - DEV Community","url":"https://dev.to/universe7creator/the-complete-guide-to-model-context-protocol-mcp-building-ai-native-applications-in-2026-10c5"},{"title":"Python in 2026: Why I Replaced pip with uv (Complete Guide + Benchmarks) - DEV Community","url":"https://dev.to/kabasele754/python-in-2026-why-i-replaced-pip-with-uv-complete-guide-benchmarks-19bp"},{"title":"Astro Framework Guide: Performance, Islands & SSR (2026)","url":"https://alexbobes.com/programming/a-deep-dive-into-astro-build/"},{"title":"Astro Server Islands explained: A complete step-by-step tutorial","url":"https://thebcms.com/blog/astro-server-islands-tutorial"},{"title":"PgBouncer: Database Connection Pooling That Actually Scales - DEV Community","url":"https://dev.to/whoffagents/pgbouncer-database-connection-pooling-that-actually-scales-4ek4"},{"title":"Neon Serverless Postgres Guide for TypeScript Backends in 2026","url":"https://encore.dev/articles/neon-serverless-postgres"},{"title":"GitHub Actions: Early April 2026 updates - GitHub Changelog","url":"https://github.blog/changelog/2026-04-02-github-actions-early-april-2026-updates/"},{"title":"uv: The Fast Python Package Manager Replacing pip in 2026","url":"https://asifmuhammad.com/articles/uv-python-package-manager-guide"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
