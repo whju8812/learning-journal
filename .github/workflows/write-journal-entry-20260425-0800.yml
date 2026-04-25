@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-04-25 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260425-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-04-25","session_label":"08:00","tech_content":"**GPT-5.5 正式進駐 GitHub Copilot，多步驟 AI 代理編程能力全面升級**\n\nGitHub Copilot 於 2026 年 4 月 24 日正式引入 OpenAI 最新的 GPT-5.5 模型，向 Copilot Pro+、Business 及 Enterprise 用戶開放。GPT-5.5 在複雜多步驟代理任務（agentic coding task）上表現最為突出，能夠解決前代 GPT 模型無法處理的真實開發挑戰。模型可在 VS Code、JetBrains、Copilot CLI 及 GitHub.com 等多個平台的模型選擇器中直接切換，讓開發者在不同環境統一享有最新推理能力。值得深入學習的原因在於：AI 輔助編程已從補全代碼演進到跨工具、跨步驟的複雜任務執行，掌握代理模式（agentic mode）的操作方式已成為現代開發者的核心競爭力。\n\n**Google 發布第八代 TPU 8t / TPU 8i，雲端 AI 基礎設施走向訓推分離架構**\n\nGoogle Cloud 於 4 月 22 日發表第八代 TPU 晶片，首次將訓練（TPU 8t）與推論（TPU 8i）拆分為兩個專用架構。TPU 8t 針對大規模模型訓練優化，9,600 晶片超級叢集可達 121 FP4 ExaFLOPS，並能將前沿模型的開發週期從數月縮短至數週；TPU 8i 聚焦低延遲推論，搭載 Collectives Acceleration Engine（CAE）加速自迴歸解碼與思維鏈處理，效能功耗比較上一代提升 80%。Native PyTorch 支援 TPU 同步進入 preview，大幅降低現有 PyTorch 用戶遷移門檻。這代表雲端 AI 資源選型進入精細化時代，工程師需根據工作負載類型（訓練 vs 推論）選擇最適合的硬體配置。\n\n**GitHub Actions OIDC Token 新增不可變識別碼，杜絕倉庫名稱回收引發的身份偽冒風險**\n\nGitHub 於 4 月 23 日宣布 GitHub Actions OIDC Token 的主體聲明（subject claim）將加入不可變的 owner ID 與 repository ID，格式從原本僅含可變名稱升級為包含數字 ID 的不可變格式。這項改動解決了一個長期潛在的安全漏洞：當組織或倉庫名稱被回收再利用時，新擁有者可能產生與舊身份相同的 Token，進而取得雲端資源（AWS、Azure、GCP）的未授權存取。2026 年 6 月 18 日後建立的所有倉庫將自動採用新格式，現有倉庫的雲端信任策略須在此之前主動更新，以確保 CI/CD 管線的持續安全性。","tech_application":"**① 在 GitHub Copilot 中切換至 GPT-5.5 並使用代理模式執行複雜任務**\n\n適合對象：使用 Copilot Business 或 Enterprise 的開發者，尤其是需要跨工具重構、大型 PR 解析或多檔案協調修改的工程師。管理員須先至 Copilot 後台啟用 GPT-5.5 policy，再由開發者在模型選擇器中切換。\n\n```bash\n# 安裝或更新 GitHub Copilot CLI 擴充套件\ngh extension install github/gh-copilot\ngh extension upgrade gh-copilot\n\n# 使用 Copilot CLI 執行多步驟代理任務\ngh copilot suggest \"重構 src 目錄下所有使用 requests 的模組，改用 httpx 並加入 async 支援\"\n\n# 查看目前 Copilot CLI 可用設定\ngh copilot config\n```\n\n**② 用 n8n 自建 AI Agent 工作流程，連接本地 Ollama 或 OpenAI**\n\n適合對象：後端工程師或 DevOps 工程師，想在不依賴付費 SaaS 的前提下，自行部署可與 LLM 整合的 AI 代理工作流程，適用於內部資料處理、通知自動化或定期報告生成。\n\n```bash\n# 使用 Docker 啟動 n8n（帶持久儲存）\ndocker run -d --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n n8nio/n8n\n\n# 開啟 http://localhost:5678\n# 建立 Workflow → 新增 AI Agent 節點 → 選擇模型（OpenAI 或 Ollama）\n# 設定 Webhook 觸發器即可接收外部事件並自動執行 AI 任務\n```","learning_analysis":{"AI / 機器學習":{"summary":"GPT-5.5 進入 GitHub Copilot 強化代理編碼能力，Google TPU 8t/8i 以訓推分離架構優化雲端 AI 效能，Ollama 突破 5200 萬月下載量推動本地 LLM 普及","items":["GPT-5.5 在多步驟代理任務（agentic coding task）的表現超越前代 GPT 模型，適合跨工具重構等複雜場景","Google TPU 8t 訓練效能較 Ironwood 上代提升 2.7x，TPU 8i 推論效能功耗比提升 80%","Ollama 支援 Qwen 2.5 Coder、GLM-5 等最新開源模型在消費級硬體本地運行，Apple Silicon 適合 32B 以上模型"]},"雲端與基礎架構":{"summary":"Google 第八代 TPU 採訓推分離專用架構，代表雲端 AI 基礎設施向精細化資源選型演進，Native PyTorch 支援降低遷移門檻","items":["TPU 8t 超級叢集（9,600 晶片）達 121 FP4 ExaFLOPS，可大幅縮短前沿模型訓練週期","TPU 8i 搭載 CAE（Collectives Acceleration Engine）加速低延遲推論與 chain-of-thought 處理","Native PyTorch 支援 TPU 進入 preview，現有 PyTorch 用戶可直接遷移而無需修改模型代碼"]},"前端開發":{"summary":"GitHub Copilot 在 JetBrains IDE 推出 inline agent mode preview 及 Next Edit Suggestions 強化，前端 IDE 整合體驗持續深化；本日前端框架層無重大新版本，建議複習 React Concurrent Mode 基礎","items":["JetBrains Copilot inline agent mode（preview）可在編輯器內直接執行多步驟代理任務","Next Edit Suggestions 依據當前修改脈絡推薦後續編輯位置，減少手動跳轉的開發摩擦","建議複習：React 18 Concurrent Mode 與 Suspense 的實際應用場景，理解非同步渲染邊界設計"]},"後端 / 系統設計":{"summary":"Modular Monolith 架構在 2026 年持續受到關注，以單一部署保留服務邊界兼顧可維護性與低運維成本；Circuit Breaker 與 BFF 模式在分散式場景持續應用","items":["Modular Monolith：類微服務的模組邊界結合單一部署，享有 80% 微服務優勢但僅需 20% 運維成本","Circuit Breaker 模式：在分散式系統中防止單一服務故障引發連鎖崩潰，適用於微服務間呼叫","Backend for Frontend（BFF）：為不同用戶端提供專屬 API 層，降低前後端耦合與過度 fetching 問題"]},"開發者工具 / DevOps":{"summary":"GitHub Actions OIDC Token 新增不可變識別碼強化 CI/CD 管線身份驗證安全性，n8n 成為自建 AI 代理工作流程的主流開源選擇","items":["GitHub Actions OIDC Token 新格式加入 owner ID + repo ID，防止倉庫名稱回收導致的 token 偽冒攻擊","n8n 提供 500+ 整合與內建 AI Agent builder，可自部署連接 OpenAI GPT 或本地 Ollama 模型","GitHub Copilot CLI 新增 GPT-5.5 模型切換與多步驟代理執行能力，提升終端機工作流程效率"]}},"sources":[{"title":"GPT-5.5 is generally available for GitHub Copilot - GitHub Changelog","url":"https://github.blog/changelog/2026-04-24-gpt-5-5-is-generally-available-for-github-copilot/"},{"title":"Inline agent mode in preview and more in GitHub Copilot for JetBrains IDEs - GitHub Changelog","url":"https://github.blog/changelog/2026-04-24-inline-agent-mode-in-preview-and-more-in-github-copilot-for-jetbrains-ides/"},{"title":"TPU 8t and TPU 8i technical deep dive - Google Cloud Blog","url":"https://cloud.google.com/blog/products/compute/tpu-8t-and-tpu-8i-technical-deep-dive"},{"title":"Immutable subject claims for GitHub Actions OIDC tokens - GitHub Changelog","url":"https://github.blog/changelog/2026-04-23-immutable-subject-claims-for-github-actions-oidc-tokens/"},{"title":"Building AI Agent Workflows in n8n: The 2026 Complete Guide - DEV Community","url":"https://dev.to/kr8thor/building-ai-agent-workflows-in-n8n-the-2026-complete-guide-494"},{"title":"Ollama + Open WebUI Self-Hosting Guide 2026 - DEV Community","url":"https://dev.to/jangwook_kim_e31e7291ad98/ollama-open-webui-self-hosting-guide-2026-run-your-own-ai-for-0-2781"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
