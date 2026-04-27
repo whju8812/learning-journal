@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-04-27 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260427-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-04-27","session_label":"20:00","tech_content":"**Deno 2 徹底擁抱 Node.js 生態：JavaScript 執行環境 2026 年三分天下**\n\nDeno 2 在 2025 年底正式宣告全面相容 Node.js 與 npm，解決了過去最大的生態系障礙。現在 Deno 2 可直接識別 package.json 與 node_modules，支援 npm: specifier 匯入，並新增 deno install / deno add / deno remove 等套件管理指令。對 TypeScript 的支援更是一等公民——.ts 檔案無需 ts-node 或 tsx 設定即可直接執行，@types/node 型別宣告已預設包含。三大執行環境生產效能基準：Bun 以 52,000 req/sec 領先，Deno 達 29,000 req/sec，Node.js 為 14,000 req/sec，但實際含資料庫業務邏輯時差距縮至 3% 以內。推薦選擇策略：新專案或 TypeScript 密集型專案用 Deno 2（安全性與語言整合佳）；本地開發用 Bun（套件安裝比 npm 快 25-30 倍）；現有生產負載繼續 Node.js（生態系最穩定）。\n\n**GitHub Actions 快取策略：CI/CD 管線提速 5 倍的三個關鍵技巧**\n\nGitHub Actions 快取若設計得當，命中率可達 70–90%，將 npm install 從 3 分鐘壓縮至 40 秒，整體 workflow 最高提速 5 倍。三個關鍵技巧：第一，快取鍵以相依性檔案的雜湊值（如 package-lock.json）為基礎，並設定 restore-keys 作為後備避免 cache miss 時流程中斷；第二，應快取全域快取目錄（~/.npm 或 ~/.pnpm-store）而非 node_modules，因 node_modules 含有平台相依的 native 模組，跨 OS 無法共用；第三，平行化（parallelization）是僅次於快取最有效的手段——把測試拆成多個 job 同時執行，可大幅縮短整體 CI 時間。建議先用當前 workflow 執行時間建立基線，再逐一套用優化並確認效果。\n\n**Pkl：Apple 開源的設定即程式碼語言，解決 YAML/JSON 的型別安全問題**\n\nPkl（發音 Pickle）是 Apple 於 2024 年開源（Apache-2.0）的設定語言，定位在靜態格式（JSON/YAML）與完整程式語言之間，擁有類別、函式、條件運算式與迴圈，同時保有設定語言的可讀性。Pkl 可輸出為 JSON、YAML、XML 與 Java Properties，作為既有工具的設定生成器而不改動下游。最大優勢是型別驗證：所有欄位都有靜態型別，設定錯誤在生成階段即被捕捉，而非延至執行時期才爆出。支援 VS Code、IntelliJ、Neovim 的語言伺服器整合，並提供套件發佈機制，適合需要跨 dev/staging/prod 環境共享基底設定的中大型工程專案。","tech_application":"**① 在新後端專案中使用 Deno 2 取代 Node.js**\n\n適合對象：需要原生 TypeScript 支援、希望簡化執行環境設定的後端開發者。Deno 2 可直接執行 .ts 檔案，透過 npm: specifier 使用 npm 套件，無需 tsconfig.json 或 ts-node 設定。\n\n```bash\n# 安裝 Deno 2\ncurl -fsSL https://deno.land/install.sh | sh\n\n# 直接執行 TypeScript 入口檔，無需任何前置設定\ndeno run --allow-net main.ts\n```\n\n```typescript\n// main.ts -- 直接使用 npm 套件，無需 tsconfig.json\nimport express from \"npm:express@4\";\n\nconst app = express();\napp.get(\"/\", (_req, res) => res.json({ status: \"ok\" }));\napp.listen(3000, () => console.log(\"Server running on :3000\"));\n```\n\nDeno 2 自動下載並快取 npm 套件，冷啟動速度優異，特別適合 serverless function 場景。\n\n**② GitHub Actions 依賴快取最佳化設定**\n\n適合對象：使用 GitHub Actions 且建置時間超過 2 分鐘的任何規模前後端團隊。透過 actions/setup-node 的內建 cache 選項搭配 npm ci，可將安裝階段從 3 分鐘壓縮至 40 秒。\n\n```yaml\n- name: Setup Node.js with cache\n  uses: actions/setup-node@v4\n  with:\n    node-version: \"22\"\n    cache: \"npm\"\n\n- name: Install dependencies\n  run: npm ci\n\n- name: Run tests\n  run: npm test\n```\n\n若進一步使用 matrix strategy 拆分測試 job 並行執行，整體 CI 時間可壓縮最多 5 倍。","learning_analysis":{"AI / 機器學習":{"summary":"今日重點在 JavaScript 執行環境與 CI/CD 優化，AI 面向無重大新發佈。但 Deno 2 的快速冷啟動特性使其特別適合部署 AI 推論的 serverless function，可大幅降低首次呼叫延遲。","items":["Deno 2 低記憶體占用與快速冷啟動，適合部署 Anthropic SDK 呼叫的 edge function","GitHub Actions 快取優化可縮短 AI 模型建置與測試周期","建議複習：在 Deno Deploy 上部署 Claude API serverless 端點的基本設定","AI 工作負載的 CI/CD 管線同樣受益於快取與平行化策略"]},"雲端與基礎架構":{"summary":"GitHub Actions 快取優化（70-90% 命中率）直接影響 CI/CD 成本，快取命中可節省大量 runner 計費分鐘數；Deno Deploy 在邊緣運算場景的快速冷啟動優勢值得追蹤。","items":["actions/cache 使用雜湊鍵 + restore-keys 組合，可達 70-90% 快取命中率","快取 ~/.npm 或 ~/.pnpm-store 而非 node_modules，確保跨平台相容性","CI 並行化（matrix strategy）可將整體 workflow 時間壓縮最多 5 倍","Deno Deploy 零設定冷啟動特性，適合高彈性、低延遲的雲端邊緣場景"]},"前端開發":{"summary":"Deno 2 全面支援 npm 生態後，前端工具鏈可享有原生 TypeScript 支援、無需 bundler 設定的開發體驗；Bun 在本地安裝速度快 25-30 倍，正被前端工程師廣泛採用為本地開發加速工具。","items":["Deno 2 可直接執行 .ts 檔案，無需 ts-node、tsconfig.json 或額外編譯步驟","Bun 套件安裝比 npm 快 25-30 倍，適合本地開發 DX 優化","Deno 2 的 npm: specifier 讓前端依賴（React、Vue）可直接使用","前端 CI 可利用 actions/setup-node cache 選項大幅縮短依賴安裝時間"]},"後端 / 系統設計":{"summary":"JavaScript 執行環境三分天下格局確立：Bun 主導效能敏感場景，Deno 2 適合安全性優先與 TypeScript 密集的新專案，Node.js 繼續穩守現有生產工作負載。混合策略（本地用 Bun、Serverless 用 Deno、生產用 Node）正成為主流。","items":["Bun 達 52,000 req/sec、Deno 達 29,000 req/sec、Node.js 達 14,000 req/sec（合成基準）","實際含資料庫業務邏輯時，三者差距縮小至 3% 以內，遷移成本需審慎評估","Deno 2 的權限模型（--allow-net、--allow-read）提供更細粒度的安全控制","Pkl 設定語言適合後端跨環境（dev/staging/prod）型別安全設定管理"]},"開發者工具 / DevOps":{"summary":"GitHub Actions 快取優化（70-90% 命中率）與平行化是當前 CI/CD 提速最有效的雙管齊下策略，可將整體 workflow 時間壓縮最多 5 倍。Pkl 設定語言為 YAML/JSON 維護提供型別安全的替代方案，適合複雜多環境設定。","items":["actions/setup-node v4 內建 cache 選項可自動處理 npm/yarn/pnpm 快取","快取鍵設計：hashFiles 結合 restore-keys 後備策略，確保最高命中率","Pkl 可輸出 JSON/YAML/XML，作為現有工具的型別安全設定生成器","建議實測：在現有 CI pipeline 加入 cache 後比較前後執行時間"]}},"sources":[{"title":"Deno 2 vs Node.js vs Bun in 2026: The Complete JavaScript Runtime Comparison","url":"https://dev.to/pockit_tools/deno-2-vs-nodejs-vs-bun-in-2026-the-complete-javascript-runtime-comparison-1elm"},{"title":"The 2026 Runtime Battle: Deno vs. Node.js vs. Bun","url":"https://blog.weskill.org/2026/04/the-2026-runtime-battle-deno-vs-nodejs.html"},{"title":"Deno 2.0 in Production: Six Months of Migration From Node.js and What Actually Changed","url":"https://dev.to/synsun/deno-20-in-production-six-months-of-migration-from-nodejs-and-what-actually-changed-18gj"},{"title":"GitHub Actions Cache Strategy: Speed Up CI/CD Pipeline 5x","url":"https://eastondev.com/blog/en/posts/dev/20260407-github-actions-cache-strategy/"},{"title":"How to Optimize GitHub Actions Performance","url":"https://oneuptime.com/blog/post/2026-02-02-github-actions-performance-optimization/view"},{"title":"Bun Runtime Production Guide 2026: Speed vs Stability","url":"https://byteiota.com/bun-runtime-production-guide-2026-speed-vs-stability/"},{"title":"Apple Pkl: Code Example, Concepts and How to Get Started","url":"https://configu.com/blog/apple-pkl-code-example-concepts-how-to-get-started/"},{"title":"Node and npm Compatibility - Deno Docs","url":"https://docs.deno.com/runtime/fundamentals/node/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
