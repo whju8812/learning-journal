@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-04-27 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260427-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-04-27","session_label":"08:00","tech_content":"**Git 2.54 重大更新：config-based hooks 與 git history 指令**\n\nGit 2.54 於 2026 年 4 月 20 日正式釋出，帶來兩項影響日常工作流的重要改進。首先是 config-based hooks：過去只能把鉤子腳本放進 .git/hooks/ 目錄，2.54 起可以直接在 git config 中指定任意路徑的腳本作為鉤子，讓多人專案共享 hooks 不再需要手動複製檔案，也可透過 user-level config 統一管理全域鉤子。其次是實驗性的 git history 子指令：git history reword 讓你直接開啟編輯器改寫某次 commit 訊息，git history split 則可互動式將單一 commit 拆分為兩個，解決以往必須透過 git rebase -i 才能完成的繁瑣操作。這兩項改進讓版本歷史管理更接近聲明式操作，值得立即升級試用。\n\n**Claude Opus 4.7 進駐 GitHub Copilot：Agentic 編程能力大幅提升**\n\nClaude Opus 4.7 於 2026 年 4 月 16 日正式在 GitHub Copilot 上線，模型在 SWE-bench Verified 上達到 87.6%，相比前代提升 6.8 個百分點，對長鏈推理與多工具呼叫的複雜任務尤為明顯。在 Claude Code 中，預設推理強度從 high 提升至 xhigh，並新增 /ultrareview 指令可同時啟動多個代理進行平行 PR review。視覺能力也擴充至支援 2,576 像素長邊（約 3.75 MP），可直接黏貼 UI 設計截圖讓模型分析並生成程式碼。對開發者的實際意義是：更少的錯誤轉彎重試，更高的任務一次通過率。\n\n**OpenTelemetry：Agent 與 Collector 混合部署的最佳實踐**\n\nOpenTelemetry 提供兩種核心角色：Agent 作為輕量 sidecar 運行於應用旁，負責本地採集 traces、metrics 和 logs；Collector 則作為中央服務，負責聚合、過濾和轉發遙測資料到後端（如 Jaeger、Prometheus、Grafana）。最佳實踐建議採用混合架構：各主機上部署 Agent 保持低延遲採集，再將資料集中送往 Collector 進行批次壓縮與路由。Collector 若成為瓶頸可以水平擴展，Agent 的分散式設計則避免單點故障。選擇架構的關鍵判斷是：如果遙測資料需要跨多個來源聚合，就需要 Collector；若每個服務都有獨立的可觀測性後端，Agent 即可。","tech_application":"**① 使用 Git 2.54 Config-Based Hooks 統一團隊 pre-commit 設定**\n\n適合對象：需要在多個 repo 或多人協作中統一強制 lint 與格式化的後端或全端開發者。過去必須將腳本放到 .git/hooks/ 目錄且每個 clone 都要重設，現在可以透過 git config 指向任意路徑的腳本，寫入 user-level config 讓全域生效。\n\n```bash\n# 升級 Git 至 2.54\nbrew upgrade git\n\n# 建立共享 hooks 目錄\nmkdir -p ~/git-hooks\n\n# 撰寫 pre-commit hook\ncat > ~/git-hooks/pre-commit << HOOKEOF\n#!/bin/sh\nnpx eslint .\nHOOKEOF\nchmod +x ~/git-hooks/pre-commit\n\n# 透過 git config 全域啟用\ngit config --global core.hooksPath ~/git-hooks\n```\n\n完成後所有新 clone 的 repo 都會自動套用此 hook，不需再手動複製腳本。\n\n**② 用 Docker Compose 快速啟動 OpenTelemetry Collector 統一收集遙測**\n\n適合對象：微服務架構的後端工程師，想要整合多服務的 traces 與 metrics 到同一後端。以下為最小可運行的配置：\n\n```yaml\n# docker-compose.yml\nservices:\n  otel-collector:\n    image: otel/opentelemetry-collector-contrib:latest\n    volumes:\n      - ./otel-config.yaml:/etc/otelcol/config.yaml\n    ports:\n      - 4317:4317\n      - 4318:4318\n  prometheus:\n    image: prom/prometheus:latest\n    ports:\n      - 9090:9090\n```\n\n啟動後在應用程式中設定環境變數 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317，即可開始向 Collector 送出遙測資料，由 Collector 統一轉發至 Prometheus。","learning_analysis":{"AI / 機器學習":{"summary":"Claude Opus 4.7 進駐 GitHub Copilot，SWE-bench Verified 達 87.6%，agentic 編程能力大幅提升，代表 AI coding assistant 進入長鏈推理的新時代。","items":["Claude Opus 4.7 在 SWE-bench Verified 達 87.6%，對複雜多工具任務有顯著提升","GitHub Copilot 新增 /ultrareview 多代理平行 PR review 功能","Claude Code 預設推理強度提升至 xhigh，減少錯誤轉彎次數","視覺能力支援 2,576px 長邊，可直接分析 UI 截圖生成程式碼"]},"雲端與基礎架構":{"summary":"OpenTelemetry 在 2026 年成為可觀測性標準，Agent 與 Collector 混合部署架構已是分散式系統的最佳實踐。","items":["OTel Agent 負責本地低延遲採集，Collector 負責跨服務聚合與路由","Collector 支援水平擴展，適合高量遙測資料的生產環境","CNCF 推薦混合部署：Agent 分散採集 + 中央 Collector 統一轉發","Prometheus、Jaeger、Grafana 均有完整 OTel exporter 支援"]},"前端開發":{"summary":"前端工具鏈趨於穩定，AI 輔助前端開發（截圖轉程式碼）能力因 Claude Opus 4.7 視覺升級而顯著提升。","items":["AI 模型可直接解析 UI 截圖並生成對應元件程式碼","GitHub Copilot 在 IDE 中的補全品質與上下文理解能力持續改善","建議複習：CSS container queries 與 Grid subgrid 的實際使用場景","前端工程師可善用 AI 輔助加速原型開發週期"]},"後端 / 系統設計":{"summary":"後端架構建議以 modular monolith 起步，在面臨真實擴展問題時才引入微服務；Circuit Breaker 與 CQRS 是分散式系統中最常用的韌性模式。","items":["Modular monolith 提供 80% 微服務優勢，但只需 20% 的運維成本","CQRS 將讀寫分離，適合讀寫比例差異大的業務場景","Circuit Breaker 模式防止級聯故障，應配合 retry 與 timeout 一起使用","BFF（Backend for Frontend）為不同前端客戶端提供量身訂製的 API 層"]},"開發者工具 / DevOps":{"summary":"Git 2.54 帶來 config-based hooks 與實驗性 git history 指令，讓版本歷史管理更現代化；GitHub Actions 已成為中小型團隊 CI/CD 的首選平台。","items":["Git 2.54 config-based hooks 可透過 git config 統一管理多 repo 的共享 hooks","git history reword/split 簡化互動式 rebase 操作，降低歷史整理門檻","GitHub Actions 對中小型團隊最友善，減少維護 Jenkins 的運維負擔","生產就緒的 CI/CD pipeline 應包含：建置、測試、弱點掃描、分段部署與自動回滾"]}},"sources":[{"title":"Highlights from Git 2.54 - The GitHub Blog","url":"https://github.blog/open-source/git/highlights-from-git-2-54/"},{"title":"Claude Opus 4.7 is generally available - GitHub Changelog","url":"https://github.blog/changelog/2026-04-16-claude-opus-4-7-is-generally-available/"},{"title":"Claude Opus 4.7 in GitHub Copilot shows where agentic coding competition is headed","url":"https://www.the4thpath.com/2026/04/claude-opus-47-in-github-copilot-shows.html"},{"title":"OpenTelemetry Collector vs agent: How to choose the right telemetry approach","url":"https://www.cncf.io/blog/2026/02/02/opentelemetry-collector-vs-agent-how-to-choose-the-right-telemetry-approach/"},{"title":"Backend Architecture Patterns - A Practical Guide for 2026","url":"https://codelit.io/blog/backend-architecture-patterns-guide"},{"title":"Building a Production-Ready CI/CD Pipeline: The Complete 2026 Guide","url":"https://medium.com/@krishnafattepurkar/building-a-production-ready-ci-cd-pipeline-the-complete-2026-guide-b3d6a661ecd8"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
