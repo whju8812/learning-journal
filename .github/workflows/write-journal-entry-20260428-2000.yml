@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-04-28 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260428-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-04-28","session_label":"20:00","tech_content":"**Temporal Durable Execution：讓分散式長流程在崩潰後自動還原**\n\nTemporal 是開源的工作流程協調引擎，以「Durable Execution」為核心：每個步驟都記錄為事件歷史（Event History），若 worker 在執行途中崩潰，Temporal 會在新的 worker 上重播事件歷史並從中斷點繼續執行，完全不需手動實作重試邏輯或狀態機。這解決了分散式系統中最棘手的問題：如何讓包含多步驟的業務流程（如訂單結帳、用戶 onboarding、資料遷移）在任何元件失敗時都能可靠完成。Datadog、Netflix、Snap 等公司已用 Temporal 協調其最關鍵的生產系統。2025 年底發布的 Temporal 2.0 進一步強化 multi-tenant 效能與 Worker Versioning API，讓部署時的工作流程版本管理更加安全，是後端工程師處理複雜長時流程時值得深入研究的選項。\n\n**gh skill：GitHub CLI 讓 AI Agent 技能像 npm 套件一樣可安裝分享**\n\nGitHub 於 4 月 16 日發布 gh skill 命令（公開預覽），讓開發者用類似 npm 或 pip 的方式管理 AI agent 技能（agent skills）。Agent skills 是遵循開放規格的可攜式指令集，包含說明文件、指令稿與資源，可跨 GitHub Copilot、Claude Code、Cursor、Codex 和 Gemini CLI 等多種 agent 主機使用。與 MCP（Model Context Protocol）互補：MCP 提供能力（functions），skills 提供指令（instructions）。透過 gh skill search、gh skill install、gh skill preview 等子命令，開發者可從 GitHub 公開倉庫探索社群貢獻的技能包，或發布自己的技能給團隊共用。這代表 AI agent 工具鏈正走向套件生態系統化，技能的標準化分享機制將加速整個 AI 開發工具圈的複用性。\n\n**DuckDB 1.5：in-process OLAP 引擎新增 VARIANT 型別與全新 WebAssembly Shell**\n\nDuckDB 1.5.0（Variegata，2026 年 3 月）帶來三項值得關注的改進：新增 VARIANT 型別，相較舊有 JSON 型別以文字儲存，VARIANT 採用二進制儲存並內嵌型別資訊，壓縮率與查詢效能均有提升，適合處理 schema 不固定的事件日誌或 API 回應；CLI 全面翻新，加入彩色輸出、動態提示符與分頁器；4 月 13 日發布的 1.5.2 版本重新設計了 WebAssembly shell（shell.duckdb.org），支援在瀏覽器中拖拉上傳本地檔案並直接 SQL 查詢，無需安裝任何工具。DuckDB 的 in-process 架構使其特別適合本地分析、資料管線開發與小規模 OLAP 查詢場景。","tech_application":"**① 用 Temporal Python SDK 建立具備自動恢復能力的多步驟工作流程**\n\n適合對象：需要在微服務或分散式環境中協調多步驟業務流程的後端工程師，要求流程在任何元件失敗後能自動從中斷點恢復。\n\n```bash\n# 安裝 Temporal CLI\nbrew install temporal\n\n# 本地啟動開發伺服器（Web UI 位於 http://localhost:8233）\ntemporal server start-dev\n\n# 安裝 Python SDK\npip install temporalio\n```\n\n```python\nfrom datetime import timedelta\nfrom temporalio import activity, workflow\n\n@activity.defn\nasync def charge_payment(amount: float) -> str:\n    return \"charged \" + str(amount)\n\n@activity.defn\nasync def send_confirmation(order_id: str) -> None:\n    pass\n\n@workflow.defn\nclass OrderWorkflow:\n    @workflow.run\n    async def run(self, order_id: str, amount: float) -> str:\n        result = await workflow.execute_activity(\n            charge_payment, amount,\n            start_to_close_timeout=timedelta(seconds=30)\n        )\n        await workflow.execute_activity(\n            send_confirmation, order_id,\n            start_to_close_timeout=timedelta(seconds=10)\n        )\n        return result\n```\n\n每個 activity 失敗時 Temporal 自動重試，workflow 若 worker 崩潰也會在新 worker 自動恢復，無需手動管理狀態。\n\n**② 使用 gh skill 安裝社群 AI agent 技能並套用至 Claude Code**\n\n適合對象：使用 Claude Code 或其他 AI coding agent 的開發者，想快速套用社群貢獻的技能包（如文件撰寫風格、code review checklist）。\n\n```bash\n# 安裝 GitHub CLI（若尚未安裝）\nbrew install gh && gh auth login\n\n# 搜尋可用技能\ngh skill search documentation\n\n# 安裝前先預覽內容（確認無惡意指令）\ngh skill preview github/awesome-copilot documentation-writer\n\n# 安裝技能至 Claude Code（user 範圍）\ngh skill install github/awesome-copilot documentation-writer --agent claude-code --scope user\n\n# 列出已安裝的技能\ngh skill list --agent claude-code\n```\n\n安裝後技能自動對 Claude Code 生效，在對話中即可引用技能定義的工作方式與偏好設定。","learning_analysis":{"AI / 機器學習":{"summary":"gh skill 命令讓 AI agent 技能走向套件化管理，與 MCP 互補形成完整工具鏈；Temporal 的事件驅動工作流程也被越來越多 AI pipeline 採用，用於協調多步驟 LLM 推理任務。","items":["gh skill 支援 Claude Code、Copilot、Cursor 等主流 agent，代表 AI agent 工具鏈正走向標準化分享","MCP 提供能力（函式調用），agent skills 提供指令（工作方式），兩者組合可建立高度客製化的 AI 工作環境","Temporal 的 durable execution 適合協調多步驟 LLM 推理或 RAG pipeline，確保每個步驟可重試且狀態持久"]},"雲端與基礎架構":{"summary":"Temporal 可自架或使用 Temporal Cloud 全託管，DuckDB 可直接查詢 S3 等雲端儲存的 Parquet 檔案，兩者均降低了基礎架構的複雜度。","items":["Temporal Cloud 提供全託管 namespace，無需自行維運 Temporal server，適合快速起步","DuckDB 可用 SELECT * FROM read_parquet(\"s3://bucket/data/*.parquet\") 直接查詢 S3 資料，不需 Spark 或 Redshift","DuckDB 1.5 的 httpfs 改用 curl 後端，S3 / GCS / Azure Blob 的穩定性與安全性更有保障"]},"前端開發":{"summary":"DuckDB 1.5.2 的全新 WebAssembly shell 讓前端工程師可在瀏覽器中直接 SQL 分析，無需安裝工具；前端框架本週無重大版本更新，推薦複習 Web Workers API。","items":["DuckDB WebAssembly shell（shell.duckdb.org）現支援拖拉上傳本地 CSV 或 Parquet 並直接 SQL 查詢，適合快速資料驗證","Web Workers API：在瀏覽器背景執行 DuckDB WASM 等 CPU 密集任務而不阻塞主執行緒的標準做法","CSS Anchor Positioning 已在主流瀏覽器廣泛支援，可取代 JavaScript 計算 tooltip 或 popover 位置"]},"後端 / 系統設計":{"summary":"Temporal 的 Durable Execution 模型是 Saga pattern 的現代實作，DuckDB in-process 架構提供了輕量級資料分析管線的新思路，兩者均值得後端工程師深入研究。","items":["Temporal workflow 是 saga pattern 的現代實作：每個 activity 可獨立重試，無需手動實作補償邏輯","Temporal Event History 同時作為工作流程的完整審計日誌與崩潰恢復的依據","DuckDB in-process 嵌入應用進程中運行，消除網路延遲，適合本地分析或 sidecar 模式的資料處理","DuckDB VARIANT 型別：二進制儲存、自帶型別資訊，適合處理 schema 不固定的事件日誌或 API 回應"]},"開發者工具 / DevOps":{"summary":"gh skill 命令讓 AI agent 技能管理進入 CLI 生態，可跨 Copilot、Claude Code、Cursor 安裝社群技能包；DuckDB CLI 在 1.5.0 中全面翻新，互動式查詢體驗大幅提升。","items":["gh skill install/search/preview/publish：對應 npm 工作流程的 agent skills 管理，2026 年 4 月 16 日進入公開預覽","安裝前務必執行 gh skill preview 檢查內容，skills 未經 GitHub 驗證，可能含 prompt injection 或惡意指令","DuckDB 1.5 新 CLI：彩色輸出、動態提示符、分頁器，互動式 SQL 查詢體驗全面現代化","DuckDB 1.5.2 WebAssembly shell：瀏覽器中拖拉上傳 CSV 或 Parquet 並直接 SQL 查詢，無需安裝任何工具"]}},"sources":[{"title":"Temporal: The Definitive Guide to Durable Execution","url":"https://temporal.io/blog/what-is-durable-execution"},{"title":"Temporal Workflow Engine: The Reliability Layer Your Distributed System Is Missing [2026]","url":"https://dev.to/kunal_d6a8fea2309e1571ee7/temporal-workflow-engine-the-reliability-layer-your-distributed-system-is-missing-2026-guide-1ia9"},{"title":"Manage agent skills with GitHub CLI - GitHub Changelog","url":"https://github.blog/changelog/2026-04-16-manage-agent-skills-with-github-cli/"},{"title":"gh skill: GitHub CLI Agent Skills Management for Copilot, Claude Code, and Cursor","url":"https://www.bighatgroup.com/blog/gh-skill-github-cli-agent-skills-management/"},{"title":"Announcing DuckDB 1.5.0 Variegata","url":"https://duckdb.org/2026/03/09/announcing-duckdb-150"},{"title":"Announcing DuckDB 1.5.2","url":"https://duckdb.org/2026/04/13/announcing-duckdb-152"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
