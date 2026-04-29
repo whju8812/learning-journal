@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-04-29 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260429-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-04-29","session_label":"20:00","tech_content":"**GitHub Actions 2026 安全路線圖：供應鏈強化與工作流依賴鎖定**\n\nGitHub 近期公布 2026 年 GitHub Actions 安全路線圖，直接回應過去一年 CI/CD 供應鏈攻擊浪潮。2025 年 3 月的 tj-actions/changed-files 事件導致超過 23,000 個 repo 受害，根本原因是 workflow 以可變動的 tag 引用 Action，攻擊者只需竄改 tag 即可注入惡意程式碼。路線圖計畫引入 dependencies: 鎖定區塊，概念類似 Go 的 go.mod + go.sum，以 commit SHA 固定所有直接與傳遞依賴，確保每次執行皆為確定性結果。此外還包含 Layer 7 原生出口防火牆（阻止資料外洩）、範圍化的 Secret（最小權限），以及 OIDC 自訂屬性聲明（4 月已 GA），整體方向是將安全預設值提升至平台層級。\n\n**Netflix Interval-Aware Caching：解決 Apache Druid 重複時序查詢的工程方案**\n\nNetflix 工程部落格揭露一項針對 Apache Druid 的客製化快取架構。Netflix 的 Druid 叢集儲存超過 10 兆筆資料列、每秒接收高達 1,500 萬個事件；一個熱門監控儀表板在每次載入時可觸發多達 64 個 Druid 查詢，滾動時間窗口的重複查詢使叢集負載持續攀升。解法是在 Druid Router 前端攔截查詢，解析查詢結構後將時間序列結果拆分成對齊粒度的時間桶，以 Cassandra 作為後端快取，並對不同年齡的資料採用指數遞增的 TTL。最新資料允許最多 5 秒過期，對每 10 至 30 秒刷新的儀表板完全可接受。這個「查詢攔截 + 結構感知快取 + 時間桶分片」的組合，同樣適用於 ClickHouse 或 TimescaleDB 等時序分析場景。\n\n**OpenTofu v1.10：授權爭議後崛起的開源 Terraform 替代方案**\n\n2023 年 HashiCorp 將 Terraform 授權從 MPL 2.0 改為商業限制的 Business Source License（BSL），促使 Gruntwork、Spacelift、Harness 等 IaC 廠商共同建立 OpenTofu，目前由 Linux Foundation 管理。2026 年 OpenTofu 已推進至 v1.10+，與 Terraform 完整相容，使用相同的 .tf 檔案、provider 和 CLI 工作流，遷移成本基本上只是替換二進位檔案。OpenTofu 在功能上領先 Terraform 的關鍵差異是原生支援 state file 客戶端加密——這是社區長期要求但 Terraform 至今未實作的功能。對擔心授權風險或希望維持 IaC 工具鏈完全開源的工程團隊，OpenTofu 是目前零摩擦的替代選項。","tech_application":"**① 立即提升 GitHub Actions 安全性：將 Action 引用改為 commit SHA 固定**\n\n適合任何使用 GitHub Actions 且有外部 Action 依賴的工程師或 DevOps 團隊。核心原則：tag 是可變動的（攻擊者可覆蓋），commit SHA 是不可變動的。\n\n```yaml\n# 高風險做法：使用可變動的 tag\n- uses: actions/checkout@v4\n\n# 安全做法：固定到具體 commit SHA（加注釋標記版本方便日後更新）\n- uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2\n```\n\n查詢 commit SHA：在 GitHub repo Tags 頁面點擊版號旁的 commit 短 hash，再展開取得完整 40 字元 SHA。搭配 Dependabot 自動偵測新版本，可在安全與可維護性之間取得平衡。\n\n**② 從 Terraform 遷移到 OpenTofu：零摩擦切換現有 IaC 專案**\n\n適合已有 Terraform codebase 但擔心 BSL 授權限制、或希望使用完全開源工具鏈的 DevOps 工程師。對絕大多數基於 Terraform 1.5.x 的專案，替換二進位後直接執行即可。\n\n```bash\n# macOS 安裝\nbrew install opentofu\n\n# Linux 安裝（官方腳本）\ncurl --proto=https --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh | sh\n\n# 遷移現有 Terraform 專案（.tf 檔案無需修改）\ncd your-terraform-project\ntofu init\ntofu plan\ntofu apply\n```\n\n驗證遷移成功：執行 tofu state list，確認所有資源均與原先 terraform state list 輸出一致。","learning_analysis":{"AI / 機器學習":{"summary":"本次 session 聚焦後端與 DevOps 工具面，AI/ML 方向無重大新發布。Netflix 近期發表的 LLM-as-a-Judge 論文展示如何以 LLM 評估節目摘要品質，是將語言模型嵌入生產評估管道的實戰案例，值得關注 AI 品質評估方法論的工程師參考。","items":["Netflix LLM-as-a-Judge：使用大型語言模型評估節目概要的吸引力與準確性，取代成本昂貴的人工標注","LLM 評估三種主要方法：人工標注（黃金標準）、規則式評分（快速但僵化）、LLM-as-a-Judge（在精確與速度間取得平衡）","n8n 在 2026 年整合 OpenAI、Hugging Face、Google Gemini，提供 500 個連接器，可快速搭建 AI 代理工作流","AI 代理在工作流自動化的主流應用：客戶支援自動回覆、行銷個人化外展、內部 Ops 任務自動路由"]},"雲端與基礎架構":{"summary":"OpenTofu v1.10 持續鞏固其作為 Terraform 開源替代方案的地位，state file 客戶端加密是關鍵差異功能。對需要完全開源 IaC 工具鏈的團隊而言，遷移成本幾乎為零。","items":["OpenTofu v1.10+ 與 Terraform 1.5.x 完整相容，支援相同 .tf 檔案、provider、CLI 命令（init/plan/apply/destroy）","OpenTofu 獨家功能：state file 客戶端加密，Terraform 至今仍未提供此功能","遷移成本極低：只需替換二進位（terraform 換成 tofu），現有 .tf 檔案、provider、backend 設定無需修改","2026 年 IaC 主流選擇：OpenTofu（完全開源）、Terraform（商業授權）、Pulumi（多語言）、AWS CDK（AWS 原生）"]},"前端開發":{"summary":"前端方向今日無重大工具發布，生態系持續圍繞 AI 輔助開發與效能優化演進。推薦複習 Core Web Vitals 的 INP（Interaction to Next Paint）指標，它在 2024 年取代 FID 成為正式指標，直接影響 Google 搜尋排名。","items":["INP（Interaction to Next Paint）目標值需低於 200ms，超過 500ms 為 Poor，2024 年起納入 Core Web Vitals 正式指標","降低 INP 的實用策略：拆分長任務（Long Tasks）、使用 scheduler.yield() 讓主執行緒喘息、減少主執行緒 JavaScript 執行時間","2026 年前端工具鏈趨勢：Vite 5 + Rolldown 進入穩定期，Next.js App Router 繼續主導 React SSR 生態","AI 輔助前端開發：Cursor 3 Design Mode 支援從 Figma 直接生成 React 元件，加速 UI 實作效率"]},"後端 / 系統設計":{"summary":"Netflix 的 Interval-Aware Caching 方案是本次 session 最值得後端工程師深入研究的實戰案例：查詢攔截 + 結構感知快取 + 時間桶分片的架構組合，有效解決時序分析資料庫的重複查詢問題。","items":["Netflix Interval-Aware Caching 核心設計：攔截 Druid 查詢、以查詢結構（排除時間區間）為 cache key、Cassandra 作後端儲存","時間桶快取策略：最近資料桶 TTL 5 秒、歷史資料桶 TTL 無限期，指數遞增 TTL 平衡新鮮度與快取命中率","Apache Druid 適用場景：事件流實時分析、儀表板低延遲查詢，底層使用列式儲存 + Bitmap 索引","負快取（Negative Cache）設計：對空結果的時間桶也進行快取，避免快取穿透造成 Druid 負載浪湧"]},"開發者工具 / DevOps":{"summary":"GitHub Actions 2026 安全路線圖帶來系統性的 CI/CD 供應鏈強化——依賴鎖定、出口防火牆、範圍化 Secret、OIDC 增強——搭配 OpenTofu 讓 IaC 工具鏈完全開源，是今日 DevOps 最值得關注的兩個方向。","items":["GitHub Actions 2026 路線圖：dependencies: 鎖定區塊（類似 go.sum）固定 Action SHA，防止可變 tag 供應鏈攻擊","Layer 7 原生出口防火牆：在 GitHub-hosted runner 層級阻止未授權出口流量，從源頭防止資料外洩","立即可行的 Actions 安全強化：將 uses: action@tag 全部改為 uses: action@commitSHA，並附版本注釋方便追蹤","OpenTofu 遷移一行指令：brew install opentofu，之後 tofu init/plan/apply 完全相容現有 Terraform 工作流"]}},"sources":[{"title":"What Is Coming to our GitHub Actions 2026 security roadmap - The GitHub Blog","url":"https://github.blog/news-insights/product-news/whats-coming-to-our-github-actions-2026-security-roadmap/"},{"title":"Complete Guide to GitHub Actions 2026 Security Roadmap - DEV Community","url":"https://dev.to/x4nent/complete-guide-to-github-actions-2026-security-roadmap-dependency-locking-native-egress-5aap"},{"title":"Stop Answering the Same Question Twice: Interval-Aware Caching for Druid at Netflix Scale","url":"https://netflixtechblog.com/stop-answering-the-same-question-twice-interval-aware-caching-for-druid-at-netflix-scale-22fadc9b840e"},{"title":"OpenTofu: The Open-Source Alternative to Terraform - Spacelift","url":"https://spacelift.io/blog/what-is-opentofu"},{"title":"Hardening GitHub Actions: Lessons from Recent Attacks - Wiz Blog","url":"https://www.wiz.io/blog/github-actions-security-guide"},{"title":"n8n Guide 2026: Features & Workflow Automation Deep Dive - HatchWorks","url":"https://hatchworks.com/blog/ai-agents/n8n-guide/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
