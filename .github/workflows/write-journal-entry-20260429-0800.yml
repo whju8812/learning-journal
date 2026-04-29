@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-04-29 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260429-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-04-29","session_label":"08:00","tech_content":"**Google TPU 8t 與 TPU 8i：專用 AI 硬體的分化策略**\n\nGoogle 在 2026 Google Cloud Next（4 月 22 日）正式發表第八代 TPU，首次將單一晶片分拆為兩款專用晶片：TPU 8t（訓練導向）與 TPU 8i（推論導向）。TPU 8t 專為大規模模型訓練設計，單個 Superpod 包含 9,600 顆晶片、提供 121 exaflops 算力與 2 PB 共享記憶體；TPU 8i 則針對低延遲推論與 RL 任務，新增的 Collectives Acceleration Engine（CAE）可將 on-chip collective latency 降低最多 5 倍，對 MoE 模型與 chain-of-thought 推論特別關鍵。此次硬體分化的核心洞察是訓練與推論對記憶體頻寬和延遲的需求根本不同，通用 GPU 越來越難兼顧兩者，Google 的做法預示 AI 基礎設施正式進入按需求定制硬體的時代。\n\n**Cursor 3：Agents Window 讓並行 AI 代理成為標準開發工作流**\n\nCursor 3 於 4 月 2 日發布，核心亮點是 Agents Window——一個可同時管理多個 AI 代理的獨立工作空間。代理可在本機、Git worktree、遠端 SSH 及雲端環境中並行運作，從行動端、桌面端、Slack、GitHub、Linear 等渠道觸發的代理全部匯聚於同一側欄。Cursor 會自動為並行代理建立和管理 git worktree，工程師可先讓代理在雲端持續執行，需要時切回本機測試再推回雲端，多代理並行並選最佳結果的工作流對處理多功能並行開發與跨 repo 任務尤其實用。\n\n**llms.txt：讓 AI 助理正確理解網站內容的開放標準**\n\nllms.txt 是由 Answer.AI 提出、目前已被 Anthropic 與 Cursor 等平台採納的開放標準，是一個放在網站根目錄的 Markdown 格式純文字檔案，告訴 AI 爬蟲與 LLM 工具「這個網站是什麼、最重要的文件在哪裡」。其作用類似 robots.txt，但目標是優化 AI 助理的文件召回精準度而非傳統搜尋引擎索引。對擁有 API 文件或 SaaS 產品文件的工程師而言，在網站根目錄加入 llms.txt 是目前提升 AI 助理引用準確率最低成本的實作方式，且不影響 Google 的現有索引行為。","tech_application":"**① 用 Cursor 3 Agents Window 並行處理多個功能分支**\n\nCursor 3 的 Agents Window 適合需要同時推進多個 feature 的全端或後端工程師。在 Agents Window 中為每個功能分支啟動獨立代理，Cursor 自動管理 git worktree 避免衝突：\n\n```bash\n# Cursor 3 自動建立 worktree；若需手動建立可執行：\ngit worktree add ../feat-auth feature/auth\ngit worktree add ../feat-api  feature/api\n# 在 Cursor Agents Window 側欄選擇對應 worktree 啟動各自代理\n# 代理完成後各自開 PR，從中選最佳結果合入 main\n```\n\n適合情境：多功能並行開發、跨 repo 任務分派、或同一問題需要比較多個 AI 方案時。\n\n**② 為技術文件網站加入 llms.txt 提升 AI 可見度**\n\n適合維護 API 文件、開發者工具官網或 SaaS 產品文件的工程師。在網站根目錄建立 llms.txt：\n\n```markdown\n# My Project Docs\n\n> A developer tool that helps you do X.\n\n## Docs\n\n- [Getting Started](/docs/getting-started): Installation and first steps\n- [API Reference](/docs/api): Full API documentation\n- [Examples](/docs/examples): Real-world code examples\n\n## Optional\n\n- [Changelog](/changelog): Recent updates\n```\n\n部署後可使用 Claude 或 ChatGPT 詢問網站相關問題，驗證 AI 助理能否正確引用文件內容。建議每季更新，連結控制在 20 至 50 個以確保品質。","learning_analysis":{"AI / 機器學習":{"summary":"Google 第八代 TPU 雙晶片策略揭示 AI 基礎設施走向硬體專用化；生物啟發的遺忘曲線記憶衰減機制（YourMemory）為 AI 代理長期記憶管理提供新思路。","items":["Google TPU 8t 針對大規模訓練、TPU 8i 針對低延遲推論，首次將兩種需求徹底分開設計","TPU 8i 的 Collectives Acceleration Engine（CAE）將 on-chip collective latency 降低最多 5 倍","YourMemory 以 Ebbinghaus 遺忘曲線實作 AI 代理記憶衰減，達成 52% recall 並優於 Mem0","LLM 記憶管理三層架構：短期緩衝（Buffer）、工作記憶（Scratchpad）、長期向量資料庫"]},"雲端與基礎架構":{"summary":"Google Cloud Next 2026 展示 AI 雲端基礎設施新方向：專用訓練與推論晶片搭配 Virgo Network，單一資料中心可串連高達 134,000 顆 TPU。","items":["TPU 8t Superpod 在單一資料中心可連接 134,000 顆 TPU，跨資料中心可達百萬顆規模","Virgo Network 新型資料中心網路架構搭配第四代液冷，支撐超大規模 AI 訓練叢集","PyTorch 對 TPU 原生支援進入預覽版，降低從 GPU 遷移到 TPU 的技術門檻","AI Hypercomputer 軟體棧整合 JAX、PyTorch、vLLM、XLA 與 Pathways"]},"前端開發":{"summary":"前端生態今日無重大發布，目前圍繞 AI 輔助開發工具整合與效能優化持續演進。推薦複習 BFF（Backend for Frontend）模式，理解如何為不同前端用戶端設計專屬後端接口。","items":["BFF（Backend for Frontend）模式：為 Web 與 Mobile 分別建立專屬 API 閘道，避免通用 API 臃腫","Cursor 3 Design Mode 支援視覺稿轉程式碼，加速前端 UI 實作效率","llms.txt 標準有助於前端文件網站提升 AI 助理的文件召回精準度","2026 前端工具鏈趨勢：AI 自動生成樣板程式碼、CLI 自動化重複性工作流"]},"後端 / 系統設計":{"summary":"後端架構討論集中在模組化單體作為微服務的務實替代方案，以及 Circuit Breaker 和 Pub/Sub 等可靠性模式的標準化應用。","items":["模組化單體（Modular Monolith）：保有微服務邊界但部署為單一單元，降低 80% 運維複雜度","BFF 模式：不同前端用戶端擁有專屬後端服務，避免 API 版本衝突與耦合","Circuit Breaker 模式：偵測下游服務故障並暫時中斷請求，防止分散式系統級聯失敗","Publish-Subscribe（Pub/Sub）：2026 年 Node.js 分散式架構的標準非同步通訊模式"]},"開發者工具 / DevOps":{"summary":"Cursor 3 的 Agents Window 讓並行 AI 代理成為主流開發工作流；GitHub Actions 持續主導 CI/CD 領域，Copilot Code Review 計費整合也於本月正式宣布。","items":["Cursor 3 Agents Window：單一介面管理本機、SSH、雲端多個並行 AI 代理","GitHub Copilot Code Review 將於 2026 年 6 月 1 日起消耗 GitHub Actions 分鐘數","生產級 CI/CD 最佳實踐：commit 後依序經過建置、測試、漏洞掃描、staging、整合測試、漸進式生產部署","llms.txt 可幫助 AI 代理在自動化工作流中準確定位技術文件，減少幻覺輸出"]}},"sources":[{"title":"TPU 8t and TPU 8i technical deep dive | Google Cloud Blog","url":"https://cloud.google.com/blog/products/compute/tpu-8t-and-tpu-8i-technical-deep-dive"},{"title":"Cursor 3 Introduces Agent-First Interface - InfoQ","url":"https://www.infoq.com/news/2026/04/cursor-3-agent-first-interface/"},{"title":"Meet the new Cursor | Cursor Blog","url":"https://cursor.com/blog/cursor-3"},{"title":"Show HN: AI memory with biological decay (52% recall) | Hacker News","url":"https://news.ycombinator.com/item?id=47914367"},{"title":"YourMemory: Agentic AI memory with Ebbinghaus forgetting curve | GitHub","url":"https://github.com/sachitrafa/YourMemory"},{"title":"The /llms.txt file standard | llmstxt.org","url":"https://llmstxt.org/"},{"title":"Show HN: I built a free LLMs.txt generator | Hacker News","url":"https://news.ycombinator.com/item?id=47901865"},{"title":"GitHub Copilot code review billing notice | GitHub Changelog","url":"https://github.blog/changelog/2026-04-27-github-copilot-code-review-will-start-consuming-github-actions-minutes-on-june-1-2026/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
