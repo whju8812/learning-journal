@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-04-30 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260430-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-04-30","session_label":"20:00","tech_content":"**n8n + Ollama：零成本自架 AI 工作流自動化堆疊**\n\nn8n 是以 Sustainable Use License 授權的開源工作流自動化平台，擁有 1,400+ 整合節點，在 2026 年已從 Zapier 替代品演進為可串接 LLM 呼叫、向量資料庫查詢與工具型 Agent 的視覺化 AI 工作流引擎。傳統 SaaS 平台（如 Zapier、Make）需將工作流與憑證傳至第三方雲端，而自架 n8n 搭配 Ollama 本地推論可在 2 核心 / 4GB RAM VPS 上支援 50+ 個活躍工作流，同時保持完整的資料主權。n8n 已內建 OpenAI、Anthropic、Google AI 等主流模型的憑證類型，切換本地 Ollama 模型只需修改節點的 URL 設定，是需要控制成本與資料安全的工程團隊在 2026 年的首選自動化工具。\n\n**CVE-2026-3854：git push 引發的 RCE 漏洞與輸入驗證教訓**\n\n2026 年 3 月，Wiz 研究團隊揭露 CVSS 8.7 分的嚴重漏洞 CVE-2026-3854：任何具有 repository push 權限的使用者，只需一個精心構造的 git push --push-option 指令即可在 GitHub 伺服器上達成任意程式碼執行（RCE）。根本原因是 GitHub 內部服務在處理用戶提供的 push option 值時未進行充分字元清理，允許攻擊者透過注入額外 metadata 欄位欺騙下游服務。GitHub.com 在回報後約 75 分鐘內完成修補，但截至 2026 年 4 月底，仍有 88% 的自架 GitHub Enterprise Server 實例未完成更新。此漏洞示範了邊界輸入驗證的重要性：任何來自外部的資料（push options、HTTP headers、query string）在傳入內部服務前都必須進行嚴格清理，是後端與 DevOps 工程師的基本安全素養。\n\n**Pulumi 整合 Terraform HCL：IaC 工具選擇成為可逆決策**\n\n2026 年 1 月，Pulumi 宣布原生支援 Terraform HCL 執行，讓工程師在不轉換程式碼的情況下將現有 HCL 程式碼庫交由 Pulumi 引擎管理，並使用 Pulumi Cloud 作為 state 後端。這意味著平台團隊可用 TypeScript 或 Go 撰寫複雜的 Pulumi 組件，讓其他團隊繼續用熟悉的 HCL 模組消費，兩種語言可在同一工作流中共存。Pulumi 的 pulumi convert 指令可自動將 HCL 轉換為目標語言，或透過 pulumi import --from terraform 匯入現有 .tfstate 而無需重寫程式碼。在 HashiCorp 授權轉換後，OpenTofu（CNCF 孵化中）與 Pulumi 並列成為企業評估的首要開源 IaC 替代方案，IaC 工具選擇不再是不可逆的架構決策。","tech_application":"**① 使用 Docker Compose 部署 n8n + Ollama 自架 AI 工作流平台**\n\n適合想建立私有 AI 自動化平台的後端或 DevOps 工程師，特別是需要整合 webhook、排程任務與 LLM 呼叫且不希望資料傳至第三方的場景。\n\n```bash\n# 拉取官方 Self-hosted AI Starter Kit\ngit clone https://github.com/n8n-io/self-hosted-ai-starter-kit\ncd self-hosted-ai-starter-kit\n\n# 設定環境變數\ncp .env.example .env\n# 編輯 .env，填入 N8N_ENCRYPTION_KEY 與 N8N_USER_MANAGEMENT_JWT_SECRET\n\n# 啟動服務（n8n + Ollama + Qdrant + PostgreSQL）\ndocker compose up -d\n\n# 開啟 n8n 介面\nopen http://localhost:5678\n```\n\n在 n8n 的 AI Agent 節點中，將 Ollama Base URL 設為 http://host.docker.internal:11434，即可串接本地 LLM，免付 OpenAI API 費用。\n\n**② 使用 pulumi convert 評估 Terraform 程式碼庫遷移至 Pulumi**\n\n適合已有 Terraform/OpenTofu HCL 程式碼庫、想評估 Pulumi 多語言 IaC 但不想立即重寫既有程式碼的 DevOps 或平台工程師。\n\n```bash\n# 安裝 Pulumi CLI\ncurl -fsSL https://get.pulumi.com | sh\n\n# 在現有 Terraform 專案目錄中自動轉換為 TypeScript\npulumi convert --from terraform --language typescript --out pulumi-infra/\n\n# 或直接匯入現有 tfstate，不重寫任何程式碼\npulumi stack init my-stack\npulumi import --from terraform ./terraform.tfstate\n\n# 預覽變更（等同於 terraform plan）\ncd pulumi-infra && pulumi preview\n```\n\npulumi convert 轉換成功後，可在 pulumi-infra/ 目錄檢視自動產生的 TypeScript 程式碼，逐步驗證邏輯是否符合預期，再決定是否完整遷移。","learning_analysis":{"AI / 機器學習":{"summary":"n8n + Ollama 的自架 AI 工作流堆疊讓開發者無需 OpenAI API 費用即可建立 RAG pipeline 與 AI Agent，本地推論在自動化場景的可用性在 2026 年已達生產就緒水準。","items":["n8n AI 節點支援 OpenAI、Anthropic、Ollama 等多種 LLM 後端，可在同一工作流中混用不同提供者","Self-hosted AI Starter Kit（n8n + Ollama + Qdrant）提供 RAG pipeline 的完整本地堆疊，一條指令啟動","本地 LLM 工作流適用場景：企業內部知識庫問答、合規要求資料不出境的 AI 分類任務","複習推薦：RAG 的 chunking 與 embedding 策略，是優化本地 AI 工作流品質的關鍵"]},"雲端與基礎架構":{"summary":"Pulumi 原生支援 Terraform HCL 使 IaC 工具選擇成為可逆決策，OpenTofu 在 CNCF 生態持續成熟，2026 年企業 IaC 策略更具靈活性與遷移彈性。","items":["Pulumi 2026 年 1 月宣布原生支援 HCL 執行，pulumi convert 可自動轉換既有 Terraform 程式碼庫","OpenTofu 是 CNCF 孵化中的 Terraform 開源替代方案，與 HashiCorp 授權轉換前的語法完全相容","Pulumi Cloud 可作為 OpenTofu/Terraform state 後端，無需自行維護 state 並發鎖定機制","IaC 選擇建議：小型團隊維持 HCL 用 OpenTofu，需型別安全的平台工程場景選 Pulumi TypeScript"]},"前端開發":{"summary":"n8n 的視覺化工作流介面降低了前端開發者串接 API 與自動化任務的門檻，2026 年前端工程師越來越需要理解 webhook 與事件驅動流程等後端概念。","items":["n8n 視覺化編輯器讓前端開發者在不撰寫後端程式碼的情況下串接 webhook、REST API 與 LLM 服務","現代前端工具鏈持續優化：Biome 在程式碼格式化性能上顯著超越 Prettier+ESLint 組合","複習推薦：瀏覽器原生 Fetch API 的 AbortController 與 Request/Response 型別，是理解現代 HTTP 串接的基礎"]},"後端 / 系統設計":{"summary":"CVE-2026-3854 示範了邊界輸入驗證在後端安全的根本重要性，任何外部資料未經清理直接傳入內部服務是高風險設計缺陷，值得每位後端工程師深入理解。","items":["CVE-2026-3854：GitHub 的 push option 值未充分清理導致 RCE，CVSS 8.7，任何具有 push 權限的用戶均可觸發","後端安全核心原則：永遠不信任來自外部的輸入——用戶資料、HTTP headers、query string、push options 均需嚴格清理","推送選項（push options）等 metadata 通道是常被忽略的注入攻擊向量，需納入威脅模型","88% 自架 GHES 實例仍未修補，自架服務的 patch 管理策略是後端安全不可忽視的課題"]},"開發者工具 / DevOps":{"summary":"CVE-2026-3854 的低修補率（12%）提醒 DevOps 工程師建立自動化 patch 管理流程；n8n self-hosted 部署模式示範了現代 DevOps 工具自主可控的實踐路徑。","items":["GHES 需手動升級至修補版本（3.14.25、3.15.20、3.16.16、3.17.13），建議立即檢查並執行升級","自架服務安全最佳實踐：訂閱 GitHub Security Advisories，將安全更新納入 Renovate 或 Dependabot 自動化流程","n8n Community Edition 在自架場景實質免費，2 核 4GB VPS 可支援 50+ 活躍工作流，是輕量 DevOps 自動化平台的理想選擇","DevOps 安全加固路徑：OIDC 短期令牌替換靜態 secret → push option 輸入過濾 → 定期自動化安全更新"]}},"sources":[{"title":"How to Self-Host n8n with Docker — AI Workflow Automation Guide 2026 - DEV Community","url":"https://dev.to/jangwook_kim_e31e7291ad98/how-to-self-host-n8n-with-docker-ai-workflow-automation-guide-2026-3lec"},{"title":"Self-Hosted AI in 2026: Automating Your Linux Workflow with n8n and Ollama - DEV Community","url":"https://dev.to/lyraalishaikh/self-hosted-ai-in-2026-automating-your-linux-workflow-with-n8n-and-ollama-4934"},{"title":"GitHub - n8n-io/self-hosted-ai-starter-kit","url":"https://github.com/n8n-io/self-hosted-ai-starter-kit"},{"title":"CVE-2026-3854 GitHub RCE Vulnerability Breakdown - Wiz Blog","url":"https://www.wiz.io/blog/github-rce-vulnerability-cve-2026-3854"},{"title":"Securing the git push pipeline: Responding to a critical RCE vulnerability - GitHub Blog","url":"https://github.blog/security/securing-the-git-push-pipeline-responding-to-a-critical-remote-code-execution-vulnerability/"},{"title":"88% of self-hosted GitHub servers exposed to RCE (CVE-2026-3854) - Help Net Security","url":"https://www.helpnetsecurity.com/2026/04/29/cve-2026-3854-github-rce-vulnerability/"},{"title":"Pulumi Adds Native Support for Terraform and HCL - InfoQ","url":"https://www.infoq.com/news/2026/01/pulumi-adds-terraform-hcl/"},{"title":"IaC in 2026: Terraform/OpenTofu vs Pulumi - peerobyte","url":"https://peerobyte.com/blog/infrastructure-as-code-in-2026-terraform-opentofu-vs-pulumi-and-common-mistakes/"},{"title":"OpenTofu Official Website","url":"https://opentofu.org/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
