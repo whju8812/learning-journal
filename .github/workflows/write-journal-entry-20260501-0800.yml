@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-01 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260501-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-01","session_label":"08:00","tech_content":"**YourMemory：仿生記憶衰退的 AI Agent 記憶管理層**\n\nYourMemory 是一個基於 MCP（Model Context Protocol）協議的開源記憶伺服器，它將艾賓浩斯遺忘曲線（Ebbinghaus Forgetting Curve）引入 AI Agent 的上下文管理，解決長期專案中的「Context Rot」問題。傳統 AI Agent 在同一專案工作一段時間後，早期的設計決策會持續堆積在上下文視窗中，導致 Agent 開始忽略重要的歷史資訊。YourMemory 使用衰退公式 strength = importance x e^(-λ x days) x (1 + recall_count x 0.2) 讓記憶根據重要性和存取頻率自然老化，高重要度記憶半衰期可長達一年，低重要度記憶在數天後淡出。在 LoCoMo 基準測試上，YourMemory 的召回率較 Mem0 高出 16 個百分點，並可減少 84% 的 token 浪費，對長期維護 AI 工作流的開發者極具實用價值。\n\n**Plain Framework：為 Agentic 開發時代重新設計的全端 Python 框架**\n\nPlain 是 Django 的衍生框架，由 PullApprove 工程團隊打造，設計哲學是「同時為人類開發者和 AI Agent 設計」。不同於傳統框架只考慮人類使用者，Plain 在每個組件中內嵌 Agent 可讀的規則（rules）、說明文件（docs）、技能（skills）與 CLI 工具，使 AI 編程助手能夠準確生成符合框架慣例的程式碼。框架提供第一方支援的認證（plain.auth）、ORM（plain.postgres）、背景工作（plain.jobs）、REST API（plain.api）與電子郵件（plain.email）等整合組件，並採取「捨棄向後相容性以快速迭代」的策略。對於希望在 AI 輔助開發環境中快速建立全端應用的工程師，Plain 提供了一個比 Django 更輕量、更具一致性的現代選擇。\n\n**Ollama 2026 本地 LLM 基礎設施與 n8n AI 工作流自動化**\n\nOllama 在 2026 年成為本地 AI 推論的標準基礎設施：最新版本新增多模態模型支援（視覺加文字）、Web 搜尋整合，以及 Windows ARM64 的原生建置，消除先前的 x86 模擬效能損耗。量化後的 8B 參數模型在 8GB RAM 的筆記型電腦即可流暢執行，高階設備可達每秒逾 1,200 token 的推論速度，且每 token 成本為零。與此同時，n8n 持續進化為 AI 工作流自動化的核心平台，其內建 AI Agent 節點支援多種記憶模式，可直接對接 Ollama 本地模型或 Claude、OpenAI 等雲端 API，適合工程師快速建立包含 AI 推論的端對端自動化流程而無需撰寫大量程式碼。","tech_application":"**① YourMemory MCP Server — 為 AI Agent 加入生物性遺忘機制**\n\n適合使用 Claude Code 或其他支援 MCP 協議開發環境的工程師。當 AI 輔助開發的專案規模較大、跨 session 記憶容易出現 context rot 問題時，YourMemory 提供結構化的記憶衰退管理，安裝後無需 Docker 或外部資料庫，支援 Python 3.11 至 3.14。\n\n```bash\npip install yourmemory\npython -m yourmemory.server\n```\n\n在 Claude Code 的 ~/.claude/settings.json 中加入以下設定即可整合：\n\n```json\n{\n  \"mcpServers\": {\n    \"yourmemory\": {\n      \"command\": \"python\",\n      \"args\": [\"-m\", \"yourmemory.server\"]\n    }\n  }\n}\n```\n\n啟用後可透過 store_memory、recall_memory、update_memory 三個工具管理跨 session 的專案記憶，重要度高的決策記憶可保留數月，過時的討論則自動淡出。\n\n**② n8n 自架 AI 工作流 — Docker 快速上手**\n\n適合需要串接多個服務的後端工程師或技術產品負責人。n8n 提供視覺化節點編輯器，可將 AI 推論、資料庫操作、API 呼叫串接成自動化流程，不需撰寫大量程式碼。\n\n```bash\ndocker run -d --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n n8nio/n8n\n```\n\n啟動後開啟瀏覽器前往 http://localhost:5678，在 Workflow 中新增 AI Agent 節點，設定 Memory 類型（建議 Window Memory 保留最近 10 輪對話），再連接 Ollama 本地模型或 Claude API 作為推論後端，最後串接 HTTP Request、Postgres 或 Slack 節點完成端對端自動化。","learning_analysis":{"AI / 機器學習":{"summary":"AI Agent 記憶管理技術進入新階段，YourMemory 以艾賓浩斯遺忘曲線解決 context rot 問題，Ollama 則讓本地多模態 LLM 推論成為標準配備。","items":["YourMemory MCP Server：基於艾賓浩斯遺忘曲線的 AI Agent 記憶衰退機制","Ollama 2026 新功能：多模態支援、Web 搜尋整合、Windows ARM64 原生建置","本地 8B 模型量化部署：Q4_K_M 量化讓 8GB RAM 裝置可流暢執行推論"]},"雲端與基礎架構":{"summary":"本地推論基礎設施逐漸成熟，Ollama 成為本地 LLM 部署的標準 CLI，n8n 可透過 Docker 快速自架，降低對外部雲端服務的依賴。","items":["Ollama 作為本地 LLM 標準 runtime，支援跨平台部署（macOS、Linux、Windows ARM64）","n8n Docker 自架：單一指令完成 AI 工作流自動化平台部署","本地推論成本優化：相較雲端 API 每 token 成本歸零"]},"前端開發":{"summary":"今日前端領域無重大技術更新。建議複習 Web Components 標準，這是瀏覽器原生的元件封裝機制，適合在不依賴框架的情況下建立可重用的 UI 元件。","items":["Web Components 基礎：Custom Elements、Shadow DOM、HTML Templates","Plain Framework 的前端整合策略：後端渲染搭配最小化 JS","n8n 工作流觸發 Webhook：可作為前端表單提交後的自動化處理後端"]},"後端 / 系統設計":{"summary":"Plain Framework 展示了以 Django 為基礎重新設計全端框架的可行路徑，強調第一方組件整合與 Agent 友善設計；Modular Monolith 模式持續被推薦為中小型團隊的架構起點。","items":["Plain Framework：Django 衍生框架，內嵌 AI Agent 可讀文件與 CLI，支援第一方認證、ORM、背景工作","Modular Monolith 模式：保持單體部署，以模組邊界隔離業務邏輯，兼顧開發效率與系統可維護性","背景工作設計：plain.jobs 等框架提供的排程與非同步任務處理組件"]},"開發者工具 / DevOps":{"summary":"n8n 成為 2026 年 AI 工作流自動化的核心平台，搭配 Ollama 可建立完全本地化的 AI 自動化堆疊；GitHub Copilot 程式碼審查功能將於 6 月起消耗 Actions 分鐘數，需調整使用策略。","items":["n8n AI Agent 節點：支援 Window Memory、Buffer Memory、Vector Store Memory，可對接 Ollama 或雲端 LLM","GitHub Copilot 代碼審查：2026-06-01 起開始消耗 GitHub Actions 分鐘數，建議及早評估用量","YourMemory 作為 MCP Server：與 Claude Code 整合實現跨 session 記憶持久化"]}},"sources":[{"title":"YourMemory: AI memory with biological decay (Show HN)","url":"https://news.ycombinator.com/item?id=47914367"},{"title":"GitHub - sachitrafa/YourMemory: Agentic AI memory with Ebbinghaus forgetting curve","url":"https://github.com/sachitrafa/YourMemory"},{"title":"Show HN: Plain - The full-stack Python framework designed for humans and agents","url":"https://news.ycombinator.com/item?id=47768750"},{"title":"Plain Framework - The Python web framework for building apps","url":"https://plainframework.com/"},{"title":"Building AI Agent Workflows in n8n: The 2026 Complete Guide","url":"https://dev.to/kr8thor/building-ai-agent-workflows-in-n8n-the-2026-complete-guide-494"},{"title":"How to Run LLMs Locally with Ollama in 11 Steps [2026]","url":"https://tech-insider.org/ollama-tutorial-run-llm-locally-2026/"},{"title":"GitHub Copilot code review will start consuming GitHub Actions minutes on June 1, 2026","url":"https://github.blog/changelog/2026-04-27-github-copilot-code-review-will-start-consuming-github-actions-minutes-on-june-1-2026/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
