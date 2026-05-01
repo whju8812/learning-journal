@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-01 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260501-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-01","session_label":"20:00","tech_content":"**Bun：Anthropic 收購的 JavaScript 全能執行環境**\n\nBun 是以 JavaScriptCore 引擎為基礎的現代 JavaScript 執行環境，2025 年 12 月被 Anthropic 收購後正式成為 Claude Code CLI 的核心基礎設施。Bun 的設計目標是「以單一可執行檔涵蓋執行環境、套件管理器、打包工具與測試執行器」，消除傳統 Node.js 生態系中多工具並存的配置複雜度。效能表現上，Bun 啟動時間僅約 5ms（Node.js 約 50ms），HTTP 吞吐量達每秒約 15 萬請求（Node.js 約 5 萬），已達到企業級生產穩定性，Netflix 與 Spotify 均在實際環境中採用。Anthropic 收購 Bun 的戰略意義在於掌控完整的 AI 編程工具鏈，Claude Code 以 Bun 可執行檔形式出貨至數百萬使用者，確保工具行為在 macOS、Linux 與 Windows 三大平台保持一致，這也驗證了 Bun 已從高效能實驗性工具晉升為可信賴的生產級基礎設施。\n\n**Biome：用 Rust 取代 ESLint + Prettier 的前端工具鏈革命**\n\nBiome 是一個以 Rust 撰寫的統一前端程式碼品質工具，在 2026 年正式進入主流，能以單一設定檔（biome.json）和單一指令（biome check）同時完成 lint 檢查與程式碼格式化，取代 ESLint 加 Prettier 的雙工具組合。效能差距十分顯著：對 10,000 個檔案執行 lint，ESLint 需要 45.2 秒而 Biome 僅需 0.8 秒；格式化同等數量的檔案，Prettier 需 12.1 秒而 Biome 只需 0.3 秒。2026 年最新版本 v2.3 已提供超過 423 條 lint 規則，並新增類型感知 lint 功能。Biome 提供遷移工具（biome migrate eslint 與 biome migrate prettier），可自動讀取現有設定並轉換，對追求更快 CI 回饋循環的前端團隊而言是值得立即評估的工具。\n\n**Temporal：解決分散式工作流程可靠性的持久執行引擎**\n\nTemporal 是一個「持久執行（Durable Execution）」平台，核心價值是讓開發者用普通程式碼撰寫業務邏輯，由平台自動處理失敗重試、狀態恢復與分散式事務一致性，免除手動管理 dead letter queue、補償邏輯或冪等性控制的複雜度。傳統微服務架構在跨服務事務時面臨「部分失敗」的難題，例如訂單建立成功但付款失敗時如何保證資料一致性。Temporal 使用 Saga 模式，在任何步驟失敗時以相反順序執行補償 Activities，確保無需分散式兩階段提交（2PC）即可完成一致性回滾。官方支援 Go、Java、TypeScript、Python、.NET 與 PHP 六種語言，可自架（Docker Compose 三行指令啟動）或使用 Temporal Cloud 管理服務，適合需要處理複雜長時間執行業務流程的後端工程師。","tech_application":"**① Bun 快速入門：以更輕量的執行環境取代 Node.js**\n\n適合使用 Node.js 開發後端 API 或工具腳本的工程師。Bun 與 Node.js API 高度相容，多數現有的 Express 或 Hono 應用可直接切換，無需修改程式碼，且安裝套件的速度約快 20 倍。\n\n```bash\n# 安裝 Bun（macOS / Linux）\ncurl -fsSL https://bun.sh/install | bash\n\n# 在新專案中建立 HTTP 伺服器\nbun init -y\n```\n\n在專案目錄中建立 server.ts：\n\n```typescript\nconst server = Bun.serve({\n  port: 3000,\n  fetch(req) {\n    return new Response(\"Hello from Bun!\");\n  },\n});\nconsole.log(`Listening on http://localhost:${server.port}`);\n```\n\n執行 `bun server.ts` 即可啟動，無需額外的 TypeScript 編譯步驟，並可將 `bun install` 取代現有專案中的 `npm install` 立即感受速度差異。\n\n**② Biome 遷移指南：三個指令告別 ESLint + Prettier**\n\n適合任何有 TypeScript 或 JavaScript 專案的前端工程師，特別是對 CI lint 時間不滿意的團隊。Biome 的設定遷移工具可自動讀取現有 .eslintrc 和 .prettierrc，大幅降低切換成本。\n\n```bash\n# 在現有專案中安裝 Biome\nnpm install --save-dev --save-exact @biomejs/biome\n\n# 初始化 biome.json 設定檔\nnpx @biomejs/biome init\n\n# 一鍵遷移現有 ESLint + Prettier 設定\nnpx @biomejs/biome migrate eslint --write\nnpx @biomejs/biome migrate prettier --write\n\n# 執行統一的 lint + format 檢查\nnpx @biomejs/biome check .\n\n# 自動修正可修復的問題\nnpx @biomejs/biome check --write .\n```\n\n遷移完成後可移除 eslint、prettier 及相關設定檔，CI pipeline 中只需執行單一指令，lint 時間可縮短至原本的 5% 以下。","learning_analysis":{"AI / 機器學習":{"summary":"Anthropic 收購 Bun 代表 AI 公司開始垂直整合開發工具鏈，AI coding 工具的執行效能成為競爭維度。今日趨勢是從模型能力轉向工具鏈整合，控制更多基礎設施以確保一致的使用者體驗。","items":["Anthropic 收購 Bun：AI coding 平台垂直整合執行環境基礎設施的新趨勢","Claude Code 以 Bun 可執行檔形式出貨：跨平台 AI 工具的部署一致性策略","AI coding 工具效能競爭：啟動速度與吞吐量成為 AI 開發工具的核心指標"]},"雲端與基礎架構":{"summary":"Temporal 提供可自架的持久執行引擎，是 AWS Step Functions 或手建重試邏輯的開源替代方案；Bun 的輕量可執行檔特性有助於縮短容器冷啟動時間，降低 serverless 環境的延遲。","items":["Temporal 自架部署：Docker Compose 三行指令啟動完整工作流程編排服務","Temporal Cloud：全託管持久執行服務，適合不想自維護 Temporal Server 的團隊","Bun 輕量執行環境：縮短容器冷啟動時間，適合 serverless 與 Edge 部署場景"]},"前端開發":{"summary":"Biome v2.3 正式成為前端工具鏈中 ESLint + Prettier 的成熟替代方案，10-20 倍的效能提升使 CI 反饋循環大幅縮短；Bun 的內建打包工具也簡化了前端建置流程。","items":["Biome v2.3：423+ lint 規則，新增類型感知 lint，單一工具取代 ESLint + Prettier","biome migrate eslint / prettier：自動遷移指令降低既有專案切換成本","Bun bundler：內建打包工具，可取代 webpack 或 esbuild，無需額外安裝"]},"後端 / 系統設計":{"summary":"Temporal 的持久執行模型解決了分散式系統中最棘手的部分失敗問題，Saga 模式讓跨服務事務一致性不再依賴 2PC；Bun 的高吞吐量（每秒 15 萬請求）使其適合 API gateway 或 Edge worker 場景。","items":["Temporal Saga 模式：跨微服務分散式事務一致性，無需兩階段提交（2PC）","Temporal Activities 與 Workflows：以普通程式碼撰寫業務邏輯，平台自動處理失敗重試與狀態恢復","Bun HTTP 效能：每秒約 15 萬請求吞吐量，適合高並發 API 服務與邊緣計算場景"]},"開發者工具 / DevOps":{"summary":"Biome 單指令涵蓋 lint + format 使 CI pipeline 設定更簡潔；Bun 的內建測試執行器相容 Jest 語法；Temporal 的 Web UI 儀表板簡化了複雜工作流程的可觀測性。","items":["Biome CI 整合：單指令取代 eslint + prettier 兩個 CI 步驟，執行時間縮短 95%","Bun test runner：內建 Jest 相容測試框架，bun test 指令無需安裝額外套件","Temporal Web UI：內建工作流程執行狀態儀表板，支援暫停、重播與除錯長時間執行的業務流程"]}},"sources":[{"title":"Anthropic acquires Bun as Claude Code reaches $1B milestone","url":"https://www.anthropic.com/news/anthropic-acquires-bun-as-claude-code-reaches-usd1b-milestone"},{"title":"Bun is joining Anthropic - Bun Blog","url":"https://bun.com/blog/bun-joins-anthropic"},{"title":"Bun JavaScript Runtime Complete Guide 2026","url":"https://calmops.com/programming/javascript/bun-javascript-runtime-2026/"},{"title":"Biome: The ESLint and Prettier Killer? Complete Migration Guide for 2026","url":"https://pockit.tools/blog/biome-eslint-prettier-migration-guide/"},{"title":"Biome Replaces ESLint in 2026: 10-20x Faster Linting","url":"https://byteiota.com/biome-replaces-eslint-in-2026-10-20x-faster-linting/"},{"title":"Temporal Workflow Engine: The Reliability Layer Your Distributed System Is Missing","url":"https://dev.to/kunal_d6a8fea2309e1571ee7/temporal-workflow-engine-the-reliability-layer-your-distributed-system-is-missing-2026-guide-1ia9"},{"title":"The Definitive Guide to Durable Execution | Temporal","url":"https://temporal.io/blog/what-is-durable-execution"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
