@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-02 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260502-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-02","session_label":"20:00","tech_content":"**Vue 3.6 Vapor Mode：跳過 Virtual DOM 的前端性能革命**\n\nVue 3.6 的 Vapor Mode 代表了前端框架發展的一個重大轉折：編譯器不再生成 Virtual DOM diff 算法所需的 VNode 樹，而是直接產生精準的 DOM 操作指令。它解決的核心工程問題是 Virtual DOM 的運行時開銷——VDOM diff、VNode 物件的記憶體分配，以及 reconciliation 過程中的 GC 壓力。根據 2026 年的基準測試，啟用 Vapor Mode 後 DOM 操作效能提升達 36%，初始載入的 JS 體積可縮減三分之二，記憶體用量近乎減半。Vapor Mode 的啟用幾乎不需要修改業務程式碼：只需在 `<script setup>` 中加上 `vapor` 關鍵字，模板語法與 Composition API 完全相容；對於漸進式採用的場景，`vaporInteropPlugin` 允許 Vapor 元件與傳統 VDOM 元件並存於同一 Vue 應用中。\n\n**RAG 生產環境最佳實踐：Hybrid Retrieval 與 GraphRAG**\n\n2026 年的行業數據揭示一個關鍵事實：RAG 系統 73% 的失敗發生在檢索（retrieval）階段，而非生成（generation）階段。主流解法是混合檢索（Hybrid Retrieval）：同時執行語義向量搜尋與 BM25 關鍵字搜尋，再以 RRF（Reciprocal Rank Fusion）合併排名；進階方案 GraphRAG 將知識圖譜與向量搜尋結合，透過實體關係的結構化推理將搜尋精準度提升至 99%。評估指標方面，RAGAS 提供四個維度：Faithfulness（目標 >0.9）、Answer Relevancy（>0.85）、Context Precision（>0.8）；語意快取對 cosine similarity 超過 0.95 的查詢直接回傳快取結果，可降低 LLM 呼叫量 30-50%。RAG 已從概念驗證走向企業生產環境，核心工程課題是 retrieval 品質，而非 LLM 參數調優。\n\n**OpenTelemetry 分散式追蹤：雲原生可觀測性的事實標準**\n\nOpenTelemetry（OTel）已在 2026 年成為 CNCF 第二活躍專案（僅次於 Kubernetes），成為雲原生可觀測性的事實標準。它解決的問題是傳統監控工具各有私有 API、遷移成本極高的困境：OTel 定義統一的 traces、metrics、logs 規範，讓工程師一次 instrument、多處輸出——無論後端是 Jaeger、Zipkin、Datadog 或 Grafana Tempo，埋點程式碼都不需更改。2026 年 4 月 Red Hat 發表的技術文章更將 OTel 擴展到 AI agentic workflow 的追蹤場景：每個 LLM 呼叫、tool call、agent 步驟都可作為獨立 span 被追蹤，對除錯多步驟 AI 工作流的延遲與錯誤路徑非常實用。起步建議先使用自動 instrumentation 建立基準可見度，再針對關鍵業務路徑加入手動 span。","tech_application":"**① Vue 3.6 Vapor Mode 漸進式啟用實戰**\n\n適合已使用 Vue 3.x 加 Composition API 的前端開發者，特別是需要改善初始載入速度、減少 JS bundle 體積的場景。\n\n```bash\nnpm install vue@^3.6.0\n```\n\n```vue\n<script setup vapor>\nimport { ref } from \"vue\"\nconst count = ref(0)\n</script>\n<template>\n  <button @click=\"count++\">已點擊 {{ count }} 次</button>\n</template>\n```\n\n```js\nimport { createVaporApp } from \"vue/vapor\"\nimport App from \"./App.vue\"\ncreateVaporApp(App).mount(\"#app\")\n```\n\n若要在現有 app 中漸進遷移，引入 `vaporInteropPlugin` 後可讓 Vapor 元件與傳統元件並存，不需一次全部改寫。\n\n**② 為 Node.js 服務加入 OpenTelemetry 自動 instrumentation**\n\n適合後端或 DevOps 工程師，在微服務架構下需要跨服務追蹤請求路徑、找出延遲瓶頸的場景。\n\n```bash\nnpm install @opentelemetry/sdk-node @opentelemetry/auto-instrumentations-node @opentelemetry/exporter-trace-otlp-http\n```\n\n```js\nconst { NodeSDK } = require(\"@opentelemetry/sdk-node\")\nconst { getNodeAutoInstrumentations } = require(\"@opentelemetry/auto-instrumentations-node\")\nconst { OTLPTraceExporter } = require(\"@opentelemetry/exporter-trace-otlp-http\")\n\nconst sdk = new NodeSDK({\n  traceExporter: new OTLPTraceExporter({\n    url: \"http://localhost:4318/v1/traces\",\n  }),\n  instrumentations: [getNodeAutoInstrumentations()],\n})\n\nsdk.start()\n```\n\n```bash\nnode -r ./tracing.js app.js\n```\n\n自動 instrumentation 會追蹤 HTTP 請求、資料庫查詢（pg、mysql2、redis 等）與常見框架（Express、Fastify），無需手動埋點即可立即獲得跨服務的 trace 視圖。","learning_analysis":{"AI / 機器學習":{"summary":"RAG 在 2026 年進入生產成熟期，73% 的 RAG 失敗源於 retrieval 品質不足，混合檢索（Hybrid Retrieval）與 GraphRAG 是解決方案核心；RAGAS 評估框架成為衡量 RAG 系統的業界標準工具。","items":["混合檢索（BM25 + 語義向量 + RRF 合併排名）是 2026 年 RAG 生產環境的預設推薦架構","GraphRAG 結合知識圖譜與向量搜尋，透過實體關係推理可將搜尋精準度提升至 99%","語意快取對 cosine similarity 超過 0.95 的查詢直接回傳快取結果，可降低 LLM 呼叫量 30-50%"]},"雲端與基礎架構":{"summary":"WebAssembly（WASM）加 WASI 在 2026 年正式進入邊緣運算主流：零冷啟動、記憶體用量僅 Node.js 的十分之一，Docker 已原生支援 Wasm 工作負載，Shopify 以此處理超過 10 萬 TPS 的邊緣邏輯。","items":["WASI 提供能力型安全模型，限制 Wasm 模組對系統資源的存取，特別適合邊緣多租戶場景","Docker Engine 已內建 Wasm runtime 支援，可像容器一樣以相同工具鏈部署 Wasm 應用","Wasm 二進位檔小、即時啟動、沙箱隔離，是邊緣 AI 推論與低延遲資料處理的理想選擇"]},"前端開發":{"summary":"Vue 3.6 Vapor Mode（跳過 Virtual DOM）與 React 19.2 編譯器是 2026 年前端框架最值得關注的性能突破：前者帶來 36% DOM 操作提升與 JS bundle 縮減，後者自動消除 25-40% 不必要的 re-render，兩者都能在不大幅改動業務程式碼的前提下落地。","items":["Vue 3.6 Vapor Mode：僅需在 <script setup> 加 vapor 關鍵字，DOM 操作效能提升 36%，初始 JS 縮減三分之二","React 19.2 Compiler 自動處理 useMemo/useCallback，消除 25-40% 不必要 re-render","React 19 Server Components 生產穩定，遷移至 app/ 目錄後 JS bundle 平均縮減 40%"]},"後端 / 系統設計":{"summary":"2026 年後端系統設計的新課題是 AI-native 架構整合：RAG pipeline 的 retrieval 優化、LLM 呼叫的可觀測性追蹤，以及如何以工程化方式評估 AI 系統品質，成為後端工程師的必備技能。","items":["RAGAS 提供 Faithfulness、Answer Relevancy、Context Precision 三大評估指標，讓 RAG 品質可量測","OpenTelemetry spans 可追蹤每個 LLM 呼叫與 tool call，為 AI 工作流提供工程層級的可見度","RAG 失敗 73% 在 retrieval 階段：先優化 chunking 策略與 embedding 品質，再考慮 LLM 升級"]},"開發者工具 / DevOps":{"summary":"OpenTelemetry 在 2026 年成為 CNCF 第二活躍專案，其 vendor-neutral 設計讓工程師一次 instrument 即可輸出至任意後端，已擴展至 AI agentic workflow 追蹤場景，是現代微服務與 AI 系統不可或缺的可觀測性基礎建設。","items":["OTel Node.js 自動 instrumentation 一次安裝即可追蹤 HTTP、資料庫（pg/mysql2/redis）與 Express/Fastify","支援輸出至 Jaeger、Zipkin、Datadog、Grafana Tempo，vendor-neutral 設計無廠商鎖定","Red Hat 2026 年 4 月提出以 OTel 追蹤 AI agentic workflow，每個 agent 步驟均可作為獨立 span 監控"]}},"sources":[{"title":"Vue 3.6 Vapor Mode: Components Without the Virtual DOM","url":"https://escuelavue.es/en/devtips/vue-3-vapor-mode-without-virtual-dom"},{"title":"RAG in 2026: A Practical Blueprint for Retrieval-Augmented Generation","url":"https://dev.to/suraj_khaitan_f893c243958/-rag-in-2026-a-practical-blueprint-for-retrieval-augmented-generation-16pp"},{"title":"Distributed Tracing with OpenTelemetry in Go: A Practical Guide","url":"https://dev.to/young_gao/distributed-tracing-with-opentelemetry-a-practical-guide-for-go-services-pep"},{"title":"Distributed tracing for agentic workflows with OpenTelemetry","url":"https://developers.redhat.com/articles/2026/04/06/distributed-tracing-agentic-workflows-opentelemetry"},{"title":"JavaScript Framework Trends in 2026","url":"https://www.nucamp.co/blog/javascript-framework-trends-in-2026-what-s-new-in-react-next.js-vue-angular-and-svelte"},{"title":"React 19 Server Components: Production Patterns","url":"https://dev.to/vikrant_bagal_afae3e25ca7/react-19-server-components-production-patterns-for-high-performance-apps-in-2026-3278"},{"title":"OpenTelemetry Observability 2026 Complete Guide","url":"https://calmops.com/devops/opentelemetry-observability-2026-complete-guide/"},{"title":"RAG Production Guide 2026","url":"https://lushbinary.com/blog/rag-retrieval-augmented-generation-production-guide/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
