@@ -1,0 +1,152 @@
+import json
+
+tech_content = """**GitHub Copilot CLI 正式上線：Terminal 原生 AI 代理工作流**
+
+GitHub Copilot CLI 於 2026 年 2 月正式推出 GA 版本，從單純的命令列建議工具躍升為完整的 agentic 開發環境。它解決的核心問題是：過去 AI 輔助開發僅存在於 IDE 之中，工程師在 terminal 端仍需手動逐步操作；Copilot CLI 讓你不離開終端機就能完成規劃、編輯、測試的完整循環。透過 Shift+Tab 切換 plan mode 可先審視執行計畫，autopilot mode 則讓 AI 自主完成後續步驟。最值得關注的新功能是背景代理（以 & 前綴委派任務至雲端 runner），工程師可在 AI 執行耗時任務的同時繼續其他工作。Copilot CLI 內建 MCP 伺服器支援，可切換 Claude Opus 4.6、Sonnet 4.6、GPT-5.3-Codex 等主流模型，跨 session 的 repository memory 讓 AI 記住你的 codebase 慣例。
+
+**OpenTofu vs Pulumi：2026 年 IaC 工具選型關鍵差異**
+
+基礎設施即程式碼（IaC）在 2026 年形成兩大主流路線：OpenTofu（Terraform 的開源 fork，延續 HCL 語法）與 Pulumi（支援 Python、Go、TypeScript 等真正的程式語言）。兩者解決的問題相同，但設計哲學截然不同——OpenTofu 對習慣宣告式語法的 Ops 團隊是穩健選擇；Pulumi 最大優勢在於可測試性：可用 pytest、Jest 等標準測試框架對 Pulumi 程式撰寫單元測試，不需要實際佈建資源就能驗證邏輯。許多工程團隊採取混合策略：OpenTofu 負責網路、IAM 等基礎層，Pulumi 處理應用程式層的動態基礎設施。
+
+**Cursor 3.0 Background Agents：AI 編輯器進入自主執行時代**
+
+Cursor 於 2026 年推出 v3.0，引入 Background Agents 與 Cloud Agents，使 AI 可在背景自主執行跨檔案的多步驟任務，從「智慧補全工具」蛻變為「可委派任務的開發夥伴」。Composer 2.0 大幅改善整個 codebase 的理解能力，搭配 Plan Mode 讓開發者在 AI 執行前先審視變更計畫並建立 Checkpoint 供回滾。目前 85% 的開發者已使用某種 AI 工具（平均每天節省 30-60 分鐘），但只有 29-46% 完全信任 AI 輸出——這正是 Plan Mode 與程式碼審查整合設計成為現代 AI 工具標配的原因。"""
+
+tech_application = """**① 使用 GitHub Copilot CLI 在 Terminal 中執行背景代理任務**
+
+適合後端工程師或全端開發者，在需要重構模組、撰寫測試或處理多檔案變更時，透過背景代理讓 AI 在雲端執行任務，自己同時繼續其他工作。
+
+```bash
+# 安裝（擇一）
+npm install -g @github/copilot-cli
+# 或 macOS
+brew install github/tap/gh-copilot
+
+# 完成 GitHub 認證
+gh auth login
+
+# 委派任務至雲端背景代理（& 前綴）
+& refactor the auth module to use JWT and add unit tests
+
+# 查看並切換背景任務進度
+/resume
+```
+
+進入 plan mode 先審視執行計畫：按 Shift+Tab 切換至 plan mode，確認後再按 Shift+Tab 進入 autopilot 模式自動執行。
+
+**② 用 Pulumi（Python）建立可測試的 AWS S3 基礎設施**
+
+適合熟悉 Python 的後端或 DevOps 工程師，特別是需要依不同環境動態產生多組配置，或想對 IaC 程式碼撰寫單元測試的場景。
+
+```bash
+# 安裝 Pulumi CLI
+curl -fsSL https://get.pulumi.com | sh
+
+# 建立新的 AWS Python 專案
+pulumi new aws-python
+```
+
+```python
+# __main__.py
+import pulumi
+import pulumi_aws as aws
+
+bucket = aws.s3.Bucket(
+    "my-bucket",
+    website=aws.s3.BucketWebsiteArgs(
+        index_document="index.html"
+    )
+)
+
+pulumi.export("bucket_name", bucket.id)
+```
+
+```bash
+# 預覽變更（不實際佈建資源）
+pulumi preview
+
+# 確認後執行部署
+pulumi up
+```"""
+
+learning_analysis = {
+    "AI / 機器學習": {
+        "summary": "GitHub Copilot CLI GA 與 Cursor 3.0 Background Agents 標誌著 AI coding 工具正式進入 agentic 時代，AI 不再只是建議者，而是可以自主規劃並執行任務的代理人。",
+        "items": [
+            "GitHub Copilot CLI 支援多模型切換（Claude Opus 4.6、Sonnet 4.6、GPT-5.3-Codex、Gemini 3 Pro）並具備跨 session 的 repository memory",
+            "Cursor 3.0 引入 Background Agents，AI 可在背景自主完成跨檔案多步驟任務，並以 Checkpoint 機制支援回滾",
+            "85% 開發者已使用 AI 工具，但信任度僅 29-46%，Plan Mode 成為現代 AI 工具設計的必備功能"
+        ]
+    },
+    "雲端與基礎架構": {
+        "summary": "IaC 工具在 2026 年形成 OpenTofu（HCL 宣告式）與 Pulumi（程式語言驅動）兩大路線，Pulumi 的可測試性優勢讓它在開發者密集的團隊中快速普及。",
+        "items": [
+            "OpenTofu 是 Terraform 的開源 fork，適合 Ops 團隊以宣告式語法管理基礎設施",
+            "Pulumi 支援 Python/Go/TypeScript，可用 pytest/Jest 對 IaC 程式碼撰寫單元測試，不需實際佈建資源",
+            "混合策略：OpenTofu 管理網路/IAM 基礎層，Pulumi 處理應用程式層的動態配置"
+        ]
+    },
+    "前端開發": {
+        "summary": "AI-first 編輯器（Cursor 3.0）已成為前端開發工作流的重要組成，VS Code 仍佔 75% 以上市占率，插件生態持續主導前端開發環境。",
+        "items": [
+            "Cursor 3.0 的 Composer 2.0 改善整個 codebase 理解能力，對前端多檔案重構特別有用",
+            "VS Code 市占率超過 75%，搭配 Copilot 插件仍是最多前端工程師的首選工作流",
+            "AI 輔助工具平均每天節省 30-60 分鐘，在前端樣板程式碼與 CSS 生成上效果最顯著"
+        ]
+    },
+    "後端 / 系統設計": {
+        "summary": "2026 年後端架構主流是 Modular Monolith（中小型服務最佳起點）與 Microservices（成熟後再拆分），Circuit Breaker 與 Pub/Sub 是分散式系統必備模式。",
+        "items": [
+            "Modular Monolith 提供 80% 微服務優點，僅需 20% 運維成本，是中小型後端最佳起點",
+            "Circuit Breaker pattern 防止級聯故障，在分散式環境與微服務架構中不可或缺",
+            "Pub/Sub 模式讓服務解耦、易擴展，是現代微服務非同步通訊的標準做法"
+        ]
+    },
+    "開發者工具 / DevOps": {
+        "summary": "GitHub Actions 已成為 CI/CD 事實標準，GitHub Copilot CLI GA 帶來 terminal-native agentic 開發體驗；Pulumi 讓 IaC 可測試性大幅提升，是 DevOps 工具鏈的重要演進。",
+        "items": [
+            "GitHub Copilot CLI GA：背景代理、plan/autopilot mode、MCP 伺服器支援，徹底改變 terminal 工作流",
+            "Pulumi 支援用相同 CI/CD pipeline 同時測試和部署應用程式與基礎設施程式碼",
+            "GitHub Actions 仍是最廣泛使用的 CI/CD 平台，與 Copilot CLI 整合後自動化能力再提升"
+        ]
+    }
+}
+
+sources = [
+    {"title": "GitHub Copilot CLI is now generally available", "url": "https://github.blog/changelog/2026-02-25-github-copilot-cli-is-now-generally-available/"},
+    {"title": "GitHub Copilot CLI Practical Guide 2026", "url": "https://smartscope.blog/en/generative-ai/github-copilot/github-copilot-cli-practical-guide-2026/"},
+    {"title": "IaC in 2026: Terraform/OpenTofu vs Pulumi", "url": "https://peerobyte.com/blog/infrastructure-as-code-in-2026-terraform-opentofu-vs-pulumi-and-common-mistakes/"},
+    {"title": "OpenTofu vs Pulumi: Choosing the Right IaC Tool", "url": "https://oneuptime.com/blog/post/2026-03-20-opentofu-vs-pulumi/view"},
+    {"title": "Meet the new Cursor 3.0", "url": "https://cursor.com/blog/cursor-3"},
+    {"title": "Backend Architecture Patterns Guide 2026", "url": "https://codelit.io/blog/backend-architecture-patterns-guide"},
+    {"title": "AI Developer Productivity Stack 2026", "url": "https://iterathon.tech/blog/ai-developer-productivity-stack-2026-complete-toolchain-guide"}
+]
+
+data = {
+    "entry_date": "2026-05-02",
+    "session_label": "08:00",
+    "tech_content": tech_content.strip(),
+    "tech_application": tech_application.strip(),
+    "learning_analysis": learning_analysis,
+    "sources": sources
+}
+
+# Write pretty JSON for inspection
+with open("draft.json", "w", encoding="utf-8") as f:
+    json.dump(data, f, ensure_ascii=False, indent=2)
+
+# Write single-line JSON for workflow
+single_line = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
+
+# Check for single quotes
+if "'" in single_line:
+    print("ERROR: single quote found in JSON!")
+else:
+    print("OK: no single quotes in JSON")
+
+print(f"JSON length: {len(single_line)} chars")
+
+with open("single_line.json", "w", encoding="utf-8") as f:
+    f.write(single_line)
+
+print("Done. Files written: draft.json, single_line.json")
