@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-03 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260503-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-03","session_label":"20:00","tech_content":"**Temporal.io：分散式系統的「持久化執行」基礎設施**\n\nTemporal 解決的核心工程問題是分散式系統中多步驟工作流在中途失敗後的可靠恢復。傳統方案依賴 Saga 模式，需手動撰寫每個步驟的補償邏輯；Temporal 採用事件溯源（Event Sourcing），將每個工作流步驟的執行記錄持久化到 Event History，Worker 崩潰後新 Worker 會從歷史自動重播，從斷點繼續執行，業務邏輯完全不感知底層失敗。2026 年 Temporal 官方 SDK 支援 Go、Java、TypeScript、Python 與 .NET，適合需要跨服務、執行時間超過單一 HTTP 請求週期、或需要精確一次性語義的場景，例如電商訂單處理、用戶 onboarding 流程、以及跨多個 API 的支付邏輯。Durable Execution 模式在 2026 年正成為分散式後端設計的主流範式，Temporal 的 Replay 2026 技術大會已成為該領域最重要的年度聚焦點。\n\n**Playwright：End-to-End 瀏覽器測試的 2026 事實標準**\n\nPlaywright 是 Microsoft 開源的 E2E 瀏覽器自動化框架，在 2026 年已確立為前端測試的首選工具，核心優勢是解決 Selenium 時代最痛的問題：非同步等待造成的 flaky test。Playwright 對每個操作內建 auto-wait 機制，斷言自動重試直到條件成立，消除測試工程師手動插入 sleep 的需求。API 設計採用角色導向選擇器（getByRole、getByLabel），讓測試邏輯與 UI 實作解耦，前端改版後測試不容易崩潰。單一 API 同時支援 Chromium、Firefox、WebKit 三大引擎，搭配 GitHub Actions 可在 CI 中自動執行並產出 HTML 格式的可視化測試報告。BrowserStack 的 2026 最佳實踐指南強調：測試隔離性（每個測試有獨立的 storage state）與用戶行為導向選擇器是維護成本最低的長期策略。\n\n**Dify：開源 LLM 應用的 RAG 與 Agent 整合平台**\n\nDify 是 GitHub Star 超過 13.8 萬的開源 LLM 應用構建平台，定位是讓工程師在視覺化畫布上組裝 AI 工作流，從原型到生產不需切換工具。核心優勢在於 RAG Pipeline 的整合完整度：文件上傳後自動切分、嵌入向量化、建立索引，前端直接查詢，不需手動串接 LangChain 各個元件。Dify 支援 100 多個 LLM 供應商（包含 OpenAI、Mistral、Llama 本地模型），Agent 節點可設定 tool use 與 memory，整體偏向生產就緒（production-ready）而非實驗性質。透過 Docker Compose 可完全自主部署，適合有資料主權需求的企業建立內部 AI 助理，是 2026 年企業 AI 應用落地速度最快的開源方案之一。","tech_application":"**① 用 Temporal 建立可靠的多步驟訂單處理 Workflow**\n\n適合後端工程師或系統架構師，處理跨多個服務、部分失敗需自動重試的業務邏輯，例如電商下單後的支付扣款與庫存扣減三步驟連動。\n\n```bash\ndocker run --rm -p 7233:7233 temporalio/auto-setup:latest\n```\n\n搭配 TypeScript SDK 定義 Workflow（Workflow function 內不可直接呼叫外部 API，須透過 Activity 包裝）：\n\n```typescript\nimport { proxyActivities } from \"@temporalio/workflow\";\nconst { chargePayment, deductInventory } = proxyActivities({\n  startToCloseTimeout: \"30s\",\n});\nexport async function processOrder(orderId: string): Promise<void> {\n  await chargePayment(orderId);\n  await deductInventory(orderId);\n}\n```\n\nWorker 崩潰時 Temporal 會在新 Worker 上自動從 chargePayment 後繼續，不會重複扣款。\n\n**② 用 Playwright 建立 CI 友好的 E2E 測試套件**\n\n適合前端或全棧工程師，特別是想取代 Cypress 或 Selenium 並讓測試在 GitHub Actions 中穩定執行的團隊。\n\n```bash\nnpm init playwright@latest\nnpx playwright test\n```\n\n使用角色導向選擇器撰寫可維護的登入測試：\n\n```typescript\nimport { test, expect } from \"@playwright/test\";\n\ntest(\"submit login form\", async ({ page }) => {\n  await page.goto(\"http://localhost:3000\");\n  await page.getByLabel(\"Email\").fill(\"user@example.com\");\n  await page.getByLabel(\"Password\").fill(\"secret\");\n  await page.getByRole(\"button\", { name: \"Login\" }).click();\n  await expect(page.getByRole(\"heading\", { name: \"Dashboard\" })).toBeVisible();\n});\n```\n\n在 playwright.config.ts 中設定 reporter 為 html 並將 workers 在 CI 環境設為 1，推送後 GitHub Actions 自動執行並產出可視化測試報告。","learning_analysis":{"AI / 機器學習":{"summary":"Dify 作為生產就緒的開源 LLM 應用平台，整合 RAG Pipeline、多 Agent 與 100+ 模型供應商，是 2026 年自主部署 AI 應用最快的切入點，值得關注其 RAG 索引策略與 Agent 工具呼叫設計模式。","items":["Dify 整合視覺化 Workflow 構建、完整 RAG Pipeline 與多 Agent 執行，定位為生產就緒 LLM 平台","支援 100+ LLM 供應商，包含 OpenAI、Mistral 及 Ollama 本地模型","Docker Compose 一鍵自主部署，適合有資料主權需求的企業","RAG 流程：上傳文件後自動切分、向量化、建立索引、直接查詢，無需手動串接元件"]},"雲端與基礎架構":{"summary":"Temporal 代表分散式系統可靠性設計的新範式：將持久化執行能力從應用層移至基礎設施層，讓業務邏輯程式碼專注於流程本身，不再手動處理重試、補償與狀態追蹤。","items":["Temporal Durable Execution：工作流步驟持久化為 Event History，Worker 崩潰後自動從斷點重播","適用場景：跨服務多步驟流程、執行時間超過單次請求週期、需要精確一次性語義","官方 SDK 涵蓋 Go、Java、TypeScript、Python、.NET 五種語言","Workflow function 需保持確定性：禁止使用 Date.now()、Math.random()、直接 API 呼叫"]},"前端開發":{"summary":"Playwright 已取代 Selenium 成為 2026 年 E2E 測試的事實標準，auto-wait 機制與角色導向選擇器解決了測試不穩定與維護成本高的核心痛點，是前端工程師現在就應該導入的測試工具。","items":["Playwright auto-wait：每個操作前自動等待元素可互動，消除手動 sleep 需求","角色導向選擇器（getByRole、getByLabel）讓測試與 UI 實作解耦，降低維護成本","單一 API 支援 Chromium、Firefox、WebKit 三大引擎","CI 整合：GitHub Actions 中執行並產出 HTML 格式的可視化測試報告"]},"後端 / 系統設計":{"summary":"Temporal 的 Durable Execution 模式是後端系統設計的重要演進：以事件溯源取代手動 Saga 補償邏輯，讓複雜業務流程的可靠性由基礎設施層保證，是分散式系統架構師今年最值得深入的技術模式。","items":["Durable Execution vs Saga Pattern：前者由平台自動重播，後者需手動撰寫每步補償邏輯","Temporal Event History：每個 Activity 執行結果持久化，保證最少一次執行語義","典型使用場景：電商訂單流程、用戶 onboarding、支付與庫存多步驟連動","Workflow 函式需確定性：禁止使用 Date.now()、Math.random()、直接 API 呼叫"]},"開發者工具 / DevOps":{"summary":"Playwright 的 CI 整合能力讓 E2E 測試成為 GitHub Actions pipeline 的標準環節；2026 年開發者工具整體趨勢是由工具層保證可靠性，減少工程師手動處理失敗恢復與測試不穩定的心智負擔。","items":["Playwright Test 內建 GitHub Actions 整合，reporter: html 產出可視化測試報告","Temporal Workers 可水平擴展，Task Queue 自動分發工作，適合 Kubernetes 部署","2026 開發者工具組合：AI coding assistant + 可靠 E2E 測試 + Durable workflow 基礎設施","Bruno 作為 Postman 替代方案崛起，提供更輕量且離線可用的 API 測試工作流"]}},"sources":[{"title":"Temporal Workflow Engine: The Reliability Layer Your Distributed System Is Missing [2026]","url":"https://dev.to/kunal_d6a8fea2309e1571ee7/temporal-workflow-engine-the-reliability-layer-your-distributed-system-is-missing-2026-guide-1ia9"},{"title":"Durable Execution: How Temporal, Restate, and DBOS Are Rethinking Distributed State","url":"https://devstarsj.github.io/2026/04/03/durable-execution-temporal-restate-dbos-distributed-workflows-2026/"},{"title":"Mastering Playwright in 2026: A Hands-On Guide to Modern Browser Automation","url":"https://codestax.medium.com/mastering-playwright-in-2026-a-hands-on-guide-to-modern-browser-automation-0546edbe9cff"},{"title":"15 Best Practices for Playwright Testing in 2026","url":"https://www.browserstack.com/guide/playwright-best-practices"},{"title":"Dify: The Open-Source LLM App Development Platform","url":"https://pyshine.com/2026/04/20/Dify-Open-Source-LLM-App-Development-Platform/"},{"title":"How to Build an AI Support Agent with Dify in 11 Steps [2026]","url":"https://tech-insider.org/dify-tutorial-ai-agent-rag-workflow-2026/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
