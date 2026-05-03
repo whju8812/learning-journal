@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-03 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260503-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-03","session_label":"08:00","tech_content":"**Platform Engineering 與 Internal Developer Platform（IDP）的崛起**\n\nPlatform Engineering 解決的核心問題是「開發者等待 Ops 手動處理」的瓶頸——透過建立 IDP，團隊能以 Golden Path（預核准的自助模板）讓工程師自行申請 Kubernetes namespace、資料庫、CI/CD 環境，將 onboarding 週期從數週壓縮至數天。Gartner 指出 2026 年已超過 80% 的軟體工程組織設立了專職 Platform 團隊。關鍵概念是「把基礎架構當產品做」，Platform 團隊把合規要求與安全掃描自動嵌入每一次部署，開發者不需要了解底層細節就能安全自助操作。若團隊超過 5 人、每個 sprint 仍在等待環境申請，這正是評估建立 IDP 的時機。\n\n**MCP 2.4 安全規範：AI Agent 工具連接的新底線**\n\nModel Context Protocol（MCP）已成為 AI Agent 連接 GitHub、Slack、PostgreSQL 等外部工具的標準協定，社群生態系在 2026 Q2 已超過 200 個官方 MCP Server。然而 Equixly 資安評估發現 43% 的 MCP 實作存在命令注入漏洞；MCP 2.4 規格因此強制要求所有外部函式呼叫須加上工具沙箱（Tool Sandboxing）與執行期監控（Runtime Instrumentation）。Coalition for Secure AI（CoSAI）發布的安全分類框架涵蓋 prompt injection、tool abuse 與 data exfiltration 三大攻擊向量，是生產環境部署 MCP Agent 的必讀文件。\n\n**n8n：開源 AI Workflow Orchestration 的實戰入口**\n\nn8n 在 2026 年是開源工作流自動化中少數能同時滿足 no-code 使用者與後端工程師需求的平台：視覺化節點編輯器搭配可注入自定義 JavaScript 的節點，讓開發者能把 LLM 決策嵌入工作流——例如讓 AI Agent 判斷 incoming webhook 的意圖，再決定呼叫哪個下游 API。n8n 支援完全自主部署（Docker 一行啟動），資料不離開自己的環境，適合有資料主權需求的場景。其 AI Agent 節點內建 memory、tool use 與 sub-agent routing，是建立輕量 agentic pipeline 最快的切入點。","tech_application":"**① 用 Backstage 建立第一個 Internal Developer Portal**\n\n適合有 3–10 人工程師、但基礎架構操作仍靠 Slack 討論的團隊。Backstage 是 CNCF 孵化的開源 IDP 前端，插件化架構讓你逐步加入 Software Catalog、Tech Docs 與 CI/CD 整合功能。\n\n```bash\nnpx @backstage/create-app@latest\ncd my-backstage-app\nyarn dev\n```\n\n啟動後預設在 http://localhost:3000，先從 Software Catalog 開始，把現有 GitHub repos 登錄進來，讓團隊查詢每個服務的 owner 與文件位置。catalog-info.yaml 定義 Golden Path 模板，讓工程師用一個 YAML 自助建立標準化環境。\n\n**② 在 Docker 自行部署 n8n 並建立 AI Agent Workflow**\n\n適合想建立內部 AI 自動化、但不想讓資料流過雲端 SaaS 的後端工程師或 DevOps 團隊。\n\n```bash\ndocker run -it --rm -p 5678:5678 -v ./n8n_data:/home/node/.n8n n8nio/n8n\n```\n\n啟動後開啟 http://localhost:5678，建立 Workflow，加入 AI Agent 節點，選擇 model（OpenAI 或 Ollama 本地模型），再設定 Tools（HTTP Request、Send Email、Write to DB）。入門場景：接收 Webhook，AI 分析 payload 意圖，根據意圖路由至不同後續動作。","learning_analysis":{"AI / 機器學習":{"summary":"MCP 2.4 安全規範發布代表 AI Agent 工具連接正走向企業級規範化，CoSAI 的安全分類框架是目前最完整的 MCP 風險指南，重點關注 Tool Sandboxing 與 Runtime Instrumentation 的實作。","items":["MCP 2.4 強制要求所有外部函式呼叫加上工具沙箱（Tool Sandboxing）","CoSAI 發布 MCP 安全分類框架，涵蓋 prompt injection、tool abuse、data exfiltration","43% 的 MCP 實作存在命令注入漏洞（Equixly 2026 資安評估）","n8n AI Agent 節點化 workflow 成為輕量 agentic pipeline 的主流建構方式"]},"雲端與基礎架構":{"summary":"Platform Engineering 在 2026 年成為組織基礎架構演進的核心框架，IDP 透過 Backstage、Crossplane 與 Argo CD 整合讓開發者自助管理雲端資源，Golden Path 模板是降低等候 Ops 摩擦的關鍵機制。","items":["超過 80% 軟體工程組織設立專職 Platform 團隊（Gartner 2026）","IDP 核心元件：Golden Path、Backing Services、Security Guardrails","Backstage 作為 CNCF 孵化的開源 IDP 前端持續成熟","Crossplane 讓 Kubernetes 管理雲端資源，實現 GitOps 式的基礎架構管理"]},"前端開發":{"summary":"Next.js 與 SvelteKit 仍是 2026 企業前端選型主流，選型關鍵轉向 Edge-Ready 能力與長期維護性；目前無重大框架突破，建議複習 React Server Components 的資料抓取與 Streaming 渲染模式。","items":["Next.js App Router 與 React Server Components 是現代 SSR 架構的主流實作","SvelteKit 在 Edge 環境的輕量化部署上持續有優勢","Web Components 與 island architecture 在效能最佳化場景持續受關注","前端工具鏈（Vite、Turbopack）成熟穩定，開發者體驗顯著提升"]},"後端 / 系統設計":{"summary":"Modular Monolith 被廣泛推薦為中小型團隊的最佳架構起點，以 80% 成本獲得 Microservices 的主要優點；Node.js 後端模式已趨成熟，建議複習 Circuit Breaker 與 Event-Driven Architecture 的 backpressure 設計。","items":["Modular Monolith 比 Microservices 更適合多數中小型團隊的起點","CQRS 與 Event Sourcing 強大但複雜，不建議用於一般 CRUD 系統","Circuit Breaker + Retry 模式是 Node.js 後端處理外部依賴失敗的標準方式","API Gateway 模式讓後端微服務對外接口統一管理，降低客戶端耦合"]},"開發者工具 / DevOps":{"summary":"n8n 作為自主部署的 AI workflow 平台正快速成為 DevOps 工具鏈的組成部分；GitHub Actions 仍是 CI/CD 首選；Platform Engineering 的 Golden Path 模板將 CI/CD 流程抽象化，讓每個團隊不需重複設定。","items":["n8n 支援自主部署，AI Agent 節點內建 memory 與 tool use","GitHub Actions 是 2026 年 CI/CD 的預設選擇，擁有最大的 workflow 生態","Platform Engineering 將 CI/CD 模板化為 Golden Path，降低每個團隊的設定成本","DevSecOps 趨勢：安全掃描（SAST、DAST）內嵌至 CI/CD 管線，shift-left 成為標準"]}},"sources":[{"title":"Platform Engineering in 2026: Building an Internal Developer Platform","url":"https://www.javacodegeeks.com/2026/05/platform-engineering-in-2026-what-it-actually-is-why-its-not-just-devops-renamed-and-how-to-build-an-internal-developer-platform.html"},{"title":"Securing the AI Agent Revolution: A Practical Guide to MCP Security","url":"https://www.coalitionforsecureai.org/securing-the-ai-agent-revolution-a-practical-guide-to-mcp-security/"},{"title":"n8n Guide 2026: Features and Workflow Automation Deep Dive","url":"https://hatchworks.com/blog/ai-agents/n8n-guide/"},{"title":"AI Agent Security: Securing the Model Context Protocol (MCP)","url":"https://zenity.io/blog/security/securing-the-model-context-protocol-mcp"},{"title":"Internal Developer Platform IDP 2026 Complete Guide","url":"https://calmops.com/devops/internal-developer-platform-idp-2026-complete-guide/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
