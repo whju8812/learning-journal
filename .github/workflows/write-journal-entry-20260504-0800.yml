@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-04 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260504-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-04","session_label":"08:00","tech_content":"**LangGraph：讓 AI Agent 從無狀態呼叫進化為有狀態工作流**\n\nLangGraph 是 LangChain 生態系推出的圖結構 Agent 框架，於 2025 年底發布 v1.0 後已成為 2026 年最廣泛採用的 Python Agent 框架，在 Klarna、Uber、Replit 等公司的生產環境中運行。它解決的核心工程問題是：傳統 LLM 呼叫是無狀態的，無法在多步驟任務中保持上下文並在需要時循環重試。LangGraph 透過 StateGraph 讓每個節點（Node）都能讀寫共享 State，並透過條件邊（Conditional Edge）決定下一步執行哪個節點，實現具有分支、循環、記憶的複雜 Agent 工作流。現在值得學習的原因是：用 LangGraph 建構 Agent 已從研究實驗走向生產標準，掌握它代表能交付真正可靠的 AI 自動化系統。\n\n**Platform Engineering 與 IDP：標準化基礎設施的黃金路徑**\n\n根據 Gartner 2026 年調查，超過 80% 的軟體工程組織已設立專屬 Platform Team，並透過 Internal Developer Platform（IDP）提供開發者自助服務。Platform Engineering 解決的工程問題是：每個開發者每次都要手動設定 CI pipeline、Kubernetes manifests、監控 dashboard，既耗時又容易偏離組織規範。透過黃金路徑（Golden Path）概念，開發者只需點幾下就能在三分鐘內得到一個符合標準的生產就緒服務。Backstage（Spotify 開源、CNCF 孵化）是最主流的 IDP Portal 框架，其 Software Templates 功能讓導入 IDP 的組織達到 3.5 倍部署頻率提升、4 倍交付週期縮短的效益。\n\n**模組化單體架構：Microservices 與單體之間的務實選擇**\n\n在 2026 年的後端架構討論中，Modular Monolith（模組化單體）正成為中型團隊的主流折衷方案。純 Microservices 帶來分散式系統的複雜度（網路延遲、分散式追蹤、服務間認證等），而 Modular Monolith 在同一個程序內以清晰的模組邊界隔離業務邏輯，享有 80% 的 Microservices 好處（獨立開發、清晰邊界）卻只有 20% 的運維成本。實務建議是先以 Modular Monolith 出發，確認領域邊界後再視流量與團隊規模決定是否拆分服務，這也是大多數成功的 Microservices 案例在早期走過的路。","tech_application":"**① 用 LangGraph 建立能循環搜尋的 Research Agent**\n\n適合已熟悉 Python 與基礎 LLM 呼叫的後端工程師，想打造能自主完成多步驟任務的 AI Agent。\n\n```bash\npip install langgraph langchain-anthropic\n```\n\n```python\nfrom typing import TypedDict, Annotated\nfrom langgraph.graph import StateGraph, END\nfrom langchain_anthropic import ChatAnthropic\n\nclass AgentState(TypedDict):\n    question: str\n    steps: Annotated[list, lambda x, y: x + y]\n    answer: str\n\ndef research_node(state: AgentState):\n    llm = ChatAnthropic(model=\"claude-sonnet-4-6\")\n    question = state.get(\"question\", \"\")\n    response = llm.invoke(\"Research: \" + question)\n    return {\"steps\": [response.content], \"answer\": response.content}\n\ndef should_continue(state: AgentState):\n    return END if len(state.get(\"steps\", [])) >= 3 else \"research\"\n\ngraph = StateGraph(AgentState)\ngraph.add_node(\"research\", research_node)\ngraph.set_entry_point(\"research\")\ngraph.add_conditional_edges(\"research\", should_continue)\napp = graph.compile()\nresult = app.invoke({\"question\": \"What is platform engineering?\", \"steps\": []})\nprint(result.get(\"answer\", \"\"))\n```\n\n**② 用 Backstage Scaffolder 建立標準化服務模板**\n\n適合 Platform Team 成員或希望導入 IDP 的 DevOps 工程師，讓開發者在三分鐘內生成符合組織規範的新服務。\n\n```bash\nnpx @backstage/create-app@latest\ncd my-backstage-app && yarn dev\n# 接著在 Backstage UI 建立 Software Template\n# template.yaml 關鍵步驟：fetch:template、publish:github、catalog:register\n```","learning_analysis":{"AI / 機器學習":{"summary":"LangGraph 框架讓 AI Agent 從無狀態 LLM 呼叫進化為具備記憶、條件分支與循環能力的有狀態工作流，是 2026 年生產環境 Agent 開發的主流選擇。","items":["LangGraph StateGraph：透過 TypedDict 定義共享狀態，節點讀寫狀態並透過條件邊決定下一步執行路徑","ReAct 模式（Reason + Act）：Agent 先思考、再行動、再觀察結果，是目前最成熟的 Agent 架構模式","多記憶層設計：Short-term（對話緩衝）、Working（思維鏈）、Long-term（向量資料庫如 Pinecone）三層並用","多 Agent 框架比較：LangGraph 適合有狀態複雜流程、CrewAI 適合分工協作、AutoGen 適合事件驅動場景"]},"雲端與基礎架構":{"summary":"Platform Engineering 在 2026 年已成主流，80% 以上組織設有 Platform Team，以 IDP 降低開發者認知負擔並標準化基礎設施交付。","items":["Backstage（CNCF）：業界最廣泛採用的 IDP Portal，提供 Software Catalog 與 Scaffolder 功能","Golden Path 概念：用預設最佳路徑讓開發者自助生成符合規範的服務，減少基礎設施決策負擔","IDP 建置時程參考：8 週 MVP + 8 週生產就緒，共 16 週可達第一批生產部署","導入 IDP 的量化效益：部署頻率提升 3.5 倍、交付週期縮短 4 倍（來源：Gartner 2026）"]},"前端開發":{"summary":"2026 年前端架構重心轉向 AI 整合與 Edge Computing，邊緣渲染搭配 AI 驅動個人化體驗正成為新標準。","items":["Edge-first 渲染：利用 Vercel Edge Functions 或 Cloudflare Workers 在離使用者最近的節點執行邏輯","AI 驅動 UI：LLM 動態生成元件或調整佈局，實現個人化前端體驗","Web Frameworks 選型：Next.js 仍是企業首選，Astro 在內容型網站中快速崛起","基礎複習推薦：Web Vitals（LCP、INP、CLS）是前端效能優化的核心指標，值得定期複習量測方式"]},"後端 / 系統設計":{"summary":"模組化單體（Modular Monolith）在 2026 年成為中型團隊的最佳折衷架構，兼顧清晰邊界與低運維成本。","items":["Modular Monolith 核心原則：模組間透過明確 API 介面溝通，不共享資料庫 Schema","架構演進策略：先 Modular Monolith 確認領域邊界，再視流量與團隊規模決定是否拆分 Microservices","Node.js 後端常見模式：分層架構（Controller-Service-Repository）搭配事件驅動 Pub/Sub 非同步流","Serverless 適用場景：事件觸發、低頻高峰任務優先考慮 Serverless，持續高吞吐量仍適合容器化部署"]},"開發者工具 / DevOps":{"summary":"GitHub Actions 在 2026 年已成 CI/CD 默認選擇，搭配 Platform Engineering 的黃金路徑可讓新服務從零到生產僅需數分鐘。","items":["GitHub Actions：代碼在 GitHub 的團隊首選，零外部系統管理、工作流語法直觀、數千個現成 Action 可用","現代 CI/CD 管線七階段：代碼提交 > 建置測試 > 容器映像 > 漏洞掃描 > 暫存部署 > 整合測試 > 漸進式生產部署","分支策略最佳實踐：main（生產）、develop（開發）、feature/*、bugfix/*、release/* 五層分支模型","Craft Agents（新工具）：Lukilabs 於 2026-05-02 發布的開源 Agent 框架，Apache 2.0 授權，已快速進入 GitHub Trending"]}},"sources":[{"title":"LangGraph Agent Patterns 2026: Building Stateful Multi-Step AI Workflows","url":"https://callsphere.ai/blog/langgraph-agent-patterns-2026-stateful-multi-step-ai-workflows"},{"title":"Build Your First AI Agent with LangGraph — Step-by-Step Python Tutorial (2026)","url":"https://dev.to/jangwook_kim_e31e7291ad98/build-your-first-ai-agent-with-langgraph-step-by-step-python-tutorial-2026-56cb"},{"title":"Platform Engineering in 2026: What It Actually Is and How to Build an IDP","url":"https://www.javacodegeeks.com/2026/05/platform-engineering-in-2026-what-it-actually-is-why-its-not-just-devops-renamed-and-how-to-build-an-internal-developer-platform.html"},{"title":"Platform Engineering 2026: Building Internal Developer Platforms","url":"https://appsvolt.com/platform-engineering-2026-building-internal-developer-platforms-that-make-teams-faster/"},{"title":"Backend Architecture Patterns — A Practical Guide for 2026","url":"https://codelit.io/blog/backend-architecture-patterns-guide"},{"title":"Craft Agents OSS: New Open-Source Framework by Lukilabs","url":"https://aitoolly.com/ai-news/article/2026-05-02-craft-agents-oss-lukilabs-launches-new-open-source-agent-framework-under-apache-20-license"},{"title":"LangGraph: Build Stateful AI Agents in Python","url":"https://realpython.com/langgraph-python/"},{"title":"Building a Production-Ready CI/CD Pipeline: The Complete 2026 Guide","url":"https://medium.com/@krishnafattepurkar/building-a-production-ready-ci-cd-pipeline-the-complete-2026-guide-b3d6a661ecd8"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
