@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-04 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260504-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date": "2026-05-04", "session_label": "20:00", "tech_content": "**LangGraph 有狀態 AI Agent：從 Demo 到生產級架構**\n\nLangGraph 是 LangChain 在 2026 年主力推薦的 Agent 編排框架，基於圖狀態機（state machine）架構，每個節點讀寫共享 State 物件，解決了舊版 AgentExecutor 無法支援條件分支、並行工具呼叫與跨對話持久化狀態的問題。搭配 PostgreSQL 或 Redis Checkpointer，工作流程可在程序重啟後恢復，並支援 human-in-the-loop 中斷與恢復機制，是目前開發多步驟自主 Agent 最具生產可靠性的框架選擇。\n\n**Platform Engineering 與 Backstage：讓工程師自助服務的內部開發平台**\n\nPlatform Engineering 在 2026 年已成主流，預計 80% 大型軟體組織都將建立專屬平台工程團隊。核心是打造 Internal Developer Platform（IDP），以 Spotify 開源並捐贈給 CNCF 的 Backstage 為主要框架，提供服務目錄（Software Catalog）、自助腳手架（Scaffolding Templates）與整合文件（TechDocs），將基礎設施複雜度抽象化，讓開發者無需等待維運團隊即可自助部署新服務。Backstage 目前已被數千個組織採用，從新創到 Fortune 500 企業皆有完整導入案例。\n\n**AI Agent 執行期安全：Prompt Injection 仍是頭號漏洞**\n\n2026 年 OWASP GenAI 安全報告指出，Prompt Injection 持續為 AI Agent 部署的首要漏洞，出現在 73% 的生產部署中。真實攻擊案例顯示，當 Agent 具有 shell 存取、CI/CD 觸發或 cache 寫入能力時，一次成功的 prompt injection 可串連為供應鏈攻擊。防禦方向包含：在工具呼叫層設置執行期白名單、隔離 Agent 的 filesystem 存取範圍、以及對外部來源（如 GitHub Issues 或使用者輸入）進行嚴格輸入淨化，Cisco 與 CrowdStrike 均已在 2026 年發布針對 MCP 層的執行期防護方案。", "tech_application": "**① 用 LangGraph 建立可持久化的多步驟 AI Agent**\n\n適合後端工程師與 AI 應用開發者，需要建立能在多輪對話中保持狀態、或可被中斷與恢復的工作流程。安裝依賴後，用以下最小範例快速驗證 StateGraph 節點設計：\n\n```bash\npip install langchain langchain-openai langgraph\n```\n\n```python\nfrom langgraph.graph import StateGraph, END\nfrom typing import TypedDict\n\nclass AgentState(TypedDict):\n    messages: list\n    step: int\n\ndef process_node(state: AgentState):\n    return {\"step\": state[\"step\"] + 1}\n\ngraph = StateGraph(AgentState)\ngraph.add_node(\"process\", process_node)\ngraph.set_entry_point(\"process\")\ngraph.add_edge(\"process\", END)\napp = graph.compile()\nresult = app.invoke({\"messages\": [], \"step\": 0})\nprint(result)\n```\n\n**② 用 Backstage 快速建立團隊服務目錄**\n\n適合有 5 人以上工程團隊的 DevOps 或平台工程師，目標是讓各服務擁有統一的中央目錄與文件入口。初始化 Backstage 應用後，在每個服務根目錄新增元資料描述檔即可完成服務註冊：\n\n```bash\nnpx @backstage/create-app@latest\ncd my-backstage-app\nyarn install && yarn dev\n```\n\n在各服務根目錄新增 catalog-info.yaml：\n\n```yaml\napiVersion: backstage.io/v1alpha1\nkind: Component\nmetadata:\n  name: my-service\n  description: 後端 API 服務\nspec:\n  type: service\n  lifecycle: production\n  owner: team-backend\n```\n\n接著在 Backstage UI 選擇 \"Register Existing Component\" 並貼上 catalog-info.yaml 的 Git URL 即可完成服務目錄建立。", "learning_analysis": {"AI / 機器學習": {"summary": "LangGraph 有狀態 Agent 架構在 2026 年已成生產標準，graph-based state machine 取代舊版線性 Chain 設計，支援條件分支、並行工具呼叫與 human-in-the-loop 中斷點，同時 Prompt Injection 防禦成為 AI Agent 部署不可忽視的安全基線。", "items": ["LangGraph StateGraph 節點設計：如何定義 AgentState TypedDict 與節點讀寫規則", "PostgreSQL Checkpointer 實作跨對話持久化狀態的設定方式", "Prompt Injection 攻擊路徑分析：外部輸入進入 Agent tool 呼叫層的風險點與白名單設計"]}, "雲端與基礎架構": {"summary": "Platform Engineering 趨勢持續升溫，Backstage 搭配 Kubernetes 成為大型組織建立 IDP 的主流選擇，IaC 工具以 OpenTofu 1.5 與 Pulumi 5.0 為主力，自助服務平台已被視為縮短 onboarding 時間的關鍵基礎設施。", "items": ["Backstage catalog-info.yaml 服務元資料設計與 Software Catalog 架構", "OpenTofu 1.5 與 Terraform 的相容性差異及遷移注意事項", "Backstage Scaffolding Template 建立：讓工程師自助建立符合規範的新服務骨架"]}, "前端開發": {"summary": "前端框架生態趨於穩定，React Server Components 架構已成為現代 Next.js 應用的標準資料流模式，效能優化與 Core Web Vitals 仍是首要課題。值得複習的基礎概念：瀏覽器渲染管線（Critical Rendering Path）與資源優先級控制。", "items": ["React Server Components 與 Client Components 資料流邊界設計原則", "Core Web Vitals（LCP、INP、CLS）量測工具與針對性優化策略", "事件委派（Event Delegation）模式：減少大量動態元素的事件監聽器開銷"]}, "後端 / 系統設計": {"summary": "Modular Monolith 架構在 2026 年受到重新重視，以模組間事件驅動通訊取代直接呼叫，可獲得 80% 微服務效益同時降低 80% 維運複雜度，適合中小型團隊作為微服務拆分前的過渡架構選擇。Circuit Breaker 與 Retry 模式為分散式系統韌性設計的必備基礎。", "items": ["Modular Monolith 模組邊界設計：以 bounded context 劃分模組並透過事件解耦", "Circuit Breaker 狀態機實作：Closed、Open、Half-Open 三態轉換邏輯", "CQRS 讀寫分離模式：讀模型與寫模型獨立部署的適用場景與資料同步策略"]}, "開發者工具 / DevOps": {"summary": "GitHub Actions 持續穩固為 CI/CD 主流選擇，Copilot code review 將自 2026 年 6 月起消耗 Actions 分鐘數，需提前評估用量。AI 編程工具（Copilot、Cursor、Claude Code）組合使用已成 85% 開發者的標準工作流，生產力提升平均達 20-30%。", "items": ["GitHub Actions 多環境部署策略：feature branch → staging → production 的 gate 設計", "Copilot code review 費用預估：private repo 每次 review 消耗 Actions 分鐘數的計算方式", "GitHub Actions Self-hosted runner 維護最佳實踐：版本更新與最低版本強制執行政策"]}}, "sources": [{"title": "LangGraph: Agent Orchestration Framework for Reliable AI Agents", "url": "https://www.langchain.com/langgraph"}, {"title": "LangGraph Tutorial 2026: Build Stateful Multi-Step AI Agents - GROWAI", "url": "https://growai.in/langgraph-tutorial-stateful-ai-agents-2026/"}, {"title": "Platform Engineering with Backstage: Complete Guide 2026 - Calmops", "url": "https://calmops.com/devops/platform-engineering-backstage-internal-developer-platform-2026/"}, {"title": "Platform Engineering in 2026: What It Actually Is, Why It Is Not Just DevOps Renamed", "url": "https://www.javacodegeeks.com/2026/05/platform-engineering-in-2026-what-it-actually-is-why-its-not-just-devops-renamed-and-how-to-build-an-internal-developer-platform.html"}, {"title": "OWASP GenAI Exploit Round-up Report Q1 2026", "url": "https://genai.owasp.org/2026/04/14/owasp-genai-exploit-round-up-report-q1-2026/"}, {"title": "AI Agent Security in 2026: Prompt Injection, Memory Poisoning, and the OWASP Top 10", "url": "https://swarmsignal.net/ai-agent-security-2026/"}, {"title": "Backend Architecture Patterns: A Practical Guide for 2026", "url": "https://codelit.io/blog/backend-architecture-patterns-guide"}, {"title": "8 Developer Tools That Will Boost Your Workflow in 2026 - DEV Community", "url": "https://dev.to/anthonymax/8-developer-tools-that-will-boost-your-workflow-in-2026-3p8k"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
