@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-05 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260505-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date": "2026-05-05", "session_label": "08:00", "tech_content": "**GitHub Copilot 升級為 Agentic Code Review 架構**\n\nGitHub Copilot 的程式碼審查功能在 2026 年 3 月正式升級為 Agentic 架構，徹底改變了 AI 輔助 Code Review 的運作方式。舊版系統僅能對 diff 做逐行分析，常產生脫離脈絡的通用評論；新架構透過工具呼叫（tool-calling）主動探索儲存庫，追蹤跨檔案依賴、讀取相關模組，在理解整體設計後再生成評論。根據 GitHub 官方數據，71% 的審查能有效提供可行修正建議，平均每次審查約 5.1 條評論，訊噪比明顯改善。整個系統運行在 GitHub Actions runner 上，無需額外部署基礎設施。這個從被動 diff 分析到主動蒐集上下文的 Agentic 轉變，為工程師理解現代 AI Agent 系統設計提供了真實參考案例。\n\n**n8n 2.0 雙向 MCP 支援，成為 AI 代理工作流樞紐**\n\nn8n 是一個開源工作流自動化平台，2025 年底發布的 2.0 版本新增了雙向 MCP（Model Context Protocol）支援：既能作為 MCP 客戶端接入外部 MCP server，也能將自身工作流發布為 MCP server 供 AI 助理呼叫。平台將 LangChain 核心概念（Agent、Tool、Memory、Model）以視覺化節點實作，讓開發者在不撰寫 Python 的情況下建置完整 AI 代理工作流。與 SaaS 方案相比，n8n 的 Docker 自架部署讓資料永不離開自有基礎設施，在 RAG 管線、客服路由、多代理協作等場景中逐漸取代傳統點對點整合。對後端工程師而言，n8n 2.0 是快速原型化 AI 工作流、驗證可行性的理想起點。\n\n**Ollama 讓本地端 LLM 成為日常開發基礎設施**\n\nOllama 以類似 Docker 的操作模式將本地端大型語言模型的部署門檻大幅降低：一條指令拉取模型，後台自動處理量化（quantization）、記憶體管理與 GPU 加速，並在 localhost:11434 暴露與 OpenAI API 完全相容的 REST 端點。這意味著任何已整合 OpenAI API 的程式，只需更改 base URL，即可切換為完全離線運行。2026 年 Ollama 已整合 Kimi-K2.5、DeepSeek、Qwen、Gemma 等主流開源模型。對於需要處理敏感程式碼、客戶資料或個人資訊的場景，本地 LLM 能在不犧牲推論能力的前提下完整保護隱私，是現代開發者工具箱的重要基礎設施選項。", "tech_application": "**① n8n 打造 AI 自動化代理工作流**\n\n適合後端工程師或技術負責人快速驗證 AI 代理工作流可行性，無需撰寫完整程式碼即可整合 LLM 與現有服務。\n\n```bash\n# 使用 Docker 自架 n8n\ndocker run -d \\\n  --name n8n \\\n  -p 5678:5678 \\\n  -v n8n_data:/home/node/.n8n \\\n  docker.n8n.io/n8nio/n8n\n```\n\n啟動後開啟 http://localhost:5678，建立新 Workflow，加入 AI Agent 節點並選擇 LLM 模型（OpenAI 或本地 Ollama），再透過 Tools 子節點（HTTP Request、Code）完成代理設定。若要接入 MCP server，在 AI Agent 的 Tools 中加入 MCP Client Tool 子節點並指定 MCP server URL，節點會自動探索可用工具。\n\n**② Ollama 本地 LLM 快速部署與 API 呼叫**\n\n適合需要在離線或隱私敏感環境中使用 LLM 推論的開發者，或想在本機比較不同開源模型效果的工程師。\n\n```bash\n# macOS/Linux 安裝\ncurl -fsSL https://ollama.com/install.sh | sh\n\n# 拉取並執行 Llama 3.2\nollama pull llama3.2\nollama run llama3.2\n```\n\n```python\n# 使用 OpenAI Python SDK 切換至本地模型\nfrom openai import OpenAI\nclient = OpenAI(base_url=\"http://localhost:11434/v1\", api_key=\"ollama\")\nresponse = client.chat.completions.create(\n    model=\"llama3.2\",\n    messages=[{\"role\": \"user\", \"content\": \"解釋什麼是 MCP\"}]\n)\nprint(response.choices[0].message.content)\n```", "learning_analysis": {"AI / 機器學習": {"summary": "GitHub Copilot 升級為 Agentic Code Review 架構，代表 AI 輔助工具正從被動回應轉向主動推理，透過工具呼叫蒐集上下文是 2026 年 AI Agent 設計的核心模式。Ollama 則讓本地端 LLM 推論基礎設施的所有權回到開發者手中。", "items": ["GitHub Copilot Agentic Code Review：tool-calling 主動探索儲存庫，71% 審查可提供可行建議", "Ollama 本地 LLM：量化模型 + OpenAI 相容 REST API，支援 Kimi-K2.5、DeepSeek、Qwen、Gemma", "AI Agent 設計模式：從被動 diff 分析到主動上下文蒐集的 Agentic 架構轉變"]}, "雲端與基礎架構": {"summary": "GitHub Actions 成為 Copilot Agentic Code Review 的執行基礎設施，顯示雲端 runner 在 AI 工作流中的角色持續深化。n8n Docker 自架部署讓資料主權成為基礎設施設計的核心考量之一。", "items": ["GitHub Actions 作為 AI Agent 執行環境：Copilot code review 於 2026/6/1 起計費 Actions minutes", "n8n Docker 自架：單指令部署，資料主權 vs. SaaS 便利性的選型依據", "Ollama GPU 加速 vs. CPU 量化：本地 LLM 的硬體資源規劃策略"]}, "前端開發": {"summary": "2026 年前端框架趨勢持續往 Server-Side Rendering 傾斜，純客戶端渲染的重型 JS bundle 時代逐漸結束。值得複習的基礎概念是 SSR hydration 機制及其對 Core Web Vitals 的影響。", "items": ["SSR hydration：伺服器渲染與客戶端接管的銜接機制，直接影響 TTI 指標", "React Server Components / SvelteKit：現代框架在伺服器端渲染互動元件的設計方向", "Core Web Vitals（LCP、INP、CLS）與不同渲染策略的對應關係"]}, "後端 / 系統設計": {"summary": "模組化單體（Modular Monolith）作為微服務替代方案的討論持續熱絡，核心是以清晰模組邊界設計程式，根據實際瓶頸再決定拆分，避免過早引入微服務的運維成本。", "items": ["Modular Monolith：清晰模組邊界 + 單一部署單元，以 80% 微服務收益換 20% 運維成本", "API-First 設計：先定義介面契約再實作，確保跨團隊與前後端一致性", "Circuit Breaker 模式：臨時封鎖失敗服務請求，防止分散式系統的級聯故障"]}, "開發者工具 / DevOps": {"summary": "n8n 2.0 雙向 MCP 支援讓工作流自動化平台進入 AI 代理生態，GitHub Actions 繼續鞏固其作為預設 CI/CD 執行環境的地位。VS Code 以 75%+ 市佔率主導 IDE 市場並持續新增 AI 整合標準端點。", "items": ["n8n 2.0 MCP 雙向支援：工作流即 MCP server，AI 助理可直接呼叫自動化流程", "GitHub Actions：現代 CI/CD 的事實標準，同時成為 Copilot Agentic Review 執行平台", "VS Code AI 整合 API：75%+ 市佔率，標準化第三方 AI 助理介入點"]}}, "sources": [{"title": "Copilot code review now runs on an agentic architecture - GitHub Changelog", "url": "https://github.blog/changelog/2026-03-05-copilot-code-review-now-runs-on-an-agentic-architecture/"}, {"title": "GitHub Copilot code review will start consuming GitHub Actions minutes on June 1, 2026", "url": "https://github.blog/changelog/2026-04-27-github-copilot-code-review-will-start-consuming-github-actions-minutes-on-june-1-2026/"}, {"title": "How to maximize GitHub Copilot agentic capabilities - The GitHub Blog", "url": "https://github.blog/ai-and-ml/github-copilot/how-to-maximize-github-copilots-agentic-capabilities/"}, {"title": "Tutorial: Build an AI workflow in n8n", "url": "https://docs.n8n.io/advanced-ai/intro-tutorial/"}, {"title": "n8n Guide 2026: Features and Workflow Automation Deep Dive", "url": "https://hatchworks.com/blog/ai-agents/n8n-guide/"}, {"title": "Ollama Quickstart", "url": "https://docs.ollama.com/quickstart"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
