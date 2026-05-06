@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-06 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260506-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-06","session_label":"08:00","tech_content":"**Ollama 本地 LLM Agent 工具調用實戰**\n\nOllama 的 tool calling（工具調用）功能讓本地 LLM 可以真正執行外部操作，而不只是生成文字。相容模型（Llama 3.1+、Qwen 2.5+、Mistral）會解析以 JSON Schema 定義的工具清單，決定是否呼叫函式並回傳結構化的 tool_calls 物件。開發者可搭配 CrewAI 或 LangChain 建立 agent loop，讓模型在無網路環境下完成規劃、工具執行、結果整合的完整循環。這解決了雲端 AI API 的成本與隱私顧慮，對需要處理內部機密資料的企業場景尤其重要。\n\n**Modular Monolith 架構的主流回歸**\n\n根據 CNCF Q1 2026 報告，42% 採用微服務的組織正在把部分服務合併回較大的部署單元。Modular Monolith（模組化單體）以單一可部署應用程式為基礎，內部依領域劃分為清晰邊界的模組，透過 Spring Modulith 或 Service Weaver 強制執行模組介面契約。它消除了分散式事務、網路延遲與 Kubernetes 運維成本，同時保有快速解耦的可能性。遷移策略推薦 strangler fig 模式：新功能建在新邊界內，舊耦合程式碼逐步被替換，無需一次性大規模重寫。\n\n**GitHub Secret Scanning 整合 MCP Server 正式上線**\n\n2026 年 5 月 5 日，GitHub 宣布 Secret Scanning 在 GitHub MCP Server 中正式 GA（原為 3 月公開預覽）。開發者使用 MCP 相容的 AI 編程助手（如 GitHub Copilot CLI 或 VS Code Copilot）時，可在 commit 或開 PR 前掃描程式碼中的暴露憑證，並延用既有的 push protection 設定。這直接解決了 AI 生成程式碼不小心內嵌 API key 或 token 的痛點，憑證在進入版本控制之前即可被攔截。","tech_application":"**① 用 Ollama + Python 建立本地工具調用 AI Agent**\n\n適合希望在本機環境建立私有自動化助手的後端開發者，無需雲端 API 費用，資料完全不離開本機。先安裝 Ollama 並拉取支援 tool calling 的模型，再用 Python 定義工具函式並執行 agent loop。\n\n```bash\n# 安裝 Ollama 並拉取模型\ncurl -fsSL https://ollama.com/install.sh | sh\nollama pull llama3.1\npip install ollama\n```\n\n```python\nimport ollama\n\ntools = [{\n    \"type\": \"function\",\n    \"function\": {\n        \"name\": \"get_weather\",\n        \"description\": \"取得指定城市的即時天氣\",\n        \"parameters\": {\n            \"type\": \"object\",\n            \"properties\": {\"city\": {\"type\": \"string\"}},\n            \"required\": [\"city\"]\n        }\n    }\n}]\n\nresponse = ollama.chat(\n    model=\"llama3.1\",\n    messages=[{\"role\": \"user\", \"content\": \"台北今天天氣如何？\"}],\n    tools=tools\n)\nprint(response)\n```\n\n**② 在 VS Code 中啟用 GitHub Secret Scanning MCP 自動掃描**\n\n適合使用 GitHub Copilot 的開發者，確保 AI 生成的程式碼片段不會將 API key 或 token 帶入版本控制。倉庫須已開啟 GitHub Secret Protection，並將 VS Code 的 Copilot 擴充套件更新至最新版本。\n\n```json\n{\n  \"github.copilot.advanced\": {\n    \"secretScanning\": true\n  }\n}\n```\n\n設定後，Copilot 協助撰寫含有憑證字串的程式碼時，MCP Server 將在提交前觸發掃描並發出警告，掃描行為與倉庫既有的 push protection 規則保持一致。","learning_analysis":{"AI / 機器學習":{"summary":"本地 LLM agent 實用化是當前 AI 工程的核心趨勢，Ollama 的 tool calling 功能讓開發者無需雲端 API 即可建構具備工具使用能力的 AI agent，適合隱私敏感或成本受控的應用場景。","items":["Ollama tool calling 相容 Llama 3.1+、Qwen 2.5+、Mistral，工具以 JSON Schema 定義","LLM 自動判斷何時呼叫工具並回傳結構化 tool_calls 物件","可搭配 CrewAI 建立多 agent 協作系統，完全離線運行，無 API 費用","2026 年本地 AI 已從小眾走向主流，Llama 3.1 模型拉取量超過 1.12 億次"]},"雲端與基礎架構":{"summary":"IaC 工具選擇趨於明朗：熟悉 HCL 的團隊選 OpenTofu（完全開源的 Terraform 替代品），偏好用程式語言管理基礎設施的團隊選 Pulumi，兩者均具備完整生產就緒能力。","items":["OpenTofu 是 Terraform 的開源替代品，使用 HCL，具備完整生態系支持","Pulumi 支援 TypeScript、Python、Go 等語言，可使用 pytest 或 Jest 撰寫單元測試","Pulumi CLI 已可原生解析 HCL，Pulumi Cloud 可作為 OpenTofu 的 state backend","選型建議：既有 HCL 資產選 OpenTofu；新專案且開發者熟悉 TypeScript 或 Python 選 Pulumi"]},"前端開發":{"summary":"React Compiler 穩定版自動化記憶化優化，解決過去手動調整 useMemo 與 useCallback 的痛點；TanStack 生態持續擴展至 DB、Form、AI 等領域，WebAssembly 在主流瀏覽器已達生產就緒。","items":["React Compiler 穩定版：自動處理 memoization 與 dependency tracking，無需手動優化","TanStack 新增 TanStack DB、Form、AI、Start，形成統一開發工具鏈","WebAssembly 新標準：Exception Handling、JS String Builtins、Memory64 已正式上線","Vercel v0 等 AI UI 生成工具預設輸出完整 Next.js 專案結構"]},"後端 / 系統設計":{"summary":"Modular Monolith 在 2026 年成為主流選擇，CNCF 資料顯示 42% 微服務組織正在整合回模組化單體，Spring Modulith 和 strangler fig 模式是實際遷移的主要工具。","items":["CNCF Q1 2026：42% 採用微服務的組織正在將部分服務合併為模組化單體","Spring Modulith 透過 ArchUnit 在編譯期檢查模組邊界違反","strangler fig 遷移模式：新功能建在新邊界，逐步取代舊耦合程式碼，無需一次性重寫","模組化單體提供約 80% 微服務效益，只需承擔約 20% 的運維成本"]},"開發者工具 / DevOps":{"summary":"GitHub Secret Scanning 整合 MCP Server 於 5 月 5 日正式 GA，AI 編程助手現可在 commit 前自動掃描憑證洩漏；GitHub Actions 持續穩固 CI/CD 主流地位，現代 pipeline 已整合安全掃描與漸進式部署。","items":["GitHub Secret Scanning MCP GA：commit 前即時掃描 API key 或 token 洩漏（5 月 5 日正式上線）","掃描行為延用既有 push protection 設定，組織規則保持一致","GitHub Actions 為多數團隊的預設 CI/CD 工具，與 GitHub 生態緊密整合","現代 CI/CD pipeline：建置 → 測試 → 容器映像 → 安全掃描 → 漸進部署 → 自動回滾"]}},"sources":[{"title":"Build AI Agents Locally with Ollama: No API Costs (2026 Guide)","url":"https://localaimaster.com/blog/ai-agents-local-guide"},{"title":"Ollama Tool Calling - Official Docs","url":"https://docs.ollama.com/capabilities/tool-calling"},{"title":"Secret scanning with GitHub MCP Server is now generally available","url":"https://github.blog/changelog/2026-05-05-secret-scanning-with-github-mcp-server-is-now-generally-available/"},{"title":"The Modular Monolith 2026 Complete Guide - Spring Modulith and ArchUnit","url":"https://dev.to/x4nent/the-modular-monolith-2026-complete-guide-spring-modulith-archunit-fitness-functions-and-lessons-878"},{"title":"Why Teams Are Moving Back From Microservices to Modular Monoliths in 2026","url":"https://codingplainenglish.medium.com/why-teams-are-moving-back-from-microservices-to-modular-monoliths-in-2026-76a3eb7162b8"},{"title":"Infrastructure as Code Best Practices: Terraform, Pulumi, and OpenTofu in 2026","url":"https://dev.to/muskan_8abedcc7e12/infrastructure-as-code-best-practices-terraform-pulumi-and-opentofu-in-2026-4nc1"},{"title":"How to roll your own local AI coding agents - The Register","url":"https://www.theregister.com/2026/05/02/local_ai_coding_agents/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
