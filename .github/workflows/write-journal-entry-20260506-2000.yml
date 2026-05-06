@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-06 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260506-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-06","session_label":"20:00","tech_content":"**Rust + WebAssembly：wasm-pack 0.12.0 高效能前端模組實戰**\n\nRust + WebAssembly 在 2026 年已成為高效能前端模組的首選工具鏈。wasm-pack 0.12.0（搭配 Rust 1.85）可自動將 Rust 編譯為 WASM binary、產生 JavaScript 綁定、TypeScript 型別定義，並打包為 npm 套件，大幅降低整合摩擦。實際 benchmark 顯示：用 Rust + WASM 實作的 4K 圖片縮放耗時僅 4.2ms，相同邏輯的純 JavaScript 版本需要 18ms，差距超過 4 倍。對需要在瀏覽器端執行 CPU 密集任務（圖片處理、加密、資料壓縮）的應用而言，這是目前最直接有效的效能提升路徑。\n\n**GitHub MCP Server 新增相依套件漏洞掃描（公開預覽）**\n\n5 月 5 日，GitHub 宣布 GitHub MCP Server 第二項安全功能進入公開預覽：Dependency Scanning（相依套件漏洞掃描）。開啟 Dependabot alerts 的倉庫現在可透過 AI 編程助手在 commit 或開 PR 前，主動查詢受影響套件、CVE 嚴重性與修正版本建議。MCP Server 將相依資訊送至 GitHub Advisory Database 並回傳結構化結果，安全掃描從事後 PR review 前移至程式撰寫階段，大幅縮短修補週期。配合前一日 GA 的 Secret Scanning，GitHub 正逐步把安全工具鏈整合進 AI 開發流程的每個環節。\n\n**n8n：開源 AI Agent 工作流程自動化工具實戰部署**\n\nn8n 是一套開源、可自行部署的工作流程自動化平台，近期因原生支援 AI agent 節點（連接 OpenAI、Hugging Face 等 LLM provider）而快速受到後端與 DevOps 工程師關注。與 Zapier 或 Make 不同，n8n 可部署於自有伺服器，資料完全不離開內部網路，且支援條件分支、迴圈、WebHook、HTTP 呼叫與資料庫查詢，適合建立內部 ticketing 分流、會議摘要自動分派，或多步驟 DevOps 通知流程。它解決了用 Python 手刻 agent loop 的高維護成本問題，讓不熟悉 LangChain 的開發者也能快速落地自動化工作流。","tech_application":"**① 用 wasm-pack 將 Rust 編譯為瀏覽器可用的 WASM 模組**\n\n適合需要在前端處理高 CPU 負載任務（圖片轉換、加密、影像辨識前處理）的全端或前端工程師。安裝 wasm-pack 後，建立 Rust crate 並加入 wasm-bindgen 相依，再用 wasm-pack build 一鍵輸出 npm 套件。\n\n```bash\n# 安裝 wasm-pack\ncargo install wasm-pack\n\n# 建立新的 Rust WASM 專案\ncargo new --lib my-wasm-module\ncd my-wasm-module\n\n# 編譯為 Web 模組（輸出在 pkg/ 目錄）\nwasm-pack build --target web\n```\n\nCargo.toml 加入相依：\n\n```toml\n[lib]\ncrate-type = [\"cdylib\"]\n\n[dependencies]\nwasm-bindgen = \"0.2\"\n```\n\n**② 在 VS Code 中啟用 GitHub MCP Dependency Scanning**\n\n適合使用 GitHub Copilot 的開發者，可在 commit 前即時查詢目前相依套件是否含有已知 CVE 漏洞。倉庫需已在 Settings 開啟 Dependabot alerts。\n\n```json\n{\n  \"github.copilot.mcpServer.headers\": {\n    \"X-MCP-Toolsets\": \"dependabot\"\n  }\n}\n```\n\n設定後在 Copilot Chat 輸入以下提示詞即可觸發掃描，MCP Server 將回傳受影響套件清單、CVE 編號與建議修正版本：\n\n```\nCheck my current dependencies for known vulnerabilities\n```","learning_analysis":{"AI / 機器學習":{"summary":"n8n 原生 AI agent 節點讓工程師無需手刻 LangChain pipeline 即可快速部署 LLM 驅動的工作流程，適合需要在私有環境運行多步驟 AI 自動化任務的場景。","items":["n8n 支援 OpenAI、Hugging Face、Cohere 等 LLM provider 的原生節點","可自行部署（Docker 單指令啟動），資料不離開內部網路，適合企業隱私需求","AI agent 節點支援條件分支、工具調用、記憶體 buffer，可建立多輪對話流程","實際應用：自動分流客服 ticket、會議摘要分派、Slack 通知整合、CI/CD 觸發通知"]},"雲端與基礎架構":{"summary":"GitHub MCP Server 的 Dependency Scanning 進入公開預覽，代表雲端安全工具鏈正從 PR review 前移至程式撰寫階段，與 Dependabot 整合的架構成為 AI 助手時代的標準安全實踐。","items":["GitHub Advisory Database 提供結構化 CVE 查詢，MCP Server 作為 AI 助手的安全工具層","Dependency Scanning 需倉庫開啟 Dependabot alerts，無需額外費用","掃描結果包含：受影響套件名稱、CVE 編號、嚴重性評級（Critical/High/Medium）、修正版本","搭配 Secret Scanning GA，GitHub 安全工具鏈正完整整合進 AI coding 工作流"]},"前端開發":{"summary":"Rust + WebAssembly 工具鏈在 2026 年趨於成熟，wasm-pack 0.12.0 大幅簡化從 Rust 編譯到 npm 發布的流程，4K 圖片處理 benchmark 顯示 WASM 比純 JS 快 4 倍以上，是高效能前端模組開發的首選方案。","items":["wasm-pack 0.12.0 自動產生 JS bindings、TypeScript 型別定義與 npm 套件","Rust 1.85 + WASM：4K 圖片縮放 4.2ms vs JavaScript 18ms，效能差距 4.3 倍","wasm-bindgen 處理 Rust/JS 邊界的資料型別轉換，支援 Vec<u8>、String、struct","部署選項：--target web（ES module）/ --target bundler（Webpack/Vite）/ --target nodejs"]},"後端 / 系統設計":{"summary":"n8n 等低程式碼 orchestrator 工具讓 event-driven workflow 的落地成本大幅降低，Circuit Breaker 與 Pub/Sub 模式仍是分散式系統容錯設計的核心，建議先理解底層模式的適用情境再選擇工具。","items":["Pub/Sub 模式：服務間解耦，訂閱者無需知道發布者，適合通知、日誌、分析更新","Circuit Breaker 模式：暫時封鎖失敗服務的請求，防止級聯失敗（Resilience4j、Polly 實作）","n8n 可作為輕量 event orchestrator，取代部分 Celery/BullMQ 非核心自動化流程","設計建議：先確認業務流程穩定後再抽出模式，避免過早引入分散式複雜度"]},"開發者工具 / DevOps":{"summary":"GitHub MCP Server 同日推出 Secret Scanning GA 與 Dependency Scanning 公開預覽，AI 開發助手的安全能力從代碼生成擴展到主動的 shift-left 掃描，現代 DevOps pipeline 的安全整合門檻持續降低。","items":["Dependency Scanning via MCP：AI 助手可在 commit 前主動查詢 CVE，無需等待 PR 機器人","VS Code 啟用：settings.json 加入 X-MCP-Toolsets: dependabot 標頭","GitHub Copilot CLI 啟用：copilot --add-github-mcp-toolset dependabot","Shift-left security：安全掃描從 pipeline 末端前移至 IDE 撰碼階段，縮短修補週期"]}},"sources":[{"title":"2026 WebAssembly Tutorial: Rust 1.85 & wasm-pack 0.12.0","url":"https://johal.in/tutorial-build-2026-webassembly-app-rust-185-wasm-pack/"},{"title":"Rust + WASM: A Practical Guide (2026)","url":"https://dasroot.net/posts/2026/03/rust-wasm-practical-guide/"},{"title":"Dependency scanning with GitHub MCP Server is in public preview","url":"https://github.blog/changelog/2026-05-05-dependency-scanning-with-github-mcp-server-is-in-public-preview/"},{"title":"n8n Guide 2026: Features & Workflow Automation Deep Dive","url":"https://hatchworks.com/blog/ai-agents/n8n-guide/"},{"title":"15 Practical AI Agent Examples to Scale Your Business in 2026","url":"https://blog.n8n.io/ai-agents-examples/"},{"title":"WebAssembly for Web Developers: Getting Started with Wasm in 2026","url":"https://daily.dev/blog/webassembly-web-developers-getting-started-wasm"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
