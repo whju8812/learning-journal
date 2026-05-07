@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-07 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260507-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-07","session_label":"20:00","tech_content":"**.NET 10 與 C# 14：微軟首個整合後量子密碼學的 LTS 版本**\n\n.NET 10 為長期支援版本，支援期至 2028 年 11 月，C# 14 加入三大生產力特性：Extension Members（可為既有型別新增擴充屬性與運算子）、Implicit Span Conversions（讓陣列與 Span 之間轉換更簡潔高效），以及 File-Based Apps（無需建立方案或專案檔，直接執行單一 .cs 檔案）。安全性方面，.NET 10 率先於主流 SDK 導入後量子密碼學演算法 ML-KEM（FIPS 203）、ML-DSA（FIPS 204）與 SLH-DSA（FIPS 205），防範量子電腦問世後的解密威脅。AI 整合方面，.NET 10 將 Semantic Kernel 與 AutoGen 整合為統一的 Agent Framework，讓開發者可從簡單的 AI 函數呼叫無縫擴展至複雜的多智能體工作流程，是目前 .NET 生態系最完整的 AI 整合方案。\n\n**OpenTelemetry 三柱可觀測性：成為雲端原生微服務的分散式追蹤標準**\n\nOpenTelemetry（OTel）統合 metrics、logs、traces 三大可觀測性支柱，以 OTLP 協定作為標準傳輸格式，讓 Jaeger、Grafana Tempo、Datadog 等後端工具可互換，徹底消除廠商鎖定。2026 年的生態系中，Kubernetes 1.36 已內建 OTLP 匯出支援，Istio 1.22+ 原生整合 OTel 追蹤，eBPF 工具（如 Grafana Beyla）更實現零程式碼插裝，無需修改應用程式即可獲取追蹤資料。OTel 解決的核心工程問題是微服務架構中的根因分析困難：當一個請求跨越多個服務時，完整的呼叫鏈追蹤讓工程師能精確定位延遲瓶頸與失敗點，顯著縮短平均修復時間（MTTR）。\n\n**PostgreSQL 生產級效能調優：索引策略、連線池與非同步 I/O**\n\nPostgreSQL 預設設定針對低規格環境保守配置，生產系統通常需要調整三類參數：記憶體（shared_buffers 設為 RAM 的 25%、work_mem 依並行查詢數分配）、WAL 與 checkpoint 參數，以及查詢層的索引策略。正確的索引設計是投報率最高的優化手段，一個複合索引可讓千萬行資料表的查詢從 1.8 秒降至 0.5 秒，整體吞吐量提升 25%。PostgreSQL 18/19 新引入的非同步 I/O（AIO）子系統讓讀密集查詢延遲降低最多 3 倍。連線池方面，PgBouncer 的 max_client_conn 應設高以承受流量高峰，但 default_pool_size 應限制在 CPU 核心數的 2 至 4 倍，避免上下文切換成為瓶頸。","tech_application":"**① OpenTelemetry Node.js 自動插裝：五分鐘為微服務加上分散式追蹤**\n\n適合後端或全端工程師，希望快速為現有 Node.js 微服務加入可觀測性能力，無需大規模重構程式碼。\n\n安裝 OTel SDK 與自動插裝套件：\n\n```bash\nnpm install @opentelemetry/sdk-node @opentelemetry/auto-instrumentations-node @opentelemetry/exporter-otlp-http\n```\n\n建立 tracing.js 並以 node --require ./tracing.js server.js 啟動：\n\n```javascript\nconst { NodeSDK } = require(\"@opentelemetry/sdk-node\");\nconst { getNodeAutoInstrumentations } = require(\"@opentelemetry/auto-instrumentations-node\");\nconst { OTLPTraceExporter } = require(\"@opentelemetry/exporter-otlp-http\");\n\nconst sdk = new NodeSDK({\n  serviceName: \"my-service\",\n  traceExporter: new OTLPTraceExporter({ url: \"http://localhost:4318/v1/traces\" }),\n  instrumentations: [getNodeAutoInstrumentations()],\n});\nsdk.start();\n```\n\n所有 HTTP 請求與資料庫呼叫將自動產生 span，可送至 Jaeger 或 Grafana Tempo 視覺化呈現，完整呼叫鏈一覽無遺。\n\n**② PostgreSQL EXPLAIN ANALYZE 實戰：定位慢查詢並加索引提速**\n\n適合後端工程師或 DBA，需要診斷生產資料庫中的效能瓶頸問題。\n\n以 EXPLAIN ANALYZE 取得實際執行計畫：\n\n```sql\nEXPLAIN (ANALYZE, BUFFERS)\nSELECT * FROM orders\nWHERE user_id = 123\nORDER BY created_at DESC\nLIMIT 20;\n```\n\n若輸出顯示 Seq Scan（全表掃描），使用 CONCURRENTLY 加入複合索引而不鎖定資料表：\n\n```sql\nCREATE INDEX CONCURRENTLY idx_orders_user\nON orders (user_id, created_at DESC);\n```\n\n加索引後再次執行 EXPLAIN ANALYZE，確認由 Seq Scan 改為 Index Scan，效能通常提升 10 倍以上。","learning_analysis":{"AI / 機器學習":{"summary":".NET 10 將 Semantic Kernel 與 AutoGen 整合為 Agent Framework，讓 .NET 生態系在多智能體框架競逐中取得重要地位；後量子密碼學演算法（ML-KEM、ML-DSA）進入主流 SDK，為 AI 應用的長期安全傳輸提供保障。建議動手建立一個基礎的多智能體工作流，理解 Agent 協調機制。","items":[".NET 10 Agent Framework：整合 Semantic Kernel 與 AutoGen 的多智能體工作流建構","後量子密碼學在主流 SDK 的部署：ML-KEM、ML-DSA、SLH-DSA 演算法應用場景","eBPF 可觀測工具在 AI 推論服務延遲分析中的零插裝監控實踐"]},"雲端與基礎架構":{"summary":"Kubernetes 1.36 原生 OTLP 匯出讓叢集級追蹤更易整合；eBPF 可觀測性工具鏈（Cilium + Hubble + Grafana Beyla）成為 2026 年雲端原生監控的最佳組合，無需修改應用程式即可獲取完整可觀測資料。","items":["Kubernetes 1.36 原生 OTLP 支援：從叢集控制面到應用層的統一追蹤鏈路","eBPF 零插裝可觀測性：Grafana Beyla 實現不修改程式碼的 OTel span 生成","OTel Collector 部署模式：DaemonSet vs Sidecar vs Gateway 的選擇邏輯"]},"前端開發":{"summary":"Visual Studio 2026 與 Copilot 深度整合，提供自動效能分析建議與程式碼現代化輔助，啟動速度比前一版本提升逾 50%；C# 14 的 File-Based Apps 讓前端工程師以更低門檻體驗 .NET 工具鏈。","items":["Visual Studio 2026 Profiler Agent：AI 自動生成效能優化建議的 IDE 整合功能","C# 14 File-Based Apps：無需建立 .sln/.csproj 即可執行 .cs 腳本，降低 .NET 嘗試成本","前後端可觀測性關聯：透過 RUM（真實用戶監控）與後端 OTel trace 串接效能分析"]},"後端 / 系統設計":{"summary":"PostgreSQL 效能調優三層次（記憶體配置、索引策略、連線池）是後端工程師的核心技能；PostgreSQL 18/19 的非同步 I/O 子系統大幅提升高讀取負載場景效能，值得生產環境升級評估。","items":["PostgreSQL AIO 非同步 I/O：讀密集工作負載延遲降低 3 倍的調整要點與版本要求","複合索引設計原則：選擇性高的欄位置前、涵蓋 WHERE/ORDER BY/SELECT 的覆蓋索引","PgBouncer 連線池生產配置：max_client_conn 與 default_pool_size 的最佳實踐"]},"開發者工具 / DevOps":{"summary":"OpenTelemetry 成為可觀測性的事實標準，三柱一體（metrics、logs、traces）的實作已大幅簡化；OTel Collector 的批次處理、採樣與多目標匯出讓大規模微服務監控更易管理，值得導入現有 DevOps 工作流。","items":["OpenTelemetry 自動插裝：Node.js、Go、Python、Java SDK 的零成本快速接入方法","OTel Collector 管線設計：接收 → 處理（批次/採樣）→ 匯出至多個後端的配置模式","Jaeger vs Grafana Tempo：分散式追蹤後端選型比較（開源部署、雲端托管、查詢效能）"]}},"sources":[{"title":"Announcing .NET 10 - .NET Blog","url":"https://devblogs.microsoft.com/dotnet/announcing-dotnet-10/"},{"title":"C# 14 New Features - Microsoft Learn","url":"https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-14"},{"title":".NET 10 Arrives with AI Integration, Performance Boosts, and New Tools","url":"https://visualstudiomagazine.com/articles/2025/11/12/net-10-arrives-with-ai-integration-performance-boosts-and-new-tools.aspx"},{"title":"Implementing OpenTelemetry in Node.js Microservices - DEV Community","url":"https://dev.to/codingmavrick/implementing-opentelemetry-in-nodejs-microservices-from-fundamentals-to-production-deployment-12d9"},{"title":"OpenTelemetry Project Publishes Demystifying OpenTelemetry Guide - InfoQ","url":"https://www.infoq.com/news/2026/02/opentelemetry-observability/"},{"title":"PostgreSQL Performance Tuning Checklist: 2026 Complete Guide - DEV Community","url":"https://dev.to/_d7eb1c1703182e3ce1782/postgresql-performance-tuning-checklist-2026-complete-guide-65a"},{"title":"How to Optimize PostgreSQL Query Performance - OneUptime","url":"https://oneuptime.com/blog/post/2026-01-26-postgresql-query-optimization/view"}]}'  > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
