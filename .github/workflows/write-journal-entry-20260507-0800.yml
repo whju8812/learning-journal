@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-07 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260507-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date": "2026-05-07", "session_label": "08:00", "tech_content": "**MCP：AI Agent 工具整合的通用標準**\n\nMCP（Model Context Protocol）由 Anthropic 於 2024 年 11 月開源，現已成為 AI Agent 連接外部工具與資料源的事實標準。截至 2026 年 3 月，MCP SDK 每月下載量突破 9,700 萬次，GitHub 星數超過 8.1 萬，並獲得 Anthropic、OpenAI、Google、Microsoft、AWS 等主要 AI 廠商全面支援。MCP 透過 JSON-RPC 2.0 通訊，支援 stdio（本地子程序）與 HTTP/SSE（遠端連線）兩種傳輸方式，讓開發者可為自己的工具建立 MCP Server，讓任何相容的 LLM 客戶端都能直接調用，實現真正的互通性。社群已為 GitHub、Slack、PostgreSQL、Stripe 等 200 種以上工具提供現成伺服器，現在學習 MCP 可快速接入這些整合，也能為自有系統建立客製化擴充。\n\n**OpenTofu vs Pulumi：2026 年 IaC 工具選擇策略**\n\nOpenTofu 是 Terraform 的開源 fork，由 Linux 基金會維護，可作為既有 Terraform 工作流程的直接替換（drop-in replacement），所有 .tf 檔案無需修改即可切換。自 HashiCorp 於 2023 年將 Terraform 改為 BSL 授權後，OpenTofu 成為維持純開源 IaC 工作流程的首選方案。Pulumi 則走不同路線，允許使用 TypeScript、Python、Go 等通用程式語言定義基礎設施，並於 2026 年 1 月宣布原生支援 HCL，讓團隊可在 Pulumi 內直接執行既有 Terraform 程式碼。選擇原則：運維導向或需要遷移現有 Terraform 設定的團隊，OpenTofu 是最低摩擦選項；開發者導向、需要複雜動態邏輯的團隊，Pulumi 提供更強的程式設計彈性。\n\n**GitHub Actions 2026 安全強化藍圖與現代 CI/CD 最佳實踐**\n\nGitHub 公布 Actions 2026 安全性藍圖，重點方向包括安全預設值（secure defaults）、供應鏈端到端策略管控，以及 CI/CD 可觀測性提升。現代 CI/CD 管道的典型架構為：推送程式碼觸發 Actions → 建置與測試 → 容器映像推送 → 部署至雲端服務 → 自動監控與回滾。Shift Left 安全哲學讓弱點掃描直接嵌入 IDE 和 CI/CD 流程，大幅縮短漏洞暴露窗口。研究顯示，掌握 CI/CD 最佳實踐的組織部署頻率可提升 208 倍、變更前置時間縮短 106 倍，DevSecOps 能力已成為工程團隊的核心競爭力。", "tech_application": "**① 用 Python MCP SDK 建立第一個 MCP Server**\n\n適合後端工程師與 AI 應用開發者，希望讓自有工具或資料能被 LLM 直接調用的情境。\n\n安裝 SDK：\n\n```\npip install mcp>=1.2.0\n```\n\n建立 server.py 並定義工具：\n\n```python\nfrom mcp.server import Server\nfrom mcp.server.stdio import stdio_server\n\napp = Server(\"my-tool-server\")\n\n@app.tool()\nasync def get_project_status(project: str) -> str:\n    return \"Status: \" + project + \" is running\"\n\nasync def main():\n    async with stdio_server() as (reader, writer):\n        await app.run(reader, writer, app.create_initialization_options())\n\nif __name__ == \"__main__\":\n    import asyncio\n    asyncio.run(main())\n```\n\n將此 Server 路徑加入 Claude Desktop 的 MCP 設定後，Claude 即可直接調用你定義的工具，實現 LLM 與自有系統的無縫整合。\n\n**② OpenTofu 快速起步：從 Terraform 零成本遷移**\n\n適合原本使用 Terraform 的 DevOps 工程師，或希望以純開源 IaC 工具管理雲端資源的團隊。\n\n安裝 OpenTofu（macOS）：\n\n```bash\nbrew install opentofu\n```\n\n直接在既有 Terraform 專案中執行：\n\n```bash\ntofu init\ntofu plan\ntofu apply\n```\n\nOpenTofu 完整相容 Terraform HCL 語法與 Provider 生態系，所有 .tf 檔案無需修改，可從任何現有 Terraform 專案無痛切換至完全開源的工具鏈。", "learning_analysis": {"AI / 機器學習": {"summary": "MCP 已成為 AI Agent 工具整合的事實標準，9,700 萬月下載量與 8.1 萬 GitHub 星數印證生態成熟度，Anthropic、OpenAI、Google 等主流廠商全面採用。建議動手建立第一個 MCP Server，理解 JSON-RPC 通訊機制與工具暴露流程。", "items": ["MCP 三層架構：Client、Server、Transport（stdio 本地 vs HTTP/SSE 遠端）", "MCP Server 三種能力類型：Resources（資料讀取）、Tools（函數調用）、Prompts（模板）", "A2A（Agent-to-Agent）多智能體協調機制，預計 2026 H2 進入成熟階段"]}, "雲端與基礎架構": {"summary": "OpenTofu 作為 Terraform 的開源替代方案持續成熟，Pulumi 加入原生 HCL 支援使工具選擇策略更清晰。運維導向團隊選 OpenTofu、開發者導向團隊選 Pulumi 是目前的主流建議。", "items": ["OpenTofu 與 Terraform 的 drop-in 相容性：零修改遷移實踐", "Pulumi 原生 HCL 支援：在通用語言環境中執行既有 Terraform 程式碼", "IaC 狀態管理最佳實踐：Remote State、State Locking、模組化設計"]}, "前端開發": {"summary": "2026 年前端生態處於穩定整合期，AI 輔助工具（GitHub Copilot、Cursor）已融入 92% 開發者的工作流程。建議複習 CSS Container Queries 實現元件級響應式設計，以及 Core Web Vitals 效能優化方法。", "items": ["CSS Container Queries：基於容器尺寸而非視窗尺寸的響應式設計", "Core Web Vitals（LCP、INP、CLS）指標優化技術", "AI 編碼助理在前端工作流中的整合策略與提示技巧"]}, "後端 / 系統設計": {"summary": "Backend for Frontend（BFF）模式為不同前端客戶端提供專屬後端，解決過度拉取問題。Modular Monolith 在 2026 年成為微服務的主流折衷方案，以 80% 的收益換取 20% 的運維成本。", "items": ["BFF 模式：為 Web、Mobile 分別設計專屬後端 API 以減少 over-fetching", "Modular Monolith：在單一部署單元內建立清晰模組邊界的架構策略", "CQRS 模式：讀寫分離設計在大規模系統中的實際應用"]}, "開發者工具 / DevOps": {"summary": "GitHub Actions 2026 安全藍圖強化供應鏈防護，Shift Left 安全理念讓弱點掃描前移至開發階段。掌握 CI/CD 最佳實踐的組織部署頻率可提升 208 倍，DevSecOps 已成為工程團隊核心競爭力。", "items": ["GitHub Actions 安全強化：least-privilege 權限設計、pin actions 到特定 SHA", "Shift Left 安全：將 SAST、依賴弱點掃描嵌入 IDE 和 CI/CD 流程", "現代 CI/CD 架構：建置、掃描、部署、監控、自動回滾完整流程"]}}, "sources": [{"title": "Complete Guide to MCP in 2026: Building the USB-C for AI-Native Applications", "url": "https://www.essamamdani.com/blog/complete-guide-model-context-protocol-mcp-2026"}, {"title": "Build an MCP Server - Model Context Protocol Official Docs", "url": "https://modelcontextprotocol.io/docs/develop/build-server"}, {"title": "Build an MCP Server with TypeScript: 2026 Tutorial - DEV Community", "url": "https://dev.to/jangwook_kim_e31e7291ad98/build-an-mcp-server-with-typescript-2026-tutorial-1ipk"}, {"title": "Infrastructure as Code Best Practices: Terraform, Pulumi, and OpenTofu in 2026", "url": "https://dev.to/muskan_8abedcc7e12/infrastructure-as-code-best-practices-terraform-pulumi-and-opentofu-in-2026-4nc1"}, {"title": "OpenTofu vs Pulumi: Choosing the Right IaC Tool", "url": "https://oneuptime.com/blog/post/2026-03-20-opentofu-vs-pulumi/view"}, {"title": "What is Coming to GitHub Actions 2026 Security Roadmap", "url": "https://github.blog/news-insights/product-news/whats-coming-to-our-github-actions-2026-security-roadmap/"}, {"title": "Building a Production-Ready CI/CD Pipeline: The Complete 2026 Guide", "url": "https://medium.com/@krishnafattepurkar/building-a-production-ready-ci-cd-pipeline-the-complete-2026-guide-b3d6a661ecd8"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
