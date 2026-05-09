@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-09 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260509-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-09","session_label":"08:00","tech_content":"**LangChain + FastAPI 構建生產級 AI Agent**\n\nAI Agent 架構在 2026 年已成為主流工程實踐，核心是透過 LLM 驅動推理、工具呼叫與狀態管理的閉環流程。LangChain 框架提供 Agent、Tool 與 Memory 三層抽象，搭配 FastAPI 的非同步處理能力，可打造支援高並發的 Agent API 服務。實際工程上，Agent 收到自然語言指令後，先由 LLM 判斷需呼叫哪個 Tool（如資料庫查詢、外部 API、計算函數），執行完畢後再由 LLM 整合結果回應，這套 ReAct（Reasoning + Acting）迴圈是目前業界最廣泛採用的 Agent 模式。FastAPI 在此場景具備明顯優勢：async def 端點讓服務可同時等待多個 LLM 回應而不阻塞，搭配 Pydantic 強型別驗證，可避免 Agent 輸入輸出格式不一致導致的靜默錯誤。\n\n**GitHub Copilot CLI 企業外掛管理進入公開預覽**\n\nGitHub 於 2026 年 5 月 6 日宣布 Copilot CLI 的企業外掛管理（Enterprise-Managed Plugins）進入公開預覽，這是 AI 輔助開發工具走向企業標準化的重要里程碑。企業管理員現在可透過 .github-private/.github/copilot/settings.json 統一定義外掛市集，讓所有持有 Copilot Business 或 Enterprise 授權的開發者自動取得相同的 Agent、Skill 與 MCP 設定，無需個別安裝。這項功能直接解決了大型工程團隊長期面臨的痛點：工具設定分散、新人 onboarding 耗時、以及難以統一執行程式碼規範外掛。對於已導入 Copilot CLI 的企業，現在是整合內部工具外掛並推廣至全團隊的最佳時機。\n\n**Playwright 成為 2026 年端對端測試的標準框架**\n\nPlaywright 由 Microsoft 開發，在 2026 年已實質成為前端與全端工程師的預設 E2E 測試框架，核心優勢在於「自動等待」（auto-wait）機制，框架會持續等到元素可互動後才執行操作，從根本消除了 Selenium 時代的 flaky test 問題。最佳實踐建議使用語意化定位器如 getByRole、getByLabel、getByText 取代 CSS selector，讓測試與 UI 實作解耦，大幅降低維護成本。Playwright 的跨瀏覽器支援（Chromium、Firefox、WebKit）與並行執行能力，不僅適用於開發者本機環境，也能直接整合進 GitHub Actions CI 流程，在每次 PR 自動觸發完整的瀏覽器回歸測試，確保每次部署品質。","tech_application":"**① 用 LangChain + FastAPI 建立第一個 AI Agent API**\n\n適合 Python 後端工程師或對 AI 應用開發感興趣的開發者，以下是最小可運行範例，安裝後即可在本機啟動 Agent 服務：\n\n```bash\npip install langchain langchain-openai fastapi uvicorn\n```\n\n```python\n# main.py\nfrom fastapi import FastAPI\nfrom langchain_openai import ChatOpenAI\nfrom langchain.agents import AgentExecutor, create_react_agent\nfrom langchain.tools import tool\nfrom langchain import hub\n\n@tool\ndef get_word_length(word: str) -> int:\n    return len(word)\n\nllm = ChatOpenAI(model=\"gpt-4o-mini\", temperature=0)\nprompt = hub.pull(\"hwchase17/react\")\nagent = create_react_agent(llm, [get_word_length], prompt)\nagent_executor = AgentExecutor(agent=agent, tools=[get_word_length], verbose=True)\n\napp = FastAPI()\n\n@app.post(\"/chat\")\nasync def chat(query: str):\n    result = await agent_executor.ainvoke({\"input\": query})\n    return {\"output\": result[\"output\"]}\n```\n\n```bash\nuvicorn main:app --reload\n```\n\n**② 設定 GitHub Copilot CLI 企業外掛（管理員配置）**\n\n適合 DevOps 工程師或企業 GitHub 管理員，用於統一全組織的 Copilot CLI 工具設定。在組織的 .github-private 私有 repo 中建立 .github/copilot/settings.json，讓所有開發者自動取得組織外掛：\n\n```json\n{\n  \"version\": \"1.0\",\n  \"plugins\": {\n    \"marketplace\": [\n      {\n        \"name\": \"internal-code-review-agent\",\n        \"source\": \"https://github.com/your-org/copilot-plugins\",\n        \"autoInstall\": true\n      }\n    ]\n  }\n}\n```\n\n設定完成後，所有持有 Copilot Business 或 Enterprise 授權的開發者在執行 gh copilot 指令時，會自動取得組織定義的外掛，無需手動安裝。","learning_analysis":{"AI / 機器學習":{"summary":"LangChain + FastAPI 的 AI Agent 開發模式已成熟，ReAct 推理迴圈為核心架構，適合立即上手實作生產級 Agent 服務。","items":["LangChain AgentExecutor + create_react_agent 是 2026 年最主流的 Agent 建構方式","FastAPI async def 配合 ainvoke 可支援高並發 LLM 請求而不阻塞主執行緒","LangSmith、Langfuse 等可觀測性工具是生產環境 Agent 除錯的必備配備"]},"雲端與基礎架構":{"summary":"GitHub Actions 持續成為 CI/CD 的預設選擇，AWS CodePipeline 適合雲端原生全棧部署，兩者均支援事件驅動的自動化流程。","items":["GitHub Actions 以 push 與 PR 事件驅動工作流程，是最低門檻的 CI/CD 入口","AWS CodePipeline 搭配 ECR + ECS 提供容器化應用的完整 CD 流程","GitOps 工具如 Argo CD 讓 Git 成為基礎架構狀態的唯一真實來源"]},"前端開發":{"summary":"Playwright 已成為 E2E 測試的業界標準，語意化定位器與自動等待機制大幅降低測試維護成本，適合整合進 CI 流程。","items":["使用 getByRole、getByLabel 取代 CSS selector，讓測試與 UI 實作解耦","Playwright 內建並行執行與跨瀏覽器支援，可在 GitHub Actions 中直接使用","Page Object Model（POM）搭配 Playwright Fixtures 是大型專案的最佳組織方式"]},"後端 / 系統設計":{"summary":"模組化單體（Modular Monolith）架構在 2026 年成為中小型團隊的首選起點，提供微服務的模組邊界優點同時大幅降低維運複雜度。","items":["Modular Monolith：清晰模組邊界搭配統一部署，適合初期或 10 人以下工程團隊","Pub/Sub 模式（Redis、Kafka、RabbitMQ）解耦服務依賴並避免級聯故障","BFF（Backend for Frontend）模式讓行動端與網頁端各自擁有最適合的 API 介面"]},"開發者工具 / DevOps":{"summary":"GitHub Copilot CLI 企業外掛管理（Enterprise-Managed Plugins）進入公開預覽，企業可透過單一設定檔統一分發 AI 工具，大幅降低 onboarding 成本。","items":["企業管理員可透過 .github-private repo 的 settings.json 統一定義外掛市集","支援 autoInstall 讓開發者自動取得組織 Agent、Skill 與 MCP 設定","與 Copilot Business 及 Enterprise 授權整合，無需個別設定即可全員推廣"]}},"sources":[{"title":"How to Build AI Agents (2026): Frameworks, Code & Systems","url":"https://blog.eduonix.com/2026/05/building-ai-agents-in-2026-a-practical-guide-to-agentic-ai-systems-frameworks-and-workflows/"},{"title":"How to Build and Deploy an AI Agent with LangChain, FastAPI, and Sevalla","url":"https://www.freecodecamp.org/news/build-ai-agent-with-langchain-fastapi-and-sevalla/"},{"title":"Enterprise-managed plugins in GitHub Copilot CLI are now in public preview","url":"https://github.blog/changelog/2026-05-06-enterprise-managed-plugins-in-github-copilot-cli-are-now-in-public-preview/"},{"title":"Playwright Automation Framework Tutorial (2026)","url":"https://www.browserstack.com/guide/playwright-tutorial"},{"title":"Backend Architecture Patterns — A Practical Guide for 2026","url":"https://codelit.io/blog/backend-architecture-patterns-guide"},{"title":"Building a Production-Ready CI/CD Pipeline: The Complete 2026 Guide","url":"https://medium.com/@krishnafattepurkar/building-a-production-ready-ci-cd-pipeline-the-complete-2026-guide-b3d6a661ecd8"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
