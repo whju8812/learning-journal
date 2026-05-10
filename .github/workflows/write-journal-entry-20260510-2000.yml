@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-10 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260510-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date": "2026-05-10", "session_label": "20:00", "tech_content": "**Biome v2.3 — 以單一工具取代 ESLint 與 Prettier 的前端程式碼品質革命**\n\nBiome 在 2026 年推出 v2.3 版本，超過 423 條 lint 規則並首次加入型別感知靜態分析（type-aware linting），這是 ESLint 過去需搭配 TypeScript plugin 才能實現的功能。它解決的核心問題是：傳統前端專案需維護多份設定檔（.eslintrc.js、.prettierrc、.eslintignore），版本升級時各工具衝突令人頭痛。Biome 以單一 biome.json 統一程式碼品質流程，對 10,000 個檔案的 lint 僅需 0.8 秒（ESLint 需 45.2 秒），格式化同樣數量的檔案僅需 0.3 秒（Prettier 需 12.1 秒）。對追求快速 CI pipeline 的前端團隊，現在正是遷移的好時機。\n\n**Vite 7 與 Rolldown 整合 — Rust 重構前端打包工具鏈的新里程碑**\n\nVite 7 已正式發布，最值得關注的是 Rolldown 的實驗性整合。Rolldown 是由 VoidZero 團隊以 Rust 打造的新一代 JavaScript 打包器，設計目標是取代 Rollup 並大幅壓縮大型專案的 build 時間。開發者只需將依賴從 vite 換成 rolldown-vite 即可試用，無需修改 vite.config.ts。此外 Vite 7 引入 baseline-widely-available 作為預設瀏覽器目標，讓 build 產出自動對齊 Google Baseline 廣泛可用特性集；最低 Node.js 要求也提升至 v20.19+，正式宣告 Node.js 18 在前端工具鏈中落幕。\n\n**Dagger — 用真實程式語言撰寫 CI/CD Pipeline，終結 YAML 地獄**\n\nDagger 是讓開發者以 Go、Python、TypeScript 等真實語言撰寫 CI/CD pipeline 的平台，解決業界長期面對的 YAML hell 問題：以宣告式 YAML 定義的 pipeline 難以測試、難以本機重現，且各 CI 平台語法各異。Dagger 的 pipeline 以容器化方式執行，保證在本機 laptop 與 CI runner 上的行為完全一致；每個操作都內建 OpenTelemetry 追蹤，可在終端機或 Web UI 即時視覺化執行流程。pipeline 本身成為可版本控制、可單元測試的程式碼，是 2026 年 DevOps 工程師值得深入研究的現代 CI/CD 實踐。", "tech_application": "**① 將現有前端專案從 ESLint + Prettier 遷移至 Biome**\n\n適合前端工程師與 TypeScript 開發者，在中大型前端專案中統一程式碼品質工具鏈。Biome 提供官方遷移指令，可自動轉換現有設定：\n\n```bash\n# 安裝 Biome\nnpm install --save-dev --save-exact @biomejs/biome\n\n# 初始化設定檔\nnpx @biomejs/biome init\n\n# 自動從 ESLint 設定遷移\nnpx @biomejs/biome migrate eslint --write\n\n# 自動從 Prettier 設定遷移\nnpx @biomejs/biome migrate prettier --write\n\n# 執行完整 lint 與格式化\nnpx @biomejs/biome check --write .\n```\n\n遷移完成後可刪除舊設定檔，改由單一 biome.json 管理。\n\n**② 以 Dagger Python SDK 建立可在本機執行的 CI Pipeline**\n\n適合後端工程師與 DevOps 工程師，以程式碼取代 YAML pipeline，實現本機與 CI 環境完全一致的執行結果。\n\n```bash\n# 安裝 Dagger CLI\ncurl -fsSL https://dl.dagger.io/dagger/install.sh | BIN_DIR=/usr/local/bin sh\n\n# 安裝 Python SDK\npip install dagger-io\n```\n\n```python\nimport dagger\nimport asyncio\n\nasync def main():\n    async with dagger.Connection() as client:\n        result = await (\n            client.container()\n            .from_(\"python:3.12-slim\")\n            .with_directory(\"/src\", client.host().directory(\".\"))\n            .with_workdir(\"/src\")\n            .with_exec([\"pip\", \"install\", \"-r\", \"requirements.txt\"])\n            .with_exec([\"pytest\", \"tests/\"])\n            .stdout()\n        )\n        print(result)\n\nasyncio.run(main())\n```\n\n```bash\n# 本機直接執行，與 CI 環境完全相同\npython pipeline.py\n```", "learning_analysis": {"AI / 機器學習": {"summary": "今日焦點轉向前端與 DevOps 工具鏈。AI 輔助開發工具方面，GitHub Copilot 在 VS Code 4 月版本新增跨 repo 語意搜尋能力，持續強化開發者體驗。值得複習的基礎概念：Transformer 注意力機制的空間與時間複雜度，這是理解 LLM 推理成本的關鍵基礎。", "items": ["GitHub Copilot VS Code 新增語意搜尋（Semantic Search），可跨 GitHub repo 執行類 grep 的意義查詢", "AI 輔助工具鏈整合趨勢：從獨立插件走向統一開發環境，開發者生產力持續提升", "複習基礎：Transformer Self-Attention 的 O(n²) 複雜度與各種優化策略（如 Flash Attention）"]}, "雲端與基礎架構": {"summary": "Dagger 以容器化 pipeline 解決跨 CI 平台一致性問題，成為雲端原生 CI/CD 的代表性工具；Vite 7 的 baseline-widely-available 策略與雲端 CDN 靜態部署的最佳化方向高度吻合，讓前端 build 產出自動對齊現代瀏覽器能力邊界。", "items": ["Dagger 容器化 pipeline：以 Docker engine 為基礎，保證本機與雲端 CI runner 行為完全一致", "Vite 7 baseline-widely-available 目標：自動對齊 Google Baseline 廣泛可用特性集，簡化 CDN 部署策略", "OpenTelemetry 在 CI/CD 的應用：Dagger 內建 trace，可視覺化 pipeline 執行流程提升可觀測性"]}, "前端開發": {"summary": "今日前端工具鏈迎來重要升級。Biome v2.3 的 type-aware linting 讓前端靜態分析對齊後端語言的編譯期型別檢查水準；Vite 7 的 Rolldown 實驗整合預示 Rust 將全面接管 JavaScript 工具鏈的效能敏感層，前端開發者應開始評估遷移時程。", "items": ["Biome v2.3：423+ 條 lint 規則 + type-aware linting，以單一 biome.json 取代 ESLint + Prettier 雙工具鏈", "Vite 7 Rolldown 整合（實驗性）：Rust 打包器，只需換用 rolldown-vite 套件即可試用，無需修改設定", "Vite 7 最低 Node.js 要求提升至 v20.19+，baseline-widely-available 作為預設瀏覽器目標"]}, "後端 / 系統設計": {"summary": "Dagger 展示了 pipeline as code 在後端工程實踐的延伸：以容器為原語、以真實語言為 DSL、以 OpenTelemetry 為可觀測性基礎。對中大型服務，統一的 pipeline 程式碼庫也成為平台工程（Platform Engineering）的重要組成。", "items": ["Dagger pipeline as code：Go/Python/TypeScript 撰寫 CI 流程，可版本控制、可單元測試", "Platform Engineering 趨勢：統一內部 CI/CD 工具鏈成為 2026 年後端基礎設施的重要議題", "複習基礎：Event-driven architecture 中的 at-least-once vs. exactly-once 語意與冪等處理策略"]}, "開發者工具 / DevOps": {"summary": "Biome 整合 lint + format 為單一工具，Dagger 將 pipeline 程式碼化，兩者共同指向 2026 年 DevOps 文化的核心轉變：工具鏈應像應用程式碼一樣被測試、版本控制和重用。這是繼 Infrastructure as Code 之後，Pipeline as Code 成為工程標準實踐的關鍵時刻。", "items": ["Biome：單一工具統一 lint + format，消除 ESLint/Prettier 設定檔地獄，CI 檢查速度提升 50 倍以上", "Dagger：pipeline 以容器化程式碼執行，本機可重現，內建 OpenTelemetry 追蹤與精細快取機制", "Pipeline as Code 趨勢：繼 IaC 之後，CI/CD pipeline 成為下一個被程式碼化的工程基礎設施"]}}, "sources": [{"title": "Biome: The ESLint and Prettier Killer? Complete Migration Guide for 2026", "url": "https://dev.to/pockit_tools/biome-the-eslint-and-prettier-killer-complete-migration-guide-for-2026-27m"}, {"title": "Migrate from ESLint and Prettier — Biome.js Official Guide", "url": "https://biomejs.dev/guides/migrate-eslint-prettier/"}, {"title": "Vite 7.0 is out! — Vite Official Blog", "url": "https://vite.dev/blog/announcing-vite7"}, {"title": "Vite 7: Rust-powered Rolldown, Baseline Browser Target and Beyond", "url": "https://blog.openreplay.com/whats-new-vite-7-rust-baseline-beyond/"}, {"title": "Dagger: CI/CD Pipelines as Code That Actually Work Locally", "url": "https://www.bordencastle.com/devops/development/2026/02/26/dagger-cicd-as-code.html"}, {"title": "Dagger.io — Automation engine to build, test and ship any codebase", "url": "https://dagger.io/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
