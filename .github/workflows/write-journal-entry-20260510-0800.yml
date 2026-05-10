@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-10 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260510-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-10","session_label":"08:00","tech_content":"**Google Cloud TPU 8i — 專為 AI 代理推理設計的第八代晶片**\n\nGoogle 在 2026 年 Cloud Next 大會上發布第八代 TPU，首次拆分為兩個專用晶片：TPU 8t（訓練導向）與 TPU 8i（推理導向）。TPU 8i 解決的核心問題在於：當 AI 代理大規模並行運行時，通用晶片的推理延遲成為瓶頃。TPU 8i 搽載比上一代多 3 倍的 on-chip SRAM，讓 KV Cache 完全存於晶片上，大幅降低長上下文解碼的閒置時間；Collectives Acceleration Engine（CAE）將分散式自迴歸解碼的集體操作延遲降低 5 倍；新型 Boardfly 網路拓撲最多可連接 1,152 颗晶片，通訊密集型工作負載延遲改善 50%。對於正在設計 AI 推理基礎架構的工程師，這種訓練與推理晶片的專用化分化趨勢，是雲端資源選型時不可忽視的架構方向。\n\n**Airlock — 可自我升級的編譯型 AI Agent 開源框架**\n\nAirlock 是一個以 Go 語言打造的開源框架，讓開發者建立能夠自行升級的自主代理程式。與傳統以 Python 腳本運行的 AI 代理不同，Airlock 代理以編譯的容器化二進位檔存在，透過向框架 API 發出請求來動態生成新工具或修復執行錯誤，同時統一管理 OAuth 認證、儲存沙箱、以及 chat、web、cron 和 webhook 多種互動介面。這種「可進化代理」的設計模式解決了 AI 代理在生產環境中難以安全自我擴充的痛點，是 2026 年 AI 代理工程架構中値得深入研究的範本。\n\n**GitHub Copilot CLI 企業插件管理 — 大規模治理 AI 開發工具鏈**\n\nGitHub 於 2026 年 5 月 6 日將 Copilot CLI 企業插件管理功能推入公開預覽。這項功能解決的是大型工程組織中 AI 工具鏈碎片化的問題：各開發者過去自行安裝不同版本的插件，導致行為不一致且難以稽核。企業管理員現在可在 .github-private 倉庫的統一設定檔中集中定義插件市集、MCP 設定與 hook 規則，並自動同步至所有持有 Copilot Business 或 Copilot Enterprise 授權的開發者端。安全政策（如 PII 過濾、工具呼叫稽核）也可透過插件一鍵下發，對負責工具鏈治理的 DevOps 工程師而言是値得立刻試用的新功能。","tech_application":"**① 使用 Airlock 建立可自我升級的 AI Agent**\n\n適合後端工程師與希望在生產環境部署自主代理的開發者。Airlock 代理以編譯的 Go 二進位檔運行，支援動態生成新工具，並整合 OAuth、Web UI 及多種觸發介面。以下是快速上手的基本步驟：\n\n```bash\n# 安裝 Airlock CLI（需要 Go 1.22 以上環境）\ngo install github.com/airlock-dev/airlock@latest\n\n# 探索本機 git 指令並自動生成工具描述\nairlock discover cli git\n\n# 以 stdio 模式啟動代理（適合本機測試）\nairlock run --mode stdio\n\n# 以 gateway server 模式在 4111 埠啟動（適合生產部署）\nairlock run --mode server --port 4111\n```\n\n**② GitHub Copilot CLI 企業插件集中下發**\n\n適合 DevOps 工程師與工程主管，在 GitHub Enterprise Cloud 環境中統一管理開發者 AI 工具鏈。建立 .github-private 倉庫並新增以下設定檔，Copilot CLI 會自動套用至所有授權用戶，路徑為 .github-private/.github/copilot/settings.json。設定完成後可在开發者端執行以下指令確認插件已載入：\n\n```bash\n# 確認已載入的企業插件清單\ngh copilot config list\n\n# 列出可用的插件市集\ngh copilot extensions list --source enterprise-marketplace\n```","learning_analysis":{"AI / 機器學習":{"summary":"Google 發布第八代 TPU，首次分為訓練版（TPU 8t）與推理版（TPU 8i），後者搞載 CAE 引擎將代理推理延遲降低 5 倍；Airlock 框架也展示了 AI 代理自我進化的工程實踐。","items":["Google TPU 8i 的 Collectives Acceleration Engine（CAE）將分散式自迴歸解碼的集體操作延遲降低 5 倍","Boardfly 網路拓撲支援最多 1,152 颗晶片互聯，通訊密集型推理延遲改善 50%","Airlock 開源框架實現可自我升級的 Go 編譯型 AI Agent，統一管理 OAuth 與沙箱安全"]},"雲端與基礎架構":{"summary":"AI 推理硬體進入專用化時代，Google 以 TPU 8t 對應訓練、TPU 8i 對應推理，打破通用晶片一統格局，這種分化趨勢將影響雲端 AI 服務的資源規劃方式。","items":["TPU 8i 擁有比前代多 3 倍的 on-chip SRAM，KV Cache 完全存於晶片，降低長上下文解碼延遲","Google 聲稱 TPU 8i 對大型 MoE 模型的低延遲推理性能/美元比較 Ironwood 提升 80%","雲端 AI 推理基礎架構選型原則：高並行推理選 TPU 8i，大規模訓練選 TPU 8t"]},"前端開發":{"summary":"GitHub Copilot 在 VS Code 的 2026 年 4 月版本持續強化 AI 輔助開發體驗，前端開發者可透過 Copilot Chat、inline completion 與 agent mode 加速組件開發流程。","items":["GitHub Copilot VS Code 2026 年 4 月更新包含更精準的 inline completion 與多模型支援","Copilot agent mode 可自動跳檔重構，適合大型前端專案的組件拆分作業","倦得複習的基礎概念：Virtual DOM reconciliation 演算法，理解 React/Vue 的渲染效能對比與最佳化原理"]},"後端 / 系統設計":{"summary":"Airlock 框架展示了 AI 代理的新型後端架構模式：以編譯二進位檔取代動態腳本，透過 API 驅動的工具生成實現安全的自我擴充。模組化單體架構在 2026 年仍是中小型後端服務的主流選擇。","items":["Airlock AI Agent 架構：Go 編譯二進位 + API 驅動工具生成 + OAuth 管理 + 沙箱雔離","模組化單體（Modular Monolith）：以清晰模組邊界獲得微服務 80% 的好處，卻只需 20% 的運維成本","BFF（Backend for Frontend）模式：為不同前端客戶端建立專屬後端，避免共享 API 的耦合問題"]},"開發者工具 / DevOps":{"summary":"GitHub Copilot CLI 企業插件管理進入公開預覽，讓組織可集中治理 AI 開發工具鏈；同日 Rubber Duck 功能也新增多模型支援，開發者可在 CLI 環境中切換最適合除錯情境的語言模型。","items":["GitHub Copilot CLI 企業插件管理：管理員可在 .github-private 倉庫集中定義插件、MCP 設定與 hook 規則","Rubber Duck 功能新增多模型支援（2026-05-07），可在 Copilot CLI 中切換不同 AI 模型進行除錯","Stage CLI 開源工具：讓開發者在本機更輕鬆閱讀 AI 生成的差異變更（Show HN 2026-05-08）"]}},"sources":[{"title":"TPU 8t and TPU 8i technical deep dive | Google Cloud Blog","url":"https://cloud.google.com/blog/products/compute/tpu-8t-and-tpu-8i-technical-deep-dive"},{"title":"Show HN: Airlock - self-upgrading compiled AI agents | Hacker News","url":"https://news.ycombinator.com/item?id=48051931"},{"title":"Enterprise-managed plugins in GitHub Copilot CLI are now in public preview - GitHub Changelog","url":"https://github.blog/changelog/2026-05-06-enterprise-managed-plugins-in-github-copilot-cli-are-now-in-public-preview/"},{"title":"Rubber Duck in GitHub Copilot CLI now supports more models - GitHub Changelog","url":"https://github.blog/changelog/2026-05-07-rubber-duck-in-github-copilot-cli-now-supports-more-models/"},{"title":"AI infrastructure at Next 26 | Google Cloud Blog","url":"https://cloud.google.com/blog/products/compute/ai-infrastructure-at-next26"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
