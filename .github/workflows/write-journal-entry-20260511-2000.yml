@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-11 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260511-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-11","session_label":"20:00","tech_content":"**Bun 1.3 進入生產：2.7 倍效能優勢重塑 JavaScript 後端生態**\n\nBun 是以 Zig 語言撰寫、基於 Apple JavaScriptCore 引擎的 JavaScript 全棧工具鏈（runtime + bundler + test runner + package manager）。Bun 1.3（2026 年 2 月發布）在 HTTP 吞吐量測試中達到 14,320 req/s，比 Node.js（5,240）快 2.7 倍、比 Deno（6,180）快 2.3 倍，冷啟動時間僅 31ms（Node.js 為 142ms）。Vercel 已於 2025 年底將 Bun runtime 認證於其 Edge 平台，截至 2026 年 4 月約 20% 的新 Next.js 生產部署使用 Bun。對後端開發者而言，Bun 的核心價值在於：原生支援 TypeScript（無需 ts-node）、內建 SQLite 驅動、與 Node.js 高度相容，遷移成本極低——通常只需修改 1–3 處不相容設定即可上線。\n\n**Pulumi：用真正的程式語言撰寫基礎架構，讓 IaC 可測試、可抽象**\n\nPulumi 是基礎設施即程式碼（IaC）工具，核心差異在於完全拋棄 HCL，改以 TypeScript、Python、Go、C# 等通用語言定義雲端資源。相較於 OpenTofu（Terraform）的宣告式 DSL，Pulumi 讓工程師能以 for 迴圈、類別繼承、型別檢查組合基礎設施，並用 Jest 或 Pytest 撰寫單元測試——這在複雜的內部開發者平台（IDP）中意義重大。2026 年 DevOps 社群出現了「雙軌策略」趨勢：以 OpenTofu 管理網路層、IAM 等穩定基礎設施，以 Pulumi 管理應用層動態資源（Lambda、容器服務、資料庫副本）。pulumi new aws-typescript 指令可在一分鐘內生成完整腳手架，並內建 dev/staging/prod stack 分離，讓基礎設施跟著應用程式 PR 一起 review。\n\n**Netflix ML 模型服務路由架構：Switchboard 到 Lightbulb 的演進**\n\nNetflix 技術部落格 2026 年 5 月公開了其 ML 模型服務平台的路由演進歷程。該平台目前服務數百種模型類型，每秒處理 100 萬次推論請求，支援標題推薦、商業決策等多個領域。第一代架構 Switchboard 提供統一的 domain-independent API 抽象，讓各業務微服務透過單一入口進行模型推論；但其單點故障風險與延遲瓶頸在百萬 QPS 下逐漸浮現。第二代 Lightbulb 將路由元資料服務從資料路徑解耦，搭配 Envoy 實現低延遲路由決策，即 control plane（Lightbulb）與 data plane（推論節點）分離。此架構模式可複用於任何需要在高 QPS 下動態切換模型版本或做 A/B 測試的 ML 系統。","tech_application":"**① 將 Node.js Express 專案遷移至 Bun**\n\n適合後端開發者或全端工程師，在現有 Node.js 專案效能成瓶頸、或想消除 ts-node 複雜度時嘗試遷移。三步驟完成安裝並驗證相容性：\n\n```bash\ncurl -fsSL https://bun.sh/install | bash\nbun install\nbun run src/index.ts\n```\n\n若使用 Express，直接修改 package.json 的 start 指令即可；Bun 相容 Node.js 的 CommonJS 與 ESM 模組，大多數 npm 套件無需修改。Docker 部署使用官方映像：\n\n```dockerfile\nFROM oven/bun:latest\nCOPY . .\nRUN bun install --frozen-lockfile\nCMD [\"bun\", \"run\", \"src/index.ts\"]\n```\n\n**② 用 Pulumi TypeScript 建立 AWS Lambda 部署並加入單元測試**\n\n適合 DevOps 工程師或希望將測試引入基礎架構管理的開發者，三步驟建立可測試的 IaC 專案：\n\n```bash\nnpm install -g @pulumi/cli\npulumi new aws-typescript\npulumi up\n```\n\n在自動生成的 index.ts 中定義 Lambda 函數，TypeScript 型別系統會在 CI 階段提前攔截設定錯誤：\n\n```typescript\nimport * as aws from \"@pulumi/aws\";\nimport * as pulumi from \"@pulumi/pulumi\";\n\nconst fn = new aws.lambda.Function(\"myFn\", {\n  runtime: aws.lambda.Runtime.NodeJS22dX,\n  code: new pulumi.asset.FileArchive(\"./dist\"),\n  handler: \"index.handler\",\n  role: lambdaRole.arn,\n});\nexport const functionArn = fn.arn;\n```\n\n切換環境只需 pulumi stack select staging，部署前預覽用 pulumi preview，清除資源用 pulumi destroy。","learning_analysis":{"AI / 機器學習":{"summary":"Netflix 公開 ML 模型服務路由架構演進（Switchboard 到 Lightbulb），揭示百萬 QPS 規模下 control plane / data plane 分離的工程必要性；ML 系統的路由設計是 2026 年 AI 基礎設施的核心議題","items":["Netflix ML 平台服務 100 萬 req/s，涵蓋推薦、商業決策等多域，版本管理複雜度極高","Switchboard（第一代）：統一 API 抽象加速上線，但單點故障與延遲成規模化瓶頸","Lightbulb（第二代）：路由元資料服務與推論節點解耦，搭配 Envoy 實現低延遲決策","Control plane / data plane 分離模式可複用於任何高 QPS ML 推論系統的版本管理與 A/B 測試"]},"雲端與基礎架構":{"summary":"Pulumi 以通用程式語言取代 HCL 撰寫 IaC，讓基礎設施真正可單元測試；2026 年 DevOps 社群興起 OpenTofu + Pulumi 雙軌策略，分別管理穩定與動態資源","items":["Pulumi 支援 TypeScript、Python、Go、C#，完整繼承型別系統與測試框架（Jest/Pytest）","OpenTofu 管理穩定基礎設施（VPC、IAM），Pulumi 管理動態應用資源（Lambda、容器、DB）","pulumi new aws-typescript 一分鐘生成腳手架，內建 dev/staging/prod stack 分離","基礎設施程式碼可納入 PR review，搭配 CI 執行 pulumi preview 預覽變更"]},"前端開發":{"summary":"Bun runtime 正在改變 JavaScript 生態，Vercel Edge 平台認證 Bun，截至 2026 年 4 月約 20% 的新 Next.js 生產部署採用 Bun；原生 TypeScript 支援讓前端開發者無需額外設定即可執行 .ts 檔","items":["Bun 1.3（2026-02）HTTP 吞吐量達 14,320 req/s，比 Node.js 快 2.7 倍","原生支援 TypeScript、JSX，無需 ts-node 或 Babel，前端開發體驗大幅簡化","Vercel Edge 平台認證 Bun，Next.js 在 Vercel 部署中 20% 採用 Bun runtime（2026-04）","Bun 冷啟動 31ms（Node.js 142ms），對 Edge Function 延遲優化效果顯著"]},"後端 / 系統設計":{"summary":"Bun 在 API 密集型後端提供 2.7 倍效能提升，內建 SQLite 適合輕量服務；Netflix Lightbulb 架構展示路由元資料服務獨立化的系統設計思路，兩者皆代表 2026 年後端基礎設施優化的實際方向","items":["Bun 基於 JavaScriptCore，冷啟動與 I/O 效能優於 V8（Node.js/Deno），適合 Serverless 與 API 密集場景","Bun 內建 SQLite 驅動，無需 better-sqlite3 等依賴，適合輕量後端或 CLI 工具","Netflix Lightbulb：routing 元資料服務職責單一，透過 Envoy 整合避免資料路徑延遲","ML 推論系統的版本切換與 A/B 測試應在 routing 層實現，而非在應用邏輯層堆疊條件判斷"]},"開發者工具 / DevOps":{"summary":"Bun 作為一站式工具鏈（runtime + bundler + test runner + package manager）簡化 JavaScript 專案設定；Pulumi CLI 讓基礎設施部署進入 GitOps 流程；兩者共同反映 2026 年減少工具複雜度、提升可測試性的核心趨勢","items":["Bun 單一工具取代 node + tsc + jest + npm/pnpm，package 安裝速度比 npm 快 18-20 倍","Pulumi CLI 指令：pulumi new、pulumi up、pulumi preview、pulumi destroy，覆蓋完整 IaC 生命週期","Pulumi stack 讓 dev/staging/prod 環境切換只需 pulumi stack select，無需維護多份設定檔","Bun 相容 Node.js 模組系統，現有 npm 套件大多無需修改即可遷移，降低採用風險"]}},"sources":[{"title":"Bun Runtime Production Guide 2026: Speed vs Stability","url":"https://byteiota.com/bun-runtime-production-guide-2026-speed-vs-stability/"},{"title":"Bun vs Deno vs Node.js in 2026: Benchmarks, Code, and Real Numbers","url":"https://dev.to/jsgurujobs/bun-vs-deno-vs-nodejs-in-2026-benchmarks-code-and-real-numbers-2l9d"},{"title":"State of Routing in Model Serving — Netflix TechBlog","url":"https://netflixtechblog.com/state-of-routing-in-model-serving-16e22fe18741"},{"title":"Infrastructure as Code Best Practices: Terraform, Pulumi, and OpenTofu in 2026","url":"https://dev.to/muskan_8abedcc7e12/infrastructure-as-code-best-practices-terraform-pulumi-and-opentofu-in-2026-4nc1"},{"title":"IaC in 2026: Terraform/OpenTofu vs Pulumi","url":"https://peerobyte.com/blog/infrastructure-as-code-in-2026-terraform-opentofu-vs-pulumi-and-common-mistakes/"},{"title":"How to Use Pulumi with TypeScript","url":"https://oneuptime.com/blog/post/2026-01-26-pulumi-typescript-iac/view"},{"title":"Bun JavaScript Tutorial: Build a REST API 2026","url":"https://tech-insider.org/bun-javascript-tutorial-rest-api-2026/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
