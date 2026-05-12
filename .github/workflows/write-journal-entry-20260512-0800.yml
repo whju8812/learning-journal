@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-12 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260512-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date": "2026-05-12", "session_label": "08:00", "tech_content": "**GitHub Copilot 進化為代理式開發夥伴**\n\n2026 年四月，GitHub Copilot 在 VS Code 推出重大更新，從單純的自動補全工具升級為真正的代理式協作夥伴。語義代碼搜尋現已在所有工作區啟用，開發者只需描述問題，代理便能突破關鍵字限制，定位概念相關的程式碼邏輯——例如描述登入錯誤，代理可自動找到 session 處理與身份驗證中介層。新功能還包括：代理可直接讀寫開啟中的終端機（含 REPL 與互動式腳本）、在聊天視窗以內聯 diff 呈現程式碼變更、分享瀏覽器分頁作為即時 UI 偵錯上下文，以及 /chronicle 指令讓開發者快速查詢歷史聊天記錄，回溯曾處理的檔案與 PR。\n\n**Ollama：讓本地 LLM 成為日常開發標配**\n\nOllama 是目前社群最廣泛採用的本地 LLM 執行環境，設計理念如同「LLM 版的 Docker」。透過單一指令即可拉取並運行模型，自動處理量化、記憶體管理與 GPU 加速，無需手動設定複雜的推論環境。2026 年穩定版 v0.5.7 支援 Llama 3.2、Mistral、Phi-3 等主流開源模型，在配備 8GB VRAM 的 GPU 上，7B 參數模型可達每秒 40-60 個 token 的推論速度。最大亮點是完全相容 OpenAI Python SDK：只需在既有程式碼中修改 base_url 一行，即可將 API 呼叫切換至本地推論，實現零費用、離線且完全私密的 AI 開發環境。\n\n**n8n：低程式碼 AI 代理工作流程的主流選擇**\n\nn8n 在 2026 年已成為開發者建立 AI 代理自動化工作流程的首要平台，結合視覺化節點編輯器與完整程式碼控制能力，兼顧快速原型與生產環境需求。內建 AI Agent 節點支援記憶體管理、工具呼叫與條件判斷，透過 MCP 客戶端子節點可與任何 MCP 伺服器整合，讓代理自動發現並呼叫外部工具。平台提供超過 600 個社群模板，涵蓋 Webhook 觸發、API 串接、Slack 通知等常見場景，解決企業內部重複性任務的自動化需求，適合從個人開發者到中型技術團隊使用。", "tech_application": "**① Ollama 本地 LLM 快速上手**\n\n適合對 AI 應用開發有興趣、但擔心 API 費用或資料隱私的後端開發者。在本機安裝 Ollama 後，可免費運行各種開源 LLM，並透過 OpenAI 相容介面整合既有程式碼，無需更改架構。\n\n```bash\n# 安裝 Ollama（Linux / macOS）\ncurl -fsSL https://ollama.com/install.sh | sh\n\n# 拉取並運行 Llama 3.2（約需 2GB 磁碟空間）\nollama pull llama3.2\nollama run llama3.2\n```\n\n```python\n# Python 整合範例（OpenAI SDK 相容，僅需修改 base_url）\nfrom openai import OpenAI\nclient = OpenAI(base_url=\"http://localhost:11434/v1\", api_key=\"ollama\")\nresponse = client.chat.completions.create(\n    model=\"llama3.2\",\n    messages=[{\"role\": \"user\", \"content\": \"解釋什麼是 BFF 設計模式\"}]\n)\nprint(response.choices[0].message.content)\n```\n\n**② n8n 快速建立 AI 代理工作流程**\n\n適合想自動化內部業務流程（例如 Slack 訊息摘要、工單自動分類）的開發者或技術主管。使用 Docker 在本機啟動 n8n，透過視覺化編輯器在 30 分鐘內建立第一個 AI 代理工作流程。\n\n```bash\n# 使用 Docker 快速啟動 n8n\ndocker run -it --rm -p 5678:5678 -v n8n_data:/home/node/.n8n n8nio/n8n\n\n# 開啟瀏覽器前往 http://localhost:5678\n# 建立流程：Webhook 節點 -> AI Agent 節點 -> HTTP Request 節點\n```", "learning_analysis": {"AI / 機器學習": {"summary": "GitHub Copilot 語義搜尋與代理模式持續強化，Ollama 讓本地 LLM 推論進入零成本時代，開發者可在個人機器上低門檻實驗各種開源模型。", "items": ["GitHub Copilot 四月更新：語義代碼搜尋覆蓋所有工作區，代理可跨 repo 執行語義與 grep 搜尋", "Ollama v0.5.7 支援 Llama 3.2、Mistral 等主流模型，7B 模型在 8GB VRAM 下達 40-60 tokens/秒", "Ollama 完全相容 OpenAI SDK，只需修改 base_url 即可將現有程式碼切換至本地推論"]}, "雲端與基礎架構": {"summary": "2026 年雲端原生架構持續成熟，模組化單體架構重新受到重視，在大多數中小型團隊中是比微服務更務實的起點。", "items": ["Backend for Frontend（BFF）模式為不同客戶端建立專屬後端服務，避免前端共用同一 API 的耦合問題", "模組化單體可提供 80% 的微服務效益，只需 20% 的運維成本，適合多數中小型團隊優先採用", "容器化部署與無伺服器運算仍是主流選擇，持續降低基礎架構管理複雜度"]}, "前端開發": {"summary": "GitHub Copilot 的 VS Code 整合為前端開發帶來新工具，瀏覽器分頁共享與內聯 diff 讓 UI 偵錯與代碼審查更直覺高效。", "items": ["VS Code Copilot 新增瀏覽器分頁共享功能，代理可取得即時頁面狀態輔助 UI 偵錯", "聊天視窗內聯 diff 顯示程式碼變更，減少開發者在編輯器與聊天介面間切換的操作成本", "/chronicle 指令讓開發者快速查詢歷史對話，回溯曾處理的元件修改與 PR 記錄"]}, "後端 / 系統設計": {"summary": "事件驅動架構與 Pub/Sub 模式在現代後端系統中廣泛應用，搭配 Trunk-based Development 可最大化 CI/CD 管道效益。", "items": ["Publish-Subscribe 模式解耦服務間依賴，常見實作工具包含 Redis Pub/Sub、Apache Kafka、RabbitMQ", "Trunk-based Development：每天多次提交至主分支，搭配完整自動化測試管道持續交付", "API-First 設計原則：先定義介面再實作，確保前後端協作效率並維持文件與實作的一致性"]}, "開發者工具 / DevOps": {"summary": "n8n 已成為 AI 代理工作流程自動化的主流平台，GitHub Actions 整合 OIDC 與 Defender for Cloud 強化了 DevSecOps 能力。", "items": ["n8n 透過 MCP 客戶端整合，代理可自動發現並呼叫任意 MCP 伺服器上的工具", "GitHub Actions 新增 OIDC token 自訂 repository 屬性支援，強化多環境身份驗證安全性", "Microsoft Defender for Cloud 與 GitHub 整合正式 GA，提供從程式碼到雲端的完整風險可視性"]}}, "sources": [{"title": "GitHub Copilot in Visual Studio Code, April releases - GitHub Changelog", "url": "https://github.blog/changelog/2026-05-06-github-copilot-in-visual-studio-code-april-releases/"}, {"title": "Ollama Setup 2026 | Local LLM Guide - SitePoint", "url": "https://www.sitepoint.com/ollama-setup-guide-2026/"}, {"title": "Building AI Agent Workflows in n8n: The 2026 Complete Guide - DEV Community", "url": "https://dev.to/kr8thor/building-ai-agent-workflows-in-n8n-the-2026-complete-guide-494"}, {"title": "How to Run LLMs Locally with Ollama in 11 Steps [2026]", "url": "https://tech-insider.org/ollama-tutorial-run-llm-locally-2026/"}, {"title": "n8n Guide 2026: Features and Workflow Automation Deep Dive", "url": "https://hatchworks.com/blog/ai-agents/n8n-guide/"}, {"title": "Backend Architecture Patterns: A Practical Guide for 2026", "url": "https://codelit.io/blog/backend-architecture-patterns-guide"}, {"title": "Building a Production-Ready CI/CD Pipeline: The Complete 2026 Guide", "url": "https://medium.com/@krishnafattepurkar/building-a-production-ready-ci-cd-pipeline-the-complete-2026-guide-b3d6a661ecd8"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
