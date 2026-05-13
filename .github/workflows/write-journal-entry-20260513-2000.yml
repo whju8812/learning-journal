@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-13 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260513-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date": "2026-05-13", "session_label": "20:00", "tech_content": "**Git 2.54 引入 `git history` 指令——更直覺的提交歷史編輯**\nGit 2.54 於 2026 年 4 月發布，帶來了實驗性的 `git history` 子指令，讓開發者無需啟動完整的 interactive rebase 就能完成常見的歷史編輯任務。`git history reword` 可直接開啟編輯器修改指定提交的訊息，`git history split` 則能將單一提交拆分為多個較小的提交。同版本還新增了 config-based hooks，允許在 `~/.gitconfig` 或 `/etc/gitconfig` 中定義掛鉤，讓跨專案共用 Git hooks 的管理從此不再依賴手動複製 `.git/hooks` 目錄內的腳本。這兩項改進大幅降低了 Git 進階功能的使用門檻，尤其適合剛開始接觸版本歷史管理的開發者。\n\n**GitHub Copilot VS Code 四月更新：Chronicle 與語義索引全面普及**\nGitHub 於 5 月 6 日發布的 VS Code Copilot 四月更新帶來兩項顯著改進：語義索引（semantic indexing）現在在所有工作區自動啟用，索引建立時間從過去的 5 分鐘縮短至數秒，`#codebase` 工具改由單一統一索引驅動，無需再區分本地或遠端模式，搜尋結果更加一致。另一項值得關注的實驗功能是 `/chronicle`，它將 Copilot 的對話記錄儲存在本機資料庫，讓開發者可搜尋過去的工作紀錄、追蹤曾觸及的檔案與 PR 參照。這些改進標誌著 AI 輔助開發逐漸從「每次對話從零開始」演進為「能理解完整工作脈絡的長期協作夥伴」。\n\n**OpenTofu：正式成熟的開源 Terraform 替代方案**\nOpenTofu 是 Terraform 在 2023 年授權爭議後由社群分叉的開源版本，現由 Linux Foundation 管理，2026 年已成為新 IaC 專案的主流選擇之一。它完全相容 Terraform HCL 語法與 state 檔案，CLI 指令只需將 `terraform` 替換為 `tofu`，切換成本極低。OpenTofu 在 CI/CD 管線中可直接搭配 GitHub Actions 使用，透過 `tofu plan` 在 PR 階段輸出基礎設施變更預覽，再由人工審核後執行 `tofu apply`，實現 GitOps 風格的基礎設施管理。對受商業授權限制困擾的企業或開源社群而言，MPL 2.0 授權提供了無商業風險的穩定選擇。", "tech_application": "**① 使用 Git 2.54 git history 修改舊提交訊息**\n適合需要修正提交歷史中拼字錯誤或補充說明、但不熟悉 `git rebase -i` 的開發者。升級至 Git 2.54 後即可使用 `git history` 子指令：\n\n```bash\n# 升級 Git（macOS Homebrew）\nbrew upgrade git\n\n# 確認版本（需 2.54 以上）\ngit --version\n\n# 修改倒數第 3 個提交的訊息（直接開啟編輯器）\ngit history reword HEAD~2\n\n# 將最後一個提交拆分為兩個\ngit history split HEAD\n```\n\n**② 在 GitHub Actions 整合 OpenTofu 實現 GitOps IaC**\n適合正在以 Terraform 管理雲端基礎設施、希望遷移至開源授權方案的 DevOps 工程師。OpenTofu CLI 與 Terraform 完全相容，以下是最小化的 GitHub Actions workflow 範例：\n\n```yaml\n- name: Setup OpenTofu\n  uses: opentofu/setup-opentofu@v1\n\n- name: Plan Infrastructure Changes\n  run: |\n    tofu init\n    tofu plan -out=tfplan\n\n- name: Apply on main branch\n  if: github.ref == \"refs/heads/main\"\n  run: tofu apply tfplan\n```", "learning_analysis": {"AI / 機器學習": {"summary": "GitHub Copilot VS Code 四月更新帶來語義索引全面普及與 Chronicle 對話記錄功能，AI 開發輔助工具正從單次對話走向具備長期記憶的工作夥伴", "items": ["語義索引自動在所有工作區啟用，#codebase 工具由統一索引驅動，搜尋結果更一致且速度更快", "Chronicle 功能將 Copilot 對話儲存本機資料庫，可搜尋過去工作脈絡與 PR 關聯", "Copilot 代理新增 githubTextSearch 工具，支援 grep 式跨 GitHub repo 語義搜尋", "AI 輔助開發從被動補全演進為主動理解工作區歷史的長期協作夥伴"]}, "雲端與基礎架構": {"summary": "OpenTofu 作為 Terraform 的開源替代方案已趨於成熟，GitOps 風格的 IaC 工作流程（plan 預覽 → 人工審核 → apply）成為 2026 年基礎設施管理最佳實踐", "items": ["OpenTofu 完全相容 Terraform state 檔案與 HCL 語法，CLI 指令只需替換 terraform 為 tofu", "Linux Foundation 管理下的 MPL 2.0 授權消除商業風險，適合開源社群與企業採用", "opentofu/setup-opentofu@v1 GitHub Action 簡化 CI/CD 管線整合", "Cloud 3.0 趨勢：混合雲、多雲及主權雲架構成為 AI 工作負載的基礎設施標準"]}, "前端開發": {"summary": "今日技術更新集中在開發工具與基礎設施層，前端領域目前處於穩定整合期。值得複習的核心概念：CSS Container Queries 讓元件自適應父容器尺寸而非視窗大小，是取代 media query hack 的現代解法", "items": ["TypeScript 嚴格模式（strict: true）已成為前端新專案的基線配置", "Vite 持續主導前端建構工具市場，冷啟動速度比 webpack 快 10-100 倍", "CSS Container Queries 實現元件層級的響應式設計，推薦複習 @container 語法", "Playwright 主導 E2E 測試場景，Vitest 成為單元測試首選"]}, "後端 / 系統設計": {"summary": "Git 2.54 的 config-based hooks 為後端工程師提供了在 pre-commit 階段自動執行 lint 與測試的新途徑；事件驅動架構持續作為微服務解耦的主流模式", "items": ["Git config-based hooks 允許在 ~/.gitconfig 定義共用掛鉤，適合統一團隊程式碼品質門檻", "事件驅動架構（pub/sub）仍是微服務解耦的主流方案，Kafka 與 NATS 為主要工具選擇", "Modular Monolith 是微服務前的務實選擇：清晰邊界搭配單一部署單元", "CQRS 讀寫分離在高查詢量場景下顯著降低讀取延遲，推薦搭配 Redis 快取層"]}, "開發者工具 / DevOps": {"summary": "Git 2.54 的 git history 指令大幅降低提交歷史編輯門檻；OpenTofu 在 CI/CD 管線中的整合讓基礎設施變更與程式碼審核流程統一，提升 IaC 工作流程成熟度", "items": ["git history reword/split：無需 interactive rebase 即可完成常見提交歷史編輯任務", "Git 2.54 config-based hooks：跨專案共用 Git hooks，無需手動複製 .git/hooks 腳本", "OpenTofu + GitHub Actions：tofu plan 於 PR 階段預覽基礎設施變更，合併後自動 apply", "Copilot 語義索引秒速建立，開發者不再需要等待索引完成才能使用 #codebase 搜尋"]}}, "sources": [{"title": "GitHub Copilot in Visual Studio Code, April 2026 releases - GitHub Changelog", "url": "https://github.blog/changelog/2026-05-06-github-copilot-in-visual-studio-code-april-releases/"}, {"title": "Highlights from Git 2.54 - The GitHub Blog", "url": "https://github.blog/open-source/git/highlights-from-git-2-54/"}, {"title": "Git 2.54 Released With New git history Command - Linux Today", "url": "https://www.linuxtoday.com/blog/git-2-54-released-with-new-git-history-command/"}, {"title": "New features in Git 2.54: easier rebasing, hooks, and statistics - Andrew Lock", "url": "https://andrewlock.net/new-features-in-git-2-54-easier-rebasing-hooks-and-statistcs/"}, {"title": "OpenTofu Complete Guide 2026 - DevOpsBoys", "url": "https://devopsboys.com/blog/opentofu-complete-guide-2026"}, {"title": "Using OpenTofu for CI/CD: Open-Source IaC Pipelines Explained", "url": "https://blogs.businesscompassllc.com/2026/02/using-opentofu-for-cicd-open-source.html"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
