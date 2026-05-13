@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-13 08:00)
+
+on:
+  push:
+    paths:
+      - .github/workflows/write-journal-entry-20260513-0800.yml
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-13","session_label":"08:00","tech_content":"**GitHub Copilot Code Review 轉型為代理架構**\n2026 年 6 月 1 日起，GitHub Copilot Code Review 將開始消耗 GitHub Actions 分鐘數。這不只是計費規則調整，更是底層架構的重大轉變：Copilot 改以 Actions Runner 驅動代理能力，包含完整的專案上下文收集，讓每次 Code Review 能真正讀取整個 codebase 後給出建議，而非僅分析表面 diff。對於已部署自建 Runner 的團隊，此項變更不會消耗 Actions 分鐘數，6 月前是評估切換架構的好時機。\n\n**FastAPI 取代 Flask/Django 成為 Python 後端新標準**\n2026 年 FastAPI 已成為新 Python 後端專案的主流選擇，核心優勢在於原生 async/await、自動生成 OpenAPI 互動文件，以及 Pydantic 強型別資料驗證，讓 API 開發同時具備速度與型別安全。相比 Flask，FastAPI 無需額外套件即可處理非同步 I/O，特別適合需要頻繁呼叫 AI 推論 API 或多個外部服務的後端架構，可在不引入複雜多執行緒邏輯的情況下顯著提升吞吐量。\n\n**代理工程時代：AI 輔助生成 51% 的 GitHub 程式碼**\n2026 年初 GitHub 統計顯示，平台上 51% 的提交程式碼由 AI 生成或大幅輔助完成，標誌著軟體開發正式進入代理工程（agentic engineering）時代。開發者角色從撰寫程式碼轉向指揮 AI Agent 完成需求分析、任務規劃與測試，Claude Code、Cursor、Windsurf 等工具已展現此模式的具體形態。投資提示工程與代理協作技能，是在這波轉型中保持競爭力的關鍵。","tech_application":"**① 評估自建 Runner 降低 Copilot Code Review 計費成本**\n適合每週 PR 量超過 20 個、已使用 GitHub Copilot Business 或 Enterprise 的開發團隊。自建 Runner 不消耗 Actions 分鐘數，可在 6 月 1 日計費開始前先評估切換方案。在 repo Settings → Actions → Runners 確認 runner 狀態後，將 workflow 中的 runs-on 改為 self-hosted：\n\n```yaml\njobs:\n  copilot-review:\n    runs-on: self-hosted\n```\n\n**② FastAPI 非同步 API 快速上手**\n適合正在使用 Flask、需要支援高並發外部 API 呼叫的 Python 後端開發者。安裝後可在五分鐘內建立帶自動文件的非同步端點：\n\n```bash\npip install fastapi uvicorn httpx\n```\n\n```python\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/health\")\nasync def health():\n    return {\"status\": \"ok\"}\n```\n\n執行 `uvicorn main:app --reload`，開啟 http://localhost:8000/docs 查看自動生成的互動式 API 文件。","learning_analysis":{"AI / 機器學習":{"summary":"AI 代理工程時代正式到來，51% 的 GitHub 程式碼由 AI 輔助生成，開發者角色轉向指揮 AI Agent 完成任務","items":["GitHub 統計：2026 年初 51% 提交程式碼由 AI 生成或大幅輔助完成","Claude Code、Cursor、Windsurf 等代理工具進入主流開發流程","代理工程（agentic engineering）：提示工程與 AI 協作成為核心技能","Ollama 讓本地執行 LLM 從小眾工具變成開發者常規選項"]},"雲端與基礎架構":{"summary":"GitHub Actions 計費架構轉型，Copilot 代理功能以 Actions Runner 為底層基礎設施；自建 Runner 成為控制成本的關鍵選項","items":["GitHub Copilot Code Review 自 2026/6/1 起消耗 Actions 分鐘數","Self-hosted runner 不消耗 Actions 分鐘，適合高 PR 量團隊節省成本","AWS CI/CD 標準架構：CodePipeline → CodeBuild → ECR → ECS/EKS","OpenTofu 與 Pulumi 成為 IaC 主流，補充或取代部分 Terraform 使用場景"]},"前端開發":{"summary":"TypeScript 已成為前端開發基準，Next.js 與 Nuxt 是新專案標準起點，Figma Dev Mode 加速設計到程式碼轉換流程","items":["TypeScript 成為前端基線，直接使用純 JavaScript 被視為 legacy 方式","Next.js 與 Nuxt 是 2026 年新專案最常見的 meta-framework 選擇","Figma Dev Mode 直接輸出生產用 React/Next.js 元件程式碼","Vitest 成為 JS/TS 專案預設測試框架；Playwright 主導 E2E 測試場景"]},"後端 / 系統設計":{"summary":"FastAPI 取代 Flask/Django 成為新 Python 後端標準；CQRS 與 Circuit Breaker 模式應對分散式系統的讀寫分離與故障隔離需求","items":["FastAPI：原生 async、Pydantic 型別驗證、自動 OpenAPI 文件三大核心優勢","CQRS（命令查詢責任分離）：讀寫分離提升大規模系統查詢效能","Circuit Breaker 模式：防止分散式系統中的連鎖失敗","Modular Monolith 是微服務前的務實起點：以 80% 效益換取 20% 運維成本"]},"開發者工具 / DevOps":{"summary":"GitHub Copilot 計費架構轉型揭示代理工具走向 Actions 深度整合；GitHub Actions 依然是 2026 年 CI/CD 的首選平台","items":["GitHub Copilot Code Review 底層改用 Actions Runner 驅動，self-hosted runner 可免除計費","GitHub Actions 為最多團隊採用的 CI/CD 平台，GitLab CI 和 Jenkins 緊隨","Argo CD 是 Kubernetes GitOps 部署的主流工具選擇","Linear 是專為軟體團隊設計的 issue 管理工具，鍵盤優先操作設計提升效率"]}},"sources":[{"title":"GitHub Copilot code review will start consuming GitHub Actions minutes on June 1, 2026","url":"https://github.blog/changelog/2026-04-27-github-copilot-code-review-will-start-consuming-github-actions-minutes-on-june-1-2026/"},{"title":"GitHub Copilot Code Review Now Consumes Actions Minutes: Deep Dive into Billing and Architecture Shifts","url":"https://thecodersblog.com/github-copilot-code-review-now-consumes-actions-minutes-deep-dive-into-billing-architecture-shifts/"},{"title":"5 Developer Trends That Actually Matter in 2026 - DEV Community","url":"https://dev.to/johnnylemonny/5-developer-trends-that-actually-matter-in-2026-not-just-the-hype-4g86"},{"title":"Backend Architecture Patterns - A Practical Guide for 2026","url":"https://codelit.io/blog/backend-architecture-patterns-guide"},{"title":"Best AI Coding Agents for 2026: Real-World Developer Reviews","url":"https://www.faros.ai/blog/best-ai-coding-agents-2026"},{"title":"Building a Production-Ready CI/CD Pipeline: The Complete 2026 Guide","url":"https://medium.com/@krishnafattepurkar/building-a-production-ready-ci-cd-pipeline-the-complete-2026-guide-b3d6a661ecd8"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
