@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-14 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260514-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-14","session_label":"08:00","tech_content":"**GitHub Copilot 自訂代理人（.agent.md）全面開放**\n\nGitHub 在 2026 年 5 月初發布了 Visual Studio Code 的 4 月份 Copilot 更新，帶來幾項重大改進。其中最值得關注的是自訂代理人（Custom Agents）功能：開發者現在可以在 repo 根目錄建立 `.agent.md` 檔案，定義具備完整 workspace 感知、工具存取、模型選擇和 MCP 連接能力的專屬 Copilot 代理人，讓代理人從通用助理升級為深度整合專案脈絡的自動化夥伴。此外，語意索引（Semantic Indexing）已全面開放適用所有工作區，索引時間從原本的 5 分鐘縮短至不到 60 秒，代碼搜尋精準度大幅提升；實驗性的 /chronicle 功能則讓你查詢自己的歷史對話記錄，快速回溯過去處理過的檔案與 PR。\n\n**Biome 取代 ESLint + Prettier：前端工具鏈的效能革命**\n\n以 Rust 語言開發的 Biome 在 2026 年已成為許多前端專案替換 ESLint 與 Prettier 的首選方案。Biome 使用單一設定檔 biome.json 即可完成 lint 與格式化工作，消除了雙工具各自維護設定的複雜度。實測中，Biome 對 10,000 個檔案的 lint 速度僅 0.8 秒，而 ESLint 需要 45.2 秒，快了近 35-56 倍。對於現有專案，Biome 內建的 biome migrate eslint --write 指令可自動讀取 ESLint 設定並轉換成 Biome 格式，支援 TypeScript ESLint、JSX A11y、React 和 Unicorn 等主流外掛規則的自動遷移。\n\n**Modular Monolith 復興：Spring Modulith 1.4 與實戰架構選擇**\n\n2026 年架構界出現明顯趨勢：CNCF Q1 報告指出，42% 最初採用微服務的組織已將部分服務整合回更大型的可部署單元，業界稱之為「模組化單體（Modular Monolith）」的復興。Spring Modulith 1.4 GA 已正式發布，它是基於 Spring Boot 的框架，幫助開發者識別、結構化並強制執行應用程式模組邊界，內建 ArchUnit 整合可自動驗證模組邊界不被違反。Amazon Prime Video 將視訊品質監控服務從微服務回歸成單一單體後，成本降低了 90%；Shopify 目前則以 280 萬行程式碼的模組化單體承載數十萬商家。這個架構的核心原則是：每個模組管理自己的資料，不直接存取其他模組的資料。","tech_application":"**① 現有 React/TypeScript 專案遷移至 Biome**\n\n適合前端工程師、想簡化工具鏈的全端開發者。若你目前專案同時維護 .eslintrc.js 和 .prettierrc，可用以下步驟快速切換：\n\n```bash\n# 安裝 Biome\nnpm install --save-dev @biomejs/biome\n\n# 初始化設定（生成 biome.json）\nnpx @biomejs/biome init\n\n# 自動從 ESLint 設定遷移\nnpx @biomejs/biome migrate eslint --write\n\n# 執行 lint + 格式檢查\nnpx @biomejs/biome check .\n\n# 自動修正可修正的問題\nnpx @biomejs/biome check --write .\n```\n\n遷移完成後，移除 eslint、prettier 及相關套件，並更新 package.json 的 scripts，即可完整切換。\n\n**② 用 .agent.md 建立專屬 Copilot 代理人**\n\n適合使用 GitHub Copilot Business/Enterprise 的開發者，希望讓 Copilot 深度理解特定專案慣例（例如：API 命名規範、測試框架設定）。在 repo 根目錄建立 .agent.md：\n\n```markdown\n# My Project Agent\n你是這個 Flask 專案的 Copilot 代理人。\n- 所有 API 路由必須放在 app.py，不得建立額外的 Blueprint 檔案\n- 測試使用 pytest，fixture 定義在 tests/conftest.py\n- 回應格式統一為 {\"status\": \"ok\", \"data\": ...}\n```\n\n在 VS Code 的 Copilot Chat 視窗選擇此代理人，它會在每次對話自動載入這些規則，避免重複說明專案慣例。","learning_analysis":{"AI / 機器學習":{"summary":"GitHub Copilot 進入代理人驅動（agent-driven）新時代，開發者可透過 .agent.md 自訂代理人行為，語意索引全面開放讓 AI 輔助編碼更精準；2026 年 AI coding 工具從補全工具演進為全流程工作夥伴。","items":["GitHub Copilot 自訂代理人 .agent.md 功能：定義代理人工具、模型與 MCP 連接","語意索引（Semantic Indexing）全面適用所有 VS Code 工作區，搜尋精準度大幅提升","/chronicle 實驗功能：查詢 Copilot 歷史對話，快速回溯過去工作脈絡"]},"雲端與基礎架構":{"summary":"2026 年雲端架構出現「微服務回退」趨勢，CNCF 報告指出 42% 組織已將部分服務合併，模組化單體成為務實的中間選項；Amazon Prime Video 回歸單體後成本降 90% 成為代表性案例。","items":["CNCF Q1 2026：42% 微服務組織整合服務為模組化單體","Amazon Prime Video 回歸單體架構，成本降低 90%","Shopify 280 萬行模組化單體支援數十萬商家，證明此架構的規模可行性"]},"前端開發":{"summary":"Biome 在 2026 年持續蠶食 ESLint + Prettier 的市佔，Rust 撰寫的工具帶來 35-56x 的效能提升，單一設定檔 biome.json 大幅降低工具鏈維護成本，官方遷移指令降低切換門檻。","items":["Biome 對 10,000 個檔案 lint 僅需 0.8 秒（ESLint 需 45.2 秒）","biome migrate eslint --write 自動轉換 ESLint 設定，支援 TypeScript ESLint 等主流外掛","單一 biome.json 取代 .eslintrc + .prettierrc，消除雙工具維護複雜度"]},"後端 / 系統設計":{"summary":"Spring Modulith 1.4 GA 正式發布標誌模組化單體工具鏈成熟，內建 ArchUnit 整合可自動驗證模組邊界；架構選擇回歸務實：以資料隔離為核心原則，先建立模組邊界再決定是否拆分服務。","items":["Spring Modulith 1.4 GA 發布：自動驗證模組邊界，內建 ArchUnit 整合","核心設計原則：每個模組管理自己的資料，禁止跨模組直接存取資料庫","ArchUnit fitness function：在 CI 中自動偵測模組邊界違規，防止架構退化"]},"開發者工具 / DevOps":{"summary":"GitHub Actions 已成為 2026 年 CI/CD 首選平台，Biome 可直接整合進 GitHub Actions 取代原有的 lint/format 步驟；Copilot CLI 新增 /remote 功能，可從 GitHub.com 或手機遠端監控和干預 Copilot CLI 工作階段。","items":["GitHub Actions 2026 CI/CD 最佳實踐：docker build → push to registry → deploy with rollback","Biome 整合 CI：npx @biomejs/biome ci . 在 pull request 自動驗證程式碼品質","Copilot CLI /remote 功能：從 GitHub.com 或行動裝置遠端監控 CLI session"]}},"sources":[{"title":"GitHub Copilot in VS Code April 2026 Releases","url":"https://github.blog/changelog/2026-05-06-github-copilot-in-visual-studio-code-april-releases/"},{"title":"Biome: The ESLint and Prettier Killer? Complete Migration Guide for 2026","url":"https://dev.to/pockit_tools/biome-the-eslint-and-prettier-killer-complete-migration-guide-for-2026-27m"},{"title":"Biome Official Migration Guide from ESLint and Prettier","url":"https://biomejs.dev/guides/migrate-eslint-prettier/"},{"title":"The Modular Monolith 2026 Complete Guide","url":"https://dev.to/x4nent/the-modular-monolith-2026-complete-guide-spring-modulith-archunit-fitness-functions-and-lessons-878"},{"title":"Modular Monolith Architecture in .NET - Complete Guide (2026)","url":"https://www.milanjovanovic.tech/blog/modular-monolith-architecture-dotnet"},{"title":"Biome Replaces ESLint in 2026: 10-20x Faster Linting","url":"https://byteiota.com/biome-replaces-eslint-in-2026-10-20x-faster-linting/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
