@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-14 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260514-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-14","session_label":"20:00","tech_content":"**Cloudflare Agents Week 2026：為 AI 代理人打造完整雲端基礎設施**\n\nCloudflare 推出「Agents Week 2026」，集中發布一系列讓 AI 代理人在雲端環境中真正可用的基礎設施工具。其中最受矚目的是 Dynamic Workers：這是一種基於 isolate 的執行環境，能在毫秒內啟動（比傳統容器快約 100 倍）、記憶體使用量也低 100 倍，專為執行 AI 生成程式碼設計的安全沙盒。Cloudflare Sandboxes 則賦予 AI 代理人持久化的隔離環境——內含真實 shell、檔案系統與背景程序，可隨需啟動並從中斷處繼續執行。Cloudflare Mesh 整合 Workers VPC，讓代理人可以安全存取私有資料庫與 API，無需手動設定 tunnel。這套基礎設施代表雲端平台從「人類使用」轉向「代理人使用」的關鍵架構轉型。\n\n**Memori：以 SQL-native 方式解決 AI 代理人跨 session 記憶問題**\n\n生產環境中 AI 代理人的核心挑戰之一是記憶持久化。Memori 是一個 LLM 無關的開源函式庫，不只從對話記錄提取記憶，更能從代理人的執行軌跡（agent trace）自動結構化記憶，讓代理人學習過去完成的任務並避免重複錯誤。在 LoCoMo 基準測試中，Memori 達到 81.95% 的準確率，且每次查詢只消耗完整上下文的 5%，節省超過 95% 的 inference 費用。Memori Cloud 提供完全托管版本，只需一個 API key 即可在幾分鐘內為生產系統添加跨 session 持久記憶，無需自行管理資料庫基礎設施。\n\n**llm CLI 0.32：命令列 LLM 工具完成重大重構**\n\nSimon Willison 的 llm CLI 工具在 0.32 版本完成了向後相容的重大重構。llm 是一個 Python 函式庫兼命令列工具，透過統一介面存取 OpenAI、Anthropic、Gemini 等多個 LLM provider（可透過插件擴充）。0.32 版加入 GPT-5.5 支援、修正工具呼叫對話在 SQLite 的持久化 bug，並新增 verbosity 設定選項。這個工具的核心價值在於可透過 Unix pipe 將 LLM 整合進 shell 腳本：例如 git diff | llm 可自動 code review，或 cat log.txt | llm 可快速分析錯誤日誌，讓 AI 能力成為 DevOps 工作流程的一部分。","tech_application":"**① 用 Memori 為代理人添加跨 session 持久記憶**\n\n適合開發多 session 對話代理人（如客服機器人、個人助理）的工程師。現有 RAG 方案只能檢索靜態知識庫，而 Memori 讓代理人記住用戶過去的操作軌跡。\n\n```bash\npip install memori-client\n```\n\n```python\nfrom memori import MemoriClient\n\nclient = MemoriClient(api_key=\"your-api-key\")\n\nclient.extract(\n    session_id=\"user-123\",\n    messages=conversation_history,\n    trace=agent_execution_trace\n)\n\ncontext = client.search(\n    session_id=\"user-123\",\n    query=user_message,\n    top_k=5\n)\n```\n\n記憶自動從 trace 結構化，跨 session 持久保存，查詢成本是全上下文的 5%。\n\n**② 使用 llm CLI 將 AI 整合進 Git 工作流程**\n\n適合想在 shell 腳本或 CI/CD 管道中使用 LLM 的 DevOps 工程師。\n\n```bash\npip install llm\nllm keys set openai\n\npip install llm-anthropic\nllm keys set anthropic\n\ngit diff HEAD~1 | llm \"請找出這個 diff 中潛在的 bug 和安全問題\"\n\ntail -100 error.log | llm -m claude-sonnet-4-6 \"分析這些錯誤，找出根本原因\"\n\ngit diff --staged | llm \"根據這個 diff 生成一個簡潔的 commit message\"\n```\n\n將 AI 能力以 Unix pipe 方式整合進現有工作流程，無需改動既有腳本架構。","learning_analysis":{"AI / 機器學習":{"summary":"2026 年 AI 代理人記憶管理成為核心技術挑戰，Memori 以 SQL-native 方式從代理人執行軌跡自動提取結構化記憶，比全上下文方式節省 95% inference 費用；llm CLI 0.32 重構完成，讓命令列操作多個 LLM provider 更為便利。","items":["Memori：從 agent trace 自動結構化記憶，LoCoMo 準確率 81.95%，查詢成本僅為全上下文的 5%","SQL-native 記憶層：讓 AI 記憶查詢使用結構化 SQL，降低費用且提升可觀測性","llm CLI 0.32：支援 GPT-5.5、修正工具呼叫 SQLite 持久化 bug、新增 verbosity 設定選項"]},"雲端與基礎架構":{"summary":"Cloudflare Agents Week 2026 展示了以 AI 代理人為核心的雲端基礎設施新典範：Dynamic Workers 的 isolate 執行環境比容器快 100 倍，Cloudflare Sandboxes 提供代理人持久化隔離環境，Cloudflare Mesh 讓代理人透過 Workers VPC 安全存取私有網路。","items":["Dynamic Workers：isolate-based 執行環境，毫秒啟動，比容器快 100 倍、記憶體使用降 100 倍","Cloudflare Sandboxes：AI 代理人的持久化隔離環境，含真實 shell、檔案系統和背景程序","Cloudflare Mesh + Workers VPC：代理人安全存取私有資料庫和 API，不需手動設定 tunnel"]},"前端開發":{"summary":"今日前端領域無重大突破新聞，適合複習 Web Vitals 核心指標優化：INP 已於 2024 年取代 FID 成為正式 Core Web Vitals 指標，目標值低於 200ms；LCP 優化應搭配資源預載入（preload）和 CDN 縮短 TTFB。","items":["INP（Interaction to Next Paint）：正式 Core Web Vitals 指標，目標 < 200ms，優秀 < 100ms","LCP 優化：preload 關鍵圖片、減少 render-blocking 資源、使用 fetchpriority=high 屬性","CLS 預防：為圖片設定明確寬高比，使用 CSS aspect-ratio，避免動態插入內容推移版面"]},"後端 / 系統設計":{"summary":"2026 年後端設計模式聚焦在 AI-native 工作負載整合，Backend for Frontend（BFF）模式適合多端應用，CQRS 適合 RAG 查詢的讀寫分離場景；呼叫外部 LLM API 時 Circuit Breaker 模式是確保服務韌性的必要配置。","items":["BFF 模式：為不同客戶端（Web、Mobile、AI 代理人）建立專屬後端，避免通用 API 的耦合問題","CQRS：讀寫分離，特別適合 RAG 工作負載（大量向量查詢 + 少量寫入的非對稱場景）","Circuit Breaker + Retry：呼叫 LLM API 時防止限流導致服務串聯失效的必要韌性模式"]},"開發者工具 / DevOps":{"summary":"llm CLI 0.32 重構完成，讓命令列 LLM 工作流程更成熟，可直接透過 pipe 整合進 CI/CD 管道做 code review 或日誌分析；Cloudflare Dynamic Workers 也為 DevOps 帶來新的 AI 工作負載部署選項。","items":["llm CLI：pip install llm，透過 pipe 將 LLM 整合進 shell 腳本，支援 OpenAI、Anthropic 等多個 provider","git diff | llm：AI code review 整合進 pre-push hook 或 CI 管道，自動找出潛在問題","Cloudflare Dynamic Workers：AI 生成程式碼的安全執行沙盒，比傳統容器快 100 倍，適合快速部署 AI 任務"]}},"sources":[{"title":"Building the agentic cloud: everything we launched during Agents Week 2026","url":"https://blog.cloudflare.com/agents-week-in-review/"},{"title":"Project Think: building the next generation of AI agents on Cloudflare","url":"https://blog.cloudflare.com/project-think/"},{"title":"Memori: Agent-Native Memory Infrastructure (GitHub)","url":"https://github.com/memorilabs/memori"},{"title":"A Coding Implementation to Build Agent-Native Memory Infrastructure with Memori - MarkTechPost","url":"https://www.marktechpost.com/2026/05/11/a-coding-implementation-to-build-agent-native-memory-infrastructure-with-memori-for-persistent-multi-user-and-multi-session-llm-applications/"},{"title":"Release: llm 0.32a2 - Simon Willison","url":"https://simonwillison.net/2026/May/12/llm/"},{"title":"Cloudflare Agents Week 2026 Updates and Announcements","url":"https://www.cloudflare.com/agents-week/updates/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
