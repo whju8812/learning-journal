@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-15 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260515-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-15","session_label":"08:00","tech_content":"**Memori：為 LLM Agent 打造的原生記憶體基礎架構**\n\nLLM Agent 在跨 session 應用中最棘手的挑戰之一，是如何在不爆炸上下文視窗的前提下保存並精準檢索歷史對話。Memori 是一個 LLM 無關（LLM-agnostic）的記憶體層，透過「進階增強管道」將非結構化對話轉換為緊湊的語意三元組（semantic triples）與對話摘要，在 LoCoMo 基準測試中達到 81.95% 準確率，同時比競品 Zep 減少 67% token 用量、比全文脈方法（full-context prompting）節省超過 20 倍成本。Memori 透過 .register() 方法掛進現有 OpenAI 客戶端，幾乎零侵入原有程式碼，並原生支援 streaming 與非同步呼叫。對需要在多 session 或多 persona 場景維持對話連貫性的 Agent 開發者，現在是導入持久記憶體層的最佳時機。\n\n**GitHub Actions 2026 安全路線圖：CI/CD 供應鏈防護進入新階段**\n\nGitHub 正式公布 2026 年 GitHub Actions 安全路線圖，針對 CI/CD 供應鏈攻擊推出多項結構性改進。Workflow 依賴鎖定（Dependency Locking）將把目前執行時動態解析 Action 版本的做法改為確定性解析（deterministic resolution），從源頭杜絕可變 tag 被竄改的風險。原生 Egress 防火牆讓 GitHub-hosted runner 具備網路層出口管控，阻止惡意 Action 外洩機密；Scoped Secrets 允許將 credential 精確綁定至 repository、branch、environment 或 workflow identity，取代當前 repo 層級的全域暴露。Actions Data Stream 提供近即時執行遙測，可輸出至 Amazon S3 或 Azure Event Hub，讓 CI/CD 首次具備與生產系統同等的可觀測性。\n\n**Pinterest 如何在生產環境落地 MCP 生態系統**\n\nModel Context Protocol（MCP）正從個人開發工具擴展至企業生產規模。Pinterest 工程團隊公開了其生產級 MCP 生態系統架構：以一個中央 MCP Registry 作為核心，統一管理所有 MCP Server 的審核、連線元資料與權限驗證，並同時提供 UI 和 API 供 IDE 與 AI 客戶端查詢。目前每月達 66,000 次工具呼叫、840+ 活躍使用者，每月為工程師節省約 7,000 小時。其中 Presto MCP Server 是流量最高的服務，讓 AI Agent 能直接查詢資料倉儲，無需離開開發環境切換到 Dashboard。Pinterest 的架構從 Registry 治理到 Agent 集成，是企業導入 MCP 時完整可參考的生產設計藍圖。","tech_application":"**① 用 Memori 為 AI Agent 加上持久記憶體**\n\n適合正在開發多輪對話或跨 session AI Agent 的後端工程師與 AI 應用開發者。Memori 透過 .register() 方法掛進現有 OpenAI 客戶端，幾行程式碼即可啟用持久記憶體。\n\n```bash\npip install memori-client\n```\n\n```python\nfrom openai import OpenAI\nfrom memori import MemoriClient\n\nclient = OpenAI()\nmemori = MemoriClient(api_key=\"YOUR_MEMORI_KEY\")\nmemori.register(client, user_id=\"user_123\", session_id=\"session_abc\")\n\nresponse = client.chat.completions.create(\n    model=\"gpt-4o\",\n    messages=[{\"role\": \"user\", \"content\": \"上次討論的資料庫設計有什麼進展？\"}]\n)\n```\n\nMemori 自動攔截每次 chat completion 呼叫，將對話轉換為語意三元組儲存，並在下次 session 自動注入相關歷史上下文，無需手動管理 prompt 中的記憶區塊。\n\n**② 以 Commit SHA 鎖定 GitHub Actions 依賴版本**\n\n適合維護 CI/CD 工作流程的 DevOps 工程師，特別是處理敏感 credential 或有 private repo 的團隊。依照 GitHub 2026 安全路線圖，立即可執行的加固動作是用完整 commit SHA 取代可變 tag：\n\n```yaml\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683\n      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020\n        with:\n          node-version: \"22\"\n```\n\n可透過 actionlint 或 GitHub 官方工具自動將既有 workflow 中的 tag 轉換為 SHA 釘版，完成後再至 Organization Settings 啟用「Require approval for outside collaborators」即完成基本供應鏈加固。","learning_analysis":{"AI / 機器學習":{"summary":"Memori 以語意三元組為核心推出 Agent 原生記憶體架構，在 LoCoMo 基準達 81.95% 準確率並大幅降低 token 消耗，標誌著 LLM Agent 記憶體工程從「塞 prompt」邁向專用基礎架構的轉折點。","items":["Memori agent-native 記憶體架構：語意三元組 + 對話摘要，LLM 無關","LoCoMo 基準：81.95% 準確率，比 Zep 少 67% token，比全文脈法省 20 倍成本","多 persona、多 session Agent 的 memory isolation 設計模式","Netflix Model Lifecycle Graph：大規模 ML 模型生命週期治理架構"]},"雲端與基礎架構":{"summary":"Cloudflare Agents Week 2026 發布超過 20 項新功能，以「Cloud 2.0 — Agentic Cloud」為定位，將 AI Agent 所需的計算、記憶體、身份與網路統一整合在邊緣雲端平台，是邊緣運算進入 Agent 時代的重要里程碑。","items":["Cloudflare Agent Memory：managed 持久記憶服務，支援選擇性遺忘與學習","Dynamic Workers：比容器快 100 倍的隔離執行環境","Managed OAuth for Access：RFC 9728 代理授權，取代不安全的 service account","Cloudflare Mesh：Workers VPC 整合的 Agent 私有網路，無需手動設定 tunnel"]},"前端開發":{"summary":"Web 平台透過 Interop 2026 持續提升跨瀏覽器一致性，CSS contrast-color() 在 Chrome 147 成為 Baseline Newly Available，讓無障礙文字顏色選擇可完全由瀏覽器自動計算，是前端無障礙實作的一大進步。","items":["CSS contrast-color()：依背景自動選黑或白文字，Baseline Newly Available（Chrome 147）","Interop 2026：Apple、Google、Microsoft、Mozilla 聯合推進跨瀏覽器功能互通","GitHub Copilot Cloud Agent in Visual Studio：雲端執行任務並自動產生 PR，支援多專案並行","建議複習：Core Web Vitals 三項指標（LCP、INP、CLS）的量測與優化方法"]},"後端 / 系統設計":{"summary":"Pinterest 公開生產級 MCP 生態系統架構，以中央 Registry 統一治理所有 MCP Server，每月 66,000 次工具呼叫、節省 7,000 工時，是目前最完整的 MCP 企業落地參考案例，對設計 AI-native 後端服務層有直接啟發。","items":["Pinterest MCP Registry：集中式治理、permission enforcement，支援 UI + API 查詢","Presto MCP Server：讓 AI Agent 直接查詢資料倉儲，無需切換 Dashboard","Netflix State of Routing in Model Serving：大規模 ML 推論的路由策略設計系列","MCP 生態系統設計模式：registry → server → client → agent 完整鏈路治理"]},"開發者工具 / DevOps":{"summary":"GitHub Actions 2026 安全路線圖帶來 Dependency Locking、Egress 防火牆、Scoped Secrets 與 Actions Data Stream 四項結構性改進，是近年 CI/CD 安全最具規模的升級；GitHub Copilot app（5/14 技術預覽）以獨立桌面 App 登場，主打 agent-driven 開發工作流。","items":["Workflow Dependency Locking：Action 依賴確定性解析，防止可變 tag 供應鏈攻擊","GitHub Actions Native Egress Firewall：runner 網路層出口管控，阻止機密外洩","Scoped Secrets：credential 精確綁定至 repo/branch/env/workflow identity","Actions Data Stream：近即時 CI/CD 遙測輸出至 S3/Azure Event Hub","GitHub Copilot app 技術預覽（2026-05-14）：GitHub-native 桌面 agentic 開發體驗"]}},"sources":[{"title":"A Coding Implementation to Build Agent-Native Memory Infrastructure with Memori","url":"https://www.marktechpost.com/2026/05/11/a-coding-implementation-to-build-agent-native-memory-infrastructure-with-memori-for-persistent-multi-user-and-multi-session-llm-applications/"},{"title":"Memori: Agent-native memory infrastructure (GitHub)","url":"https://github.com/memorilabs/memori"},{"title":"GitHub Actions 2026 Security Roadmap - GitHub Blog","url":"https://github.blog/news-insights/product-news/whats-coming-to-our-github-actions-2026-security-roadmap/"},{"title":"Complete Guide to GitHub Actions 2026 Security Roadmap","url":"https://dev.to/x4nent/complete-guide-to-github-actions-2026-security-roadmap-dependency-locking-native-egress-5aap"},{"title":"Building an MCP Ecosystem at Pinterest","url":"https://medium.com/pinterest-engineering/building-an-mcp-ecosystem-at-pinterest-d881eb4c16f1"},{"title":"How Pinterest Built a Production MCP Ecosystem - ByteByteGo","url":"https://blog.bytebytego.com/p/how-pinterest-built-a-production"},{"title":"Building the agentic cloud: everything we launched during Agents Week 2026","url":"https://blog.cloudflare.com/agents-week-in-review/"},{"title":"GitHub Copilot app is now available in technical preview","url":"https://github.blog/changelog/2026-05-14-github-copilot-app-is-now-available-in-technical-preview/"},{"title":"Democratizing Machine Learning at Netflix: Building the Model Lifecycle Graph","url":"https://netflixtechblog.com/democratizing-machine-learning-at-netflix-building-the-model-lifecycle-graph-5cc6d5828bb1"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
