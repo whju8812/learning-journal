@@ -1,0 +1,37 @@
+name: Write Journal Entry (2026-05-16 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260516-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-16","session_label":"08:00","tech_content":"**Memori — 為 LLM Agent 建立持久化記憶基礎設施**\n\n對於需要跨 session 保留上下文的多用戶 LLM 應用，無狀態的對話設計會讓 AI 每次都從零開始——這正是 Memori 要解決的問題。Memori 是一個開源的 agent-native 記憶基礎設施框架，讓每次呼叫 LLM 時都自動通過記憶層，使 AI 能記住用戶偏好、過往決策與對話脈絡。實作上，開發者只需將 OpenAI 或相容客戶端的請求路由到 Memori 的 proxy，記憶檢索與儲存便自動完成，不需手動管理向量資料庫查詢。在企業多用戶場景（如客服機器人、個人化學習助理）中，這套架構能讓不同用戶各自擁有獨立的記憶空間，顯著提升對話品質。\n\n**GitHub Actions 2026 安全路線圖 — 強化供應鏈安全的新預設值**\n\nGitHub 在 2026 安全路線圖中明確聚焦三個面向：安全預設值（secure defaults）、策略控制（policy controls）、以及 CI/CD 可觀測性（observability）。其中最值得注意的是 GitHub App installation token 的格式升級，從 4 月 27 日起，GITHUB_TOKEN 與第一方整合的 installation token 開始採用新格式，可更有效識別 token 來源並縮短有效期。對於維護 GitHub Actions workflow 的工程師，需確認 CI 腳本中的 token 解析邏輯不依賴舊格式字元串。此外，GitHub 也在強化 workflow 層級的權限控制，讓每個 job 能以最小權限原則執行，降低供應鏈攻擊面。\n\n**Cloudflare Agents Week — 建構 Agentic Cloud 的基礎設施**\n\nCloudflare 在 2026 年的 Agents Week 中發布了一系列面向 AI agent 工作負載的基礎設施工具，涵蓋運算、安全、agent 工具箱與平台工具。最受關注的是 Cloudflare Workers 對長時運行 agent workflow 的支援增強，讓開發者能在邊緣網路上部署需要多步驟 tool calling 與狀態管理的 AI agent，而不必回到中心化伺服器。這對需要低延遲、全球分佈的 AI 應用（如即時客戶互動、邊緣推論）具有重要意義。Cloudflare 同時更新了其 Threat Intelligence Platform，整合 AI 自動化威脅分析，讓安全工程師能更快速地將情報轉化為防禦規則。","tech_application":"**① 使用 Memori 為 LLM Agent 添加跨 session 記憶**\n\n適合後端工程師或 AI 應用開發者，在構建需要保持用戶上下文的聊天機器人或助理系統時使用。Memori 作為 OpenAI 相容 proxy 介入對話流程，自動管理向量記憶的存取。\n\n```bash\n# 安裝 Memori\npip install memori-agent\n\n# 啟動 Memori proxy server（Supabase 後端）\nmemori serve --port 8080 --backend supabase --supabase-url $SUPABASE_URL --supabase-key $SUPABASE_KEY\n```\n\n```python\nfrom openai import OpenAI\n\nclient = OpenAI(\n    base_url=\"http://localhost:8080/v1\",\n    api_key=\"your-openai-key\"\n)\n\nresponse = client.chat.completions.create(\n    model=\"gpt-4o\",\n    messages=[{\"role\": \"user\", \"content\": \"記得我上次問的問題嗎？\"}],\n    extra_headers={\"X-User-ID\": \"user_123\"}\n)\n```\n\n每次請求帶入 X-User-ID，Memori 會自動從該用戶記憶中檢索相關上下文並注入 prompt，無需手動管理向量資料庫。\n\n**② 用 OpenCode 在終端機執行 AI 編碼任務**\n\n適合偏好命令列工作流的開發者，OpenCode 是以 Go 語言建構的開源 AI 編碼 agent，支援 75 種以上模型（包括 Claude、Gemini、本地 Ollama），可在終端機中執行多步驟程式碼生成與修改任務。\n\n```bash\n# 安裝 OpenCode\ncurl -fsSL https://opencode.ai/install.sh | sh\n\n# 配置預設模型（以 Anthropic 為例）\nopencode config set default_model claude-sonnet-4-6\n\n# 在專案目錄中執行編碼任務\ncd your-project\nopencode \"幫我在 app.py 中加入 JWT 驗證 middleware，使用 PyJWT 函式庫\"\n```\n\nOpenCode 會分析專案結構、生成程式碼、並直接修改檔案，整個過程在終端機完成，適合在遠端 SSH 環境或 CI pipeline 中自動化程式碼任務。","learning_analysis":{"AI / 機器學習":{"summary":"LLM agent 的記憶基礎設施成為 2026 年 AI 應用的關鍵工程挑戰，Memori 等框架讓持久化 agent 記憶更易實作；Qwen3 系列持續主導本地部署生態","items":["Memori 提供 agent-native 記憶層，支援多用戶多 session 的持久化上下文管理","Qwen3 成為本地部署首選開源模型，在消費級硬體上接近閉源模型效能","Shopify 內部 AI 編碼工具 River 顯示企業級 coding agent 落地趨勢加速"]},"雲端與基礎架構":{"summary":"Cloudflare Agents Week 標誌著雲端基礎設施正式進入 agentic 時代，邊緣運算與 AI agent 工作負載的整合在 2026 年加速落地","items":["Cloudflare Workers 強化對長時運行 AI agent workflow 的支援，可在邊緣部署多步驟 tool calling","Cloudflare Threat Intelligence Platform 整合 AI 自動化威脅分析，提升安全回應速度","SAP AI Agent Hub 提供企業級 AI agent 治理平台，統一管理多廠商 agent 與 MCP server"]},"前端開發":{"summary":"前端開發聚焦在與 AI 編碼工具的整合及 agent 化工作流，傳統 UI 框架技術棧趨於穩定；建議複習 Core Web Vitals 與 Lighthouse CI 持續整合設定","items":["GitHub Copilot Cloud Agent 可在雲端執行任務並自動開 PR，讓開發者能並行處理多個前端專案","Visual Studio 2026 引入 Debugger agent，AI 修復後自動對照執行期行為進行驗證","建議複習 Core Web Vitals 三項指標（LCP、INP、CLS）與 Lighthouse CI 在 GitHub Actions 中的整合方式"]},"後端 / 系統設計":{"summary":"後端設計模式趨勢是從 Modular Monolith 出發，在真正遇到擴展問題時才引入微服務複雜度；BFF 模式在多端應用中持續普及","items":["Modular Monolith 提供微服務 80% 的好處、只需 20% 的運維成本，是大多數團隊的推薦起點","Backend for Frontend（BFF）模式讓 mobile、web 各端擁有獨立後端，優化各自的 API 契約","B-Trees vs LSM Trees 的讀寫特性取捨是資料庫選型核心，值得深度複習"]},"開發者工具 / DevOps":{"summary":"GitHub Actions 2026 安全路線圖強化供應鏈安全防護，OpenCode 等開源 AI 編碼 agent 讓終端機工作流升級，CI/CD pipeline 安全性成為重點關注領域","items":["GitHub App installation token 格式從 4 月 27 日起升級，需確認 CI 腳本中的 token 解析邏輯相容性","OpenCode 開源 AI coding agent（Go 語言）支援 75+ 模型，可在終端機或 CI 中自動化編碼任務","GitHub Actions 強化 job 層級最小權限控制（least privilege），有效降低供應鏈攻擊面"]}},"sources":[{"title":"A Coding Implementation to Build Agent-Native Memory Infrastructure with Memori","url":"https://www.marktechpost.com/2026/05/11/a-coding-implementation-to-build-agent-native-memory-infrastructure-with-memori-for-persistent-multi-user-and-multi-session-llm-applications/"},{"title":"GitHub Actions 2026 security roadmap announcement","url":"https://github.blog/news-insights/product-news/whats-coming-to-our-github-actions-2026-security-roadmap/"},{"title":"Notice about upcoming new format for GitHub App installation tokens","url":"https://github.blog/changelog/2026-04-24-notice-about-upcoming-new-format-for-github-app-installation-tokens/"},{"title":"Building the agentic cloud: everything we launched during Agents Week 2026","url":"https://blog.cloudflare.com/agents-week-in-review/"},{"title":"Evolving Cloudflare Threat Intelligence Platform","url":"https://blog.cloudflare.com/cloudflare-threat-intelligence-platform/"},{"title":"Accelerate developer productivity with 9 open source AI and MCP projects","url":"https://github.blog/open-source/accelerate-developer-productivity-with-these-9-open-source-ai-and-mcp-projects/"},{"title":"Learning on the Shop Floor — Shopify River coding agent","url":"https://simonwillison.net/2026/May/11/learning-on-the-shop-floor/"},{"title":"The Best Open Source LLM Models to Run Locally in 2026 (Hugging Face)","url":"https://huggingface.co/blog/daya-shankar/open-source-llm-models-to-run-locally"},{"title":"SAP launches AI Agent Hub at Sapphire 2026 (The New Stack)","url":"https://thenewstack.io/sap-ai-agent-hub/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            https://learning-journal.mariposa-lw.xyz/api/entries \
+            -H "X-Journal-Key: $JOURNAL_API_KEY" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
