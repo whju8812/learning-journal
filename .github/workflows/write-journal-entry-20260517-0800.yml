@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-17 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260517-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-17","session_label":"08:00","tech_content":"**Memori：為 AI Agent 打造的持久化記憶基礎設施**\n\n大多數 LLM 應用的最大痛點之一是健忘——每次對話都從零開始，agent 無法記住上一個 session 的使用者偏好或決策背景。Memori 是一個 LLM 無關的記憶基礎設施層，以輕量 SDK 包裹既有的 LLM 客戶端，自動攔截對話並將內容分類成事實、偏好、規則、摘要四種結構化記憶，儲存於 PostgreSQL，支援多使用者與多 session 的記憶彼此隔離，並提供自帶資料庫（BYODB）選項供企業控制資料主權。在 LoCoMo 長對話記憶評測中，Memori 達到 81.95% 準確率，每次查詢平均僅需 1,294 tokens，對生產環境相當友善。\n\n**Shopify River：讓 AI 工作在組織中公開可見**\n\nShopify 的內部 coding agent River，在過去一週內於公司主要 monorepo 自動開了 1,870 個 Pull Request，每八個合併 PR 就有一個由 River 撰寫、人工審核通過。River 的設計核心是：只在公開 Slack 頻道運作，拒絕私訊，所有 AI 互動紀錄對全公司可搜尋。這個讓工作可見的哲學讓超過 100 名工程師得以觀察、補充脈絡並參與審查，形成大規模的集體學習效果。對於思考如何在組織中落地 AI 工具的工程師，River 提供了兼顧速度與知識傳播的實踐參考。\n\n**Interop 2026：Web 平台跨瀏覽器一致性加速**\n\nApple、Google、Microsoft、Mozilla 共同推進 Interop 2026，鎖定多個長期存在跨瀏覽器差異的 Web API。dialog closedby 屬性讓對話框支援點擊外部自動關閉，popover 的 hint 模式專為 tooltip 設計，CSS animation-timeline 啟用 scroll-driven animations，WebTransport API 則是基於 HTTP/3 的低延遲雙向傳輸協定，是比 WebSocket 更現代的即時通訊方案。這批 API 正式進入 Baseline，代表已在所有主流瀏覽器穩定支援，前端開發者可直接使用而無需 polyfill。","tech_application":"**① Memori 快速整合：為 AI 應用加入持久記憶**\n\n適合正在開發多輪對話 agent 或 chatbot 的後端工程師。Memori 以 SDK 包裹方式整合，幾乎不需改動現有程式碼。\n\n```bash\npip install memori-sdk\n```\n\n```python\nimport openai\nfrom memori import MemoriClient\n\nmemori = MemoriClient(api_key=\"YOUR_MEMORI_KEY\")\nclient = memori.wrap(openai.OpenAI())\n\nresponse = client.chat.completions.create(\n    model=\"gpt-4o\",\n    messages=[{\"role\": \"user\", \"content\": \"我叫 Alice，我偏好用 Python 寫後端。\"}],\n    extra_body={\"memori_user_id\": \"alice-001\"}\n)\n```\n\n下次 session 時，系統自動帶入 Alice 的記憶上下文，無需手動管理 context。\n\n**② WebTransport 實作低延遲即時串流**\n\n適合需要高頻資料推送（如即時遊戲狀態、股票報價、協作工具）的前端或 Node.js 開發者，可用來取代 WebSocket。Interop 2026 確保所有主流瀏覽器一致支援。\n\n```javascript\nconst transport = new WebTransport(\"https://example.com:4433/realtime\");\nawait transport.ready;\n\nconst stream = await transport.createUnidirectionalStream();\nconst writer = stream.writable.getWriter();\nawait writer.write(new TextEncoder().encode(JSON.stringify({ event: \"ping\" })));\nawait writer.close();\n```","learning_analysis":{"AI / 機器學習":{"summary":"Memori 作為 LLM-agnostic 持久記憶層登場，解決了 agent 跨 session 健忘的核心問題；開源本地模型（Qwen3）持續進化，性能逼近頂尖閉源模型，降低企業部署門檻。","items":["Memori：自動將對話分類為事實、偏好、規則、摘要四種結構化記憶，支援多使用者隔離與 BYODB 企業部署","Qwen3-Coder-Next（80B 參數）在本地硬體上性能接近頂尖閉源模型，適合本地推論場景","HuggingFace Spring 2026 報告：西方組織積極尋求 OpenAI GPT-OSS、AI2 OLMo、Google Gemma 等可商用開源替代方案"]},"雲端與基礎架構":{"summary":"Cloudflare Agents Week 推出 agentic cloud 全套工具；GitHub Actions 2026 安全藍圖新增 OIDC 自訂屬性與 VNET failover，強化 CI/CD 安全性。","items":["Cloudflare Agents Week 2026：發布 agentic cloud 工具套件，涵蓋運算、安全防護、agent 工具箱三大面向","GitHub Actions 新增 OIDC custom properties 與 VNET failover，強化 CI/CD 身份驗證與網路容錯","GitHub Copilot Code Review 自 2026/6/1 起以 AI Credits 計費並消耗 Actions minutes，需留意私有 repo 成本"]},"前端開發":{"summary":"Interop 2026 推動 dialog、popover、scroll-driven animation、WebTransport 等 API 跨瀏覽器統一，顯著降低前端 polyfill 負擔，讓現代 Web 標準可直接投入生產使用。","items":["Interop 2026：dialog closedby、popover hint 模式、CSS animation-timeline、WebTransport 正式進入 Baseline","WebTransport API（HTTP/3）跨瀏覽器統一支援，可替代 WebSocket 用於低延遲即時通訊場景","CSS :open pseudo-class 讓 dialog 與 popover 的開啟狀態可直接用 CSS 選取器控制樣式"]},"後端 / 系統設計":{"summary":"Shopify River 的大規模 PR 自動化案例展示 AI agent 在真實 monorepo 中的落地規模；讓 AI 工作可見的設計哲學為組織導入 AI 工具提供可複製的參考框架。","items":["Shopify River：公開 Slack 頻道運作的 coding agent，一週自動開 1,870 個 PR，1/8 合併 PR 由 AI 撰寫人工審核","River 的設計原則：禁止私訊、強制公開頻道，讓 AI 工作可搜尋、可觀察，促進組織知識傳播","High Scalability 推薦 Kafka 作為高吞吐事件串流基礎設施核心，持續受工程師關注"]},"開發者工具 / DevOps":{"summary":"OpenCode 作為開源終端 AI coding agent 持續成熟，支援 75+ 模型；GitHub Actions 2026 安全藍圖與 MCP 開源生態持續擴張，AI-native 工作流程加速普及。","items":["OpenCode：Go 語言實作的開源 AI coding agent，TUI 介面，支援 75+ 模型跨提供商，可在終端直接使用","GitHub blog 整理 9 個 MCP 開源專案，提供 AI-native IDE 助理、語意程式碼理解、安全程式碼執行等能力","DevSecOps 趨勢：將安全掃描整合進 CI/CD 流水線，讓安全成為自動化且無感的開發流程一環"]}},"sources":[{"title":"Memori: Agent-Native Memory Infrastructure","url":"https://memorilabs.ai/blog/agent-native-memory-infrastructure/"},{"title":"A Coding Implementation to Build Agent-Native Memory Infrastructure with Memori","url":"https://www.marktechpost.com/2026/05/11/a-coding-implementation-to-build-agent-native-memory-infrastructure-with-memori-for-persistent-multi-user-and-multi-session-llm-applications/"},{"title":"Learning on the Shop floor (Shopify River)","url":"https://simonwillison.net/2026/May/11/learning-on-the-shop-floor/"},{"title":"Interop 2026: Continuing to improve the web for developers","url":"https://web.dev/blog/interop-2026"},{"title":"Accelerate developer productivity with 9 open source AI and MCP projects","url":"https://github.blog/open-source/accelerate-developer-productivity-with-these-9-open-source-ai-and-mcp-projects/"},{"title":"GitHub Actions 2026 Security Roadmap","url":"https://github.blog/news-insights/product-news/whats-coming-to-our-github-actions-2026-security-roadmap/"},{"title":"Building the agentic cloud: Cloudflare Agents Week 2026","url":"https://blog.cloudflare.com/agents-week-in-review/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
