@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-18 20:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260518-2000.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-18","session_label":"20:00","tech_content":"**Python 3.14 正式移除 GIL：自由執行緒帶來後端效能革命**\n\nPython 3.14 根據 PEP 779，將自由執行緒（Free-Threading）構建從實驗性功能升級為正式支援，意味著 CPython 不再預設啟用 GIL（全域解釋器鎖）。GIL 長年是 Python CPU 密集型任務的最大瓶頸——多執行緒程式實際上只能單核運行。測試結果顯示，移除 GIL 後 CPU 密集型任務速度提升最高 10 倍（3.70 秒 → 0.35 秒），FastAPI 在 CPU 密集端點的吞吐量從每秒 4 個請求躍升至 32 個，約提升 8 倍。代價是單執行緒有約 8-10% 的額外開銷，C 擴充套件需要重新編譯才能充分受益。純 Python 程式碼無需修改即可立即獲益，最適合資料 Pipeline、ML 預處理及有 CPU 密集工作的 Web API。\n\n**Shopify Cardinal：廣度優先 GraphQL 引擎如何節省 4 秒延遲**\n\nGraphQL 傳統的深度優先執行方式搭配 graphql-batch 惰性載入，在高基數查詢時存在嚴重效能問題——Shopify 發現 1,000 個惰性欄位比非惰性欄位慢約 2.5 倍。他們在 2026 年 3 月推出的 Cardinal 引擎改採廣度優先執行策略：單次遍歷整個請求文件，以聚合方式一次解析所有物件的同一欄位，消除了惰性載入帶來的過多批次請求。結果單次請求節省 4 秒延遲。這種模式對任何在高基數情境下運行 GraphQL 的團隊都有參考價值，尤其是電商、社群平台等需要串聯多層巢狀資料的場景。\n\n**Interop 2026：瀏覽器廠商協力推進的 20 項前端新標準**\n\nApple、Google、Microsoft、Mozilla 與 Igalia 今年在 Interop 2026 計劃中聯手推進 20 項跨瀏覽器互通性，幾項對前端開發者影響深遠。CSS attr() 函數現可在任何 CSS 屬性使用，讓 HTML 屬性直接驅動視覺樣式。CSS Custom Highlights API 透過 ::highlight() 偽元素對 DOM 範圍套用樣式，適合程式碼高亮或搜尋結果標記，且不影響文件佈局。Scroll-Driven Animations 讓動畫直接繫結於捲動進度（animation-timeline: scroll()），無需 JavaScript 即可製作視差或進度條效果。Cross-Document View Transitions 讓多頁應用在頁面切換時也能擁有流暢的視覺過場動畫，過去這只有 SPA 能做到。","tech_application":"**① 在 Python 3.14 自由執行緒環境中加速 FastAPI 端點**\n\n適合維護有 CPU 密集型任務（如即時影像處理、資料轉換、ML 推論前處理）的後端工程師。升級至 Python 3.14 並啟用自由執行緒構建後，可在不改動業務邏輯的情況下大幅提升 CPU 密集端點吞吐量。\n\n```bash\n# 安裝 Python 3.14 自由執行緒版本（pyenv，t 後綴代表 free-threaded build）\npyenv install 3.14.0t\npyenv local 3.14.0t\n\n# 確認 GIL 已停用\npython3 -c \"import sys; print(sys._is_gil_enabled())\"\n# 輸出: False\n\n# 使用多執行緒 Worker 啟動 FastAPI\nuvicorn main:app --workers 4\n```\n\n測試時可用 concurrent.futures.ThreadPoolExecutor 提交多個 CPU 密集任務，觀察實際並行效果。注意：若依賴 C 擴充套件（如 NumPy），請先確認該套件有提供 free-threaded wheel。\n\n**② 用 Promptfoo 為 LLM 應用建立自動化紅隊測試**\n\n適合正在生產環境部署 LLM 功能的開發者，在每次 PR 合併前自動執行 OWASP LLM Top 10 測試，防止提示注入、PII 洩漏等漏洞上線。\n\n```bash\n# 安裝 Promptfoo CLI\nnpm install -g promptfoo\n\n# 初始化設定檔\npromptfoo init\n\n# 執行紅隊安全測試（掃描提示注入、PII、SQL Injection 等）\npromptfoo redteam run\n\n# 輸出 JSON 結果（可整合 CI/CD）\npromptfoo redteam run --output results.json\n```\n\n可將上述指令加入 GitHub Actions，在 pull_request 事件時觸發，發現高風險漏洞時以 exit 1 阻擋合併。","learning_analysis":{"AI / 機器學習":{"summary":"Memori 開源記憶層以語意三元組結構化 Agent 執行軌跡，在 LoCoMo 基準上以僅 1,294 tokens/query 達到 81.95% 準確率，比競品少用 67% token；LLM-as-a-Judge 評估模式在生產環境中已被 Netflix 等頭部企業採用，但需配合領域黃金資料集校準才能降低偏差。","items":["Memori 開源 Agent 記憶基礎設施：語意三元組加摘要，跨 Session 持久化上下文","LLM-as-a-Judge：以 LLM 大規模評分輸出品質，成本僅人工審查的 1/500 至 1/5000","Netflix 以 LLM-as-a-Judge 評估節目簡介品質的生產實踐案例"]},"雲端與基礎架構":{"summary":"Figma 透過 Amazon RDS → Kafka CDC → Snowflake 增量合併的架構，將最大資料表的同步延遲從數天縮短至 3 小時；AI 與平台工程的融合趨勢在 2026 年加速，SAP 推出 AI Agent Hub 提供跨廠商的 Agent 治理層。","items":["Figma CDC Pipeline：RDS → Kafka → Snowflake 增量合併，近即時資料同步架構","AI 平台工程融合：架構智慧層與 AI Agent 治理工具成為大型工程組織新標配","SAP AI Agent Hub：跨廠商集中管理 LLM、Agent 與 MCP Server 的治理平台"]},"前端開發":{"summary":"Interop 2026 協議推進 20 項跨瀏覽器新標準，CSS attr() 全屬性支援、CSS Custom Highlights、Scroll-Driven Animations 與 Cross-Document View Transitions 是本年度最值得追蹤的四大前端新能力，無需 JavaScript 即可實現過去只有框架才能做到的互動效果。","items":["CSS attr() 全屬性支援：HTML 屬性值可直接驅動任意 CSS 屬性","CSS Custom Highlights API：::highlight() 偽元素對 DOM 範圍套用樣式，不影響佈局","Scroll-Driven Animations：animation-timeline: scroll() 純 CSS 捲動動畫","Cross-Document View Transitions：多頁應用原生頁面切換過場動畫"]},"後端 / 系統設計":{"summary":"Shopify Cardinal 以廣度優先 GraphQL 執行策略解決高基數查詢的惰性載入效能問題，單次請求節省 4 秒延遲；2026 年後端架構共識逐漸向模組化單體靠攏，認為其提供微服務 80% 的優勢但只需 20% 的運維成本。","items":["Shopify Cardinal：廣度優先 GraphQL 引擎，聚合欄位解析消除惰性載入批次開銷","模組化單體架構（Modular Monolith）：2026 年後端團隊的推薦起始架構共識","CQRS 模式：讀寫分離設計在大規模 Node.js 後端中的應用趨勢"]},"開發者工具 / DevOps":{"summary":"Python 3.14 正式移除 GIL 是後端生態的重要里程碑，CPU 密集端點吞吐量可提升 8 倍；GitHub Copilot 於 5 月 17 日將 GPT-5.3-Codex 設為 Business/Enterprise 預設模型，複雜工具驅動工作流速度較上一版提升 25%。","items":["Python 3.14 Free-Threading：PEP 779 正式支援，GIL 移除，CPU 密集任務最高 10x 加速","Promptfoo：開源 LLM 測試與紅隊框架，支援 OWASP LLM Top 10 自動化 CI/CD 整合","GitHub Copilot GPT-5.3-Codex：5/17 成為 Business/Enterprise 預設，複雜工作流速度+25%"]}},"sources":[{"title":"Python 3.14 Free-Threading, JIT Compiler and GIL Removal","url":"https://blog.imseankim.com/python-3-14-free-threading-jit-compiler-gil-removal-2026/"},{"title":"Python Free-Threading HOWTO — docs.python.org","url":"https://docs.python.org/3/howto/free-threading-python.html"},{"title":"Shopify — Faster Breadth-First GraphQL Execution (Cardinal)","url":"https://shopify.engineering/faster-breadth-first-graphql-execution"},{"title":"Interop 2026 — web.dev","url":"https://web.dev/blog/interop-2026"},{"title":"Launching Interop 2026 — Mozilla Hacks","url":"https://hacks.mozilla.org/2026/02/launching-interop-2026/"},{"title":"Memori — Agent-Native Memory Infrastructure (GitHub)","url":"https://github.com/MemoriLabs/Memori"},{"title":"How Figma Upgraded Its Data Pipeline — ByteByteGo","url":"https://blog.bytebytego.com/p/how-figma-upgraded-data-pipeline"},{"title":"GPT-5.3-Codex Now Base Model for Copilot Business/Enterprise","url":"https://github.blog/changelog/2026-05-17-gpt-5-3-codex-is-now-the-base-model-for-copilot-business-and-enterprise/"},{"title":"Promptfoo — LLM Testing and Red-Teaming (GitHub)","url":"https://github.com/promptfoo/promptfoo"},{"title":"LLM-as-a-Judge Complete Guide — EvidentlyAI","url":"https://www.evidentlyai.com/llm-guide/llm-as-a-judge"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
