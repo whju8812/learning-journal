@@ -165,7 +165,6 @@ async function loadEntry(dateStr) {
     '<div class="loading-spinner-center"><div class="accent-spinner"></div></div>';
   try {
     const sessions = await apiFetch(`/api/entries/${dateStr}`);
-    // Deduplicate sources once on load, not on every render
     const seenUrls = new Set();
     currentSessions = sessions.map(s => ({
       ...s,
@@ -200,7 +199,6 @@ function renderDateSidebarEmpty() {
   document.getElementById('mobileStrip').innerHTML = '';
 }
 
-// Build a date chip element (shared by sidebar groups).
 function buildDateChip(entry) {
   const isToday  = entry.entry_date === TODAY;
   const isActive = entry.entry_date === currentDate;
@@ -223,17 +221,13 @@ function buildDateChip(entry) {
 }
 
 function renderDateSidebar() {
-  // Sidebar (desktop): year-grouped, collapsible
   const groups = groupDatesByYear(allDates);
   const listFrag = document.createDocumentFragment();
   const newestYear = groups.length ? groups[0].year : null;
 
   groups.forEach(group => {
-    // Default: only newest year expanded.
-    // A year is collapsed if user explicitly collapsed it,
-    // OR if it isn't the newest year and user hasn't expanded it.
     const userCollapsed   = collapsedYears.has(group.year);
-    const userExpanded    = collapsedYears.has('!' + group.year); // explicit expand marker
+    const userExpanded    = collapsedYears.has('!' + group.year);
     const collapsedByDefault = group.year !== newestYear;
     const isCollapsed = userCollapsed || (collapsedByDefault && !userExpanded);
 
@@ -265,7 +259,6 @@ function renderDateSidebar() {
   list.innerHTML = '';
   list.appendChild(listFrag);
 
-  // Mobile strip: flat list (no year grouping — strip is already chronological)
   const stripFrag = document.createDocumentFragment();
   allDates.forEach(entry => {
     const isToday  = entry.entry_date === TODAY;
@@ -285,28 +278,20 @@ function renderDateSidebar() {
 }
 
 function toggleYear(year) {
-  // Tri-state model:
-  //   not in set        → default behaviour (newest expanded, others collapsed)
-  //   "<year>" in set   → forced collapsed
-  //   "!<year>" in set  → forced expanded
   const newestYear = allDates.length ? yearOf(allDates[0].entry_date) : null;
   const isCollapsed = collapsedYears.has(year) ||
     (year !== newestYear && !collapsedYears.has('!' + year));
   collapsedYears.delete(year);
   collapsedYears.delete('!' + year);
   if (isCollapsed) {
-    // expanding
     if (year !== newestYear) collapsedYears.add('!' + year);
   } else {
-    // collapsing
     if (year === newestYear) collapsedYears.add(year);
   }
   saveCollapsedYears();
   renderDateSidebar();
 }
 
-// Make sure when a search result is clicked, the year containing it
-// is force-expanded so the chip is visible.
 function ensureYearExpanded(dateStr) {
   const year = yearOf(dateStr);
   const newestYear = allDates.length ? yearOf(allDates[0].entry_date) : null;
@@ -321,8 +306,6 @@ function ensureYearExpanded(dateStr) {
 
 // ─── Search ───
 function highlightTerm(text, term) {
-  // Escape HTML first, then re-inject <mark> around the (escaped) term.
-  // We work on the escaped string so we never inject raw HTML from the source.
   const escaped = escHtml(text);
   if (!term) return escaped;
   const escapedTerm = escHtml(term).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -331,9 +314,13 @@ function highlightTerm(text, term) {
 }
 
 function setSearchUiActive(active) {
-  document.getElementById('searchClear').hidden    = !active;
-  document.getElementById('searchResults').hidden  = !active;
-  document.getElementById('dateList').hidden       = active;
+  const clearBtn  = document.getElementById('searchClear');
+  const resultsEl = document.getElementById('searchResults');
+  const dateList  = document.getElementById('dateList');
+  clearBtn.hidden = !active;
+  resultsEl.hidden = !active;
+  dateList.hidden  = active;
+  if (!active) resultsEl.innerHTML = '';
 }
 
 async function runSearch(q) {
@@ -344,16 +331,14 @@ async function runSearch(q) {
     return;
   }
   setSearchUiActive(true);
-  resultsEl.innerHTML =
-    '<div class="search-status">搜尋中…</div>';
+  resultsEl.innerHTML = '<div class="search-status">搜尋中…</div>';
   searching = true;
   try {
     const data = await apiFetch(`/api/entries/search?q=${encodeURIComponent(q)}`);
-    if (q !== searchQuery) return; // a newer search has started
+    if (q !== searchQuery) return;
     renderSearchResults(data);
   } catch {
-    resultsEl.innerHTML =
-      '<div class="search-status error">搜尋失敗，請稍後再試</div>';
+    resultsEl.innerHTML = '<div class="search-status error">搜尋失敗，請稍後再試</div>';
   } finally {
     searching = false;
   }
@@ -367,7 +352,6 @@ function renderSearchResults(data) {
       `<div class="search-status">找不到符合 "<strong>${escHtml(data.query)}</strong>" 的日誌</div>`;
     return;
   }
-  // Group by date — one entry_date may have two sessions both matching.
   const byDate = new Map();
   for (const r of results) {
     if (!byDate.has(r.entry_date)) byDate.set(r.entry_date, []);
@@ -386,10 +370,12 @@ function renderSearchResults(data) {
       </button>`;
   }).join('');
   resultsEl.innerHTML = head + rows;
-  // Wire result buttons
   resultsEl.querySelectorAll('.search-result').forEach(btn => {
     btn.addEventListener('click', () => {
       const d = btn.dataset.date;
+      resultsEl.querySelectorAll('.search-result').forEach(b => {
+        b.classList.toggle('active', b.dataset.date === d);
+      });
       selectDate(d);
     });
   });
@@ -478,7 +464,6 @@ function renderEntry() {
   }).join('');
 
   const lastSession = currentSessions[currentSessions.length - 1];
-  // Sources already deduplicated in loadEntry
   const allSources = currentSessions.flatMap(s => s.sources || []);
 
   content.innerHTML = `
@@ -500,7 +485,6 @@ function renderEntry() {
   `;
 }
 
-// Uses data-tab attribute — not fragile index-based matching
 function switchInnerTab(tab) {
   currentInnerTab = tab;
   document.querySelectorAll('.inner-tab').forEach(t => {
@@ -575,7 +559,6 @@ function renderEmptyState() {
 }
 
 function renderErrorState(retryFn) {
-  // Store retry in a closure via data attribute to avoid window global pollution
   const id = `retry-${Date.now()}`;
   requestAnimationFrame(() => {
     const btn = document.getElementById(id);
