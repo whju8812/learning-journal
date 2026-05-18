@@ -51,11 +51,11 @@ Every run should follow this workflow:
    - `YEAR` as the 4-digit year (e.g. `2026`)
 2. Check whether `.github/workflows/write-journal-entry-{YYYYMMDD}-{HHMM}.yml` already exists. If it does, the session is already handled.
 3. Search today's latest software content, prioritizing the last 3-4 hours and same-day high-engagement Threads posts.
-4. **Query the database for today's existing sessions** to avoid repeating themes:
-   - Use WebFetch to call `GET https://learning-journal.mariposa-lw.xyz/api/entries/{ENTRY_DATE}`
-   - If successful (HTTP 200), read the `tech_content` and `tech_application` fields from each returned session and extract already-covered topics/tools
-   - If the request fails or returns 404, fall back to reading any local `.github/workflows/write-journal-entry-{YYYYMMDD}-*.yml` files and parsing their embedded JSON
-   - Do NOT repeat any tool name, framework, or main theme already covered by an existing session on the same date
+4. **Query the database for recent sessions** to avoid repeating themes:
+   - Use WebFetch to call `GET https://learning-journal.mariposa-lw.xyz/api/entries/recent?days=7`
+   - If successful (HTTP 200), read the `tech_content` and `tech_application` fields from ALL returned sessions (covers last 7 days / up to 14 sessions) and extract already-covered topics, tools, and frameworks
+   - If the request fails or returns an empty array, fall back to reading any local `.github/workflows/write-journal-entry-{YYYYMMDD}-*.yml` files and parsing their embedded JSON
+   - Do NOT repeat any tool name, framework, or main theme already covered in the last 7 days
 5. Write Traditional Chinese content:
    - `tech_content`: 2-3 plain-text paragraphs
    - `tech_application`: 1–2 application scenarios (tool name + who/context + how to start)

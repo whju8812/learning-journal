@@ -290,6 +290,29 @@ def api_journal_list():
         return jsonify([]), 200
 
 
+@app.route("/api/entries/recent")
+def api_journal_recent():
+    try:
+        days = min(int(request.args.get("days", 7)), 30)
+    except (ValueError, TypeError):
+        days = 7
+    if supabase is None:
+        return jsonify([]), 200
+    try:
+        from datetime import timedelta
+        cutoff = (date_type.today() - timedelta(days=days)).isoformat()
+        result = (
+            supabase.table("journal_entries")
+            .select("entry_date, session_label, tech_content, tech_application")
+            .gte("entry_date", cutoff)
+            .order("entry_date", desc=True)
+            .execute()
+        )
+        return jsonify(result.data or []), 200
+    except Exception:
+        return jsonify([]), 200
+
+
 @app.route("/api/entries/<date_str>")
 def api_journal_entry(date_str):
     try:
