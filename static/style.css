@@ -688,4 +688,12 @@ header {
 /* About footer */
 .page-footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .footer-note { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
-.footer-link { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: var(--accent); text-decoration: none; padding: 8px 18px; border: 1.5px solid var(--accent); border-radius: var(--
+.footer-link { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: var(--accent); text-decoration: none; padding: 8px 18px; border: 1.5px solid var(--accent); border-radius: var(--radius-md); transition: background 150ms ease, color 150ms ease; }
+.footer-link:hover { background: var(--accent); color: #fff; }
+
+/* About responsive */
+@media (max-width: 640px) {
+  .page      { padding: 40px 20px 72px; }
+  .hero-title { font-size: 28px; }
+  .stack-row  { grid-template-columns: 100px 1fr; }
+}
