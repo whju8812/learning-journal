@@ -188,6 +188,173 @@ header {
   position: sticky;
   top: 120px;
 }
+
+/* Sidebar search */
+.sidebar-search {
+  position: relative;
+  margin-bottom: var(--space-3);
+}
+.sidebar-search-input {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-6) var(--space-2) var(--space-3);
+  min-height: 36px;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.sidebar-search-input::placeholder { color: var(--text-muted); }
+.sidebar-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+/* Hide native search clear button — we render our own */
+.sidebar-search-input::-webkit-search-decoration,
+.sidebar-search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+.sidebar-search-clear {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.sidebar-search-clear:hover { background: var(--bg3); color: var(--text); }
+
+/* Year groups */
+.year-group { margin-bottom: var(--space-3); }
+.year-group:last-child { margin-bottom: 0; }
+.year-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: left;
+  user-select: none;
+  min-height: 36px;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.year-header:hover { background: var(--bg3); color: var(--text); }
+.year-caret {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--text-muted);
+  transition: transform 150ms ease-out;
+  width: 12px;
+  text-align: center;
+}
+.year-group.collapsed .year-caret { transform: rotate(-90deg); }
+.year-label { flex: 1; }
+.year-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg3);
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 22px;
+  text-align: center;
+}
+.year-body {
+  padding-top: 2px;
+  padding-left: var(--space-1);
+  border-left: 1px dashed var(--border);
+  margin-left: 9px;
+}
+.year-group.collapsed .year-body { display: none; }
+
+/* Search results panel */
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.search-status {
+  font-size: var(--text-small);
+  color: var(--text-muted);
+  padding: var(--space-2) var(--space-3);
+  line-height: 1.5;
+}
+.search-status.error { color: var(--error); }
+.search-status strong { color: var(--text); font-weight: 600; }
+.search-result {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 200ms ease;
+}
+.search-result:hover { background: var(--bg2); box-shadow: var(--shadow-sm); }
+.search-result.active { border-color: var(--accent); background: var(--accent-light); }
+.search-result-date {
+  font-size: var(--text-small);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.search-result-year {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.search-result-field {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+  letter-spacing: 0.02em;
+}
+.search-result-snippet {
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  word-break: break-word;
+}
+.search-result-snippet mark {
+  background: var(--accent-light);
+  color: var(--text);
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: 600;
+}
 .date-chip {
   display: flex;
   align-items: center;

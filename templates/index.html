@@ -14,7 +14,25 @@
 
     <div class="journal-layout">
       <aside class="date-sidebar" role="navigation" aria-label="日期導覽">
+        <div class="sidebar-search">
+          <input
+            type="search"
+            id="searchInput"
+            class="sidebar-search-input"
+            placeholder="搜尋關鍵字…"
+            aria-label="搜尋日誌關鍵字"
+            autocomplete="off"
+          />
+          <button
+            type="button"
+            id="searchClear"
+            class="sidebar-search-clear"
+            aria-label="清除搜尋"
+            hidden
+          >×</button>
+        </div>
         <div id="dateList"></div>
+        <div id="searchResults" class="search-results" hidden></div>
       </aside>
       <div class="journal-content" role="main" id="journalContent"></div>
     </div>

@@ -313,6 +313,98 @@ def api_journal_recent():
         return jsonify([]), 200
 
 
+@app.route("/api/entries/search")
+def api_journal_search():
+    q = (request.args.get("q") or "").strip()
+    if not q:
+        return jsonify({"query": "", "results": []}), 200
+    # cap query length to avoid abuse
+    q = q[:100]
+    if supabase is None:
+        return jsonify({"query": q, "results": []}), 200
+    try:
+        # Pull all entries (the dataset is small — one or two rows per day).
+        # We do case-insensitive matching in Python so we can also search
+        # inside the JSON learning_analysis and sources fields.
+        result = (
+            supabase.table("journal_entries")
+            .select("entry_date, session_label, tech_content, tech_application, learning_analysis, sources")
+            .order("entry_date", desc=True)
+            .execute()
+        )
+        rows = result.data or []
+        q_lower = q.lower()
+
+        def _flatten(obj):
+            """Yield every string contained in nested dicts/lists."""
+            if obj is None:
+                return
+            if isinstance(obj, str):
+                yield obj
+            elif isinstance(obj, dict):
+                for v in obj.values():
+                    yield from _flatten(v)
+            elif isinstance(obj, list):
+                for v in obj:
+                    yield from _flatten(v)
+
+        def _snippet(text, term, radius=60):
+            """Return a short context window around the first match."""
+            if not text:
+                return ""
+            i = text.lower().find(term.lower())
+            if i < 0:
+                return ""
+            start = max(0, i - radius)
+            end   = min(len(text), i + len(term) + radius)
+            snip  = text[start:end].replace("\n", " ").strip()
+            if start > 0:
+                snip = "…" + snip
+            if end < len(text):
+                snip = snip + "…"
+            return snip
+
+        results = []
+        for row in rows:
+            fields = {
+                "tech_content":     row.get("tech_content") or "",
+                "tech_application": row.get("tech_application") or "",
+            }
+            # flatten learning_analysis (summary + items) into one searchable string
+            la_blob = " ".join(_flatten(row.get("learning_analysis")))
+            # flatten sources titles only (URLs not very searchable)
+            src_blob = " ".join(
+                (s.get("title") or "") for s in (row.get("sources") or []) if isinstance(s, dict)
+            )
+
+            hit = False
+            snippet = ""
+            matched_field = ""
+            # priority order — tech_content is most user-facing
+            for label, text in (
+                ("技術內容",   fields["tech_content"]),
+                ("技術應用",   fields["tech_application"]),
+                ("學習方向分析", la_blob),
+                ("參考來源",   src_blob),
+            ):
+                if text and q_lower in text.lower():
+                    if not hit:
+                        snippet       = _snippet(text, q)
+                        matched_field = label
+                    hit = True
+            if hit:
+                results.append({
+                    "entry_date":    row["entry_date"],
+                    "session_label": row.get("session_label"),
+                    "matched_field": matched_field,
+                    "snippet":       snippet,
+                })
+
+        return jsonify({"query": q, "results": results, "count": len(results)}), 200
+    except Exception:
+        return jsonify({"query": q, "results": []}), 200
+
+
 @app.route("/api/entries/<date_str>")
 def api_journal_entry(date_str):
     try:

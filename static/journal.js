@@ -18,6 +18,15 @@ let healthData      = null;
 let healthDismissed = false;
 let currentInnerTab = 'tech';
 
+// Year-group collapse state (persisted in localStorage)
+const LS_YEAR_KEY = 'lj.yearCollapsed.v1';
+let collapsedYears = loadCollapsedYears();
+
+// Search state
+let searchQuery   = '';
+let searchTimer   = null;
+let searching     = false;
+
 // Cached once at load — today never changes during a page session
 const TODAY = todayStr();
 
@@ -70,6 +79,43 @@ function formatDateFull(dateStr) {
 function formatDateChip(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
   return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} (${DAY_NAMES[d.getDay()]})`;
+}
+
+function yearOf(dateStr) {
+  return dateStr.slice(0, 4);
+}
+
+// ─── localStorage helpers ───
+function loadCollapsedYears() {
+  try {
+    const raw = localStorage.getItem(LS_YEAR_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    return new Set(Array.isArray(arr) ? arr.map(String) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveCollapsedYears() {
+  try {
+    localStorage.setItem(LS_YEAR_KEY, JSON.stringify([...collapsedYears]));
+  } catch { /* quota / private mode — ignore */ }
+}
+
+// Group dates into [{ year, items: [...] }] preserving descending order.
+function groupDatesByYear(dates) {
+  const groups = [];
+  const idx = new Map();
+  for (const entry of dates) {
+    const y = yearOf(entry.entry_date);
+    if (!idx.has(y)) {
+      idx.set(y, groups.length);
+      groups.push({ year: y, items: [] });
+    }
+    groups[idx.get(y)].items.push(entry);
+  }
+  return groups;
 }
 
 // ─── Date display ───
@@ -139,7 +185,11 @@ async function loadEntry(dateStr) {
 }
 
 function selectDate(dateStr) {
-  if (dateStr === currentDate && currentSessions.length > 0) return;
+  ensureYearExpanded(dateStr);
+  if (dateStr === currentDate && currentSessions.length > 0) {
+    renderDateSidebar();
+    return;
+  }
   loadEntry(dateStr);
 }
 
@@ -150,25 +200,77 @@ function renderDateSidebarEmpty() {
   document.getElementById('mobileStrip').innerHTML = '';
 }
 
-function renderDateSidebar() {
-  const listFrag  = document.createDocumentFragment();
-  const stripFrag = document.createDocumentFragment();
+// Build a date chip element (shared by sidebar groups).
+function buildDateChip(entry) {
+  const isToday  = entry.entry_date === TODAY;
+  const isActive = entry.entry_date === currentDate;
+  const label    = (isToday ? '✦ ' : '') + formatDateChip(entry.entry_date);
 
+  const chip = document.createElement('div');
+  chip.className = 'date-chip' + (isActive ? ' active' : '') + (isToday ? ' today' : '');
+  chip.setAttribute('role', 'tab');
+  chip.setAttribute('tabindex', '0');
+  chip.setAttribute('aria-selected', String(isActive));
+  chip.innerHTML = `${escHtml(label)}<span class="today-badge">今天</span>`;
+  chip.onclick = () => selectDate(entry.entry_date);
+  chip.onkeydown = e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      selectDate(entry.entry_date);
+    }
+  };
+  return chip;
+}
+
+function renderDateSidebar() {
+  // Sidebar (desktop): year-grouped, collapsible
+  const groups = groupDatesByYear(allDates);
+  const listFrag = document.createDocumentFragment();
+  const newestYear = groups.length ? groups[0].year : null;
+
+  groups.forEach(group => {
+    // Default: only newest year expanded.
+    // A year is collapsed if user explicitly collapsed it,
+    // OR if it isn't the newest year and user hasn't expanded it.
+    const userCollapsed   = collapsedYears.has(group.year);
+    const userExpanded    = collapsedYears.has('!' + group.year); // explicit expand marker
+    const collapsedByDefault = group.year !== newestYear;
+    const isCollapsed = userCollapsed || (collapsedByDefault && !userExpanded);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'year-group' + (isCollapsed ? ' collapsed' : '');
+    wrap.dataset.year = group.year;
+
+    const header = document.createElement('button');
+    header.type = 'button';
+    header.className = 'year-header';
+    header.setAttribute('aria-expanded', String(!isCollapsed));
+    header.innerHTML = `
+      <span class="year-caret" aria-hidden="true">▾</span>
+      <span class="year-label">${escHtml(group.year)} 年</span>
+      <span class="year-count">${group.items.length}</span>
+    `;
+    header.onclick = () => toggleYear(group.year);
+    wrap.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'year-body';
+    group.items.forEach(entry => body.appendChild(buildDateChip(entry)));
+    wrap.appendChild(body);
+
+    listFrag.appendChild(wrap);
+  });
+
+  const list = document.getElementById('dateList');
+  list.innerHTML = '';
+  list.appendChild(listFrag);
+
+  // Mobile strip: flat list (no year grouping — strip is already chronological)
+  const stripFrag = document.createDocumentFragment();
   allDates.forEach(entry => {
     const isToday  = entry.entry_date === TODAY;
     const isActive = entry.entry_date === currentDate;
     const label    = (isToday ? '✦ ' : '') + formatDateChip(entry.entry_date);
-
-    const chip = document.createElement('div');
-    chip.className = 'date-chip' + (isActive ? ' active' : '') + (isToday ? ' today' : '');
-    chip.setAttribute('role', 'tab');
-    chip.setAttribute('tabindex', '0');
-    chip.setAttribute('aria-selected', String(isActive));
-    chip.innerHTML = `${escHtml(label)}<span class="today-badge">今天</span>`;
-    chip.onclick = () => selectDate(entry.entry_date);
-    chip.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectDate(entry.entry_date); } };
-    listFrag.appendChild(chip);
-
     const pill = document.createElement('div');
     pill.className = 'date-pill' + (isActive ? ' active' : '') + (isToday ? ' today' : '');
     pill.setAttribute('role', 'tab');
@@ -177,13 +279,146 @@ function renderDateSidebar() {
     pill.onclick = () => selectDate(entry.entry_date);
     stripFrag.appendChild(pill);
   });
-
-  const list  = document.getElementById('dateList');
   const strip = document.getElementById('mobileStrip');
-  list.innerHTML  = '';
   strip.innerHTML = '';
-  list.appendChild(listFrag);
   strip.appendChild(stripFrag);
+}
+
+function toggleYear(year) {
+  // Tri-state model:
+  //   not in set        → default behaviour (newest expanded, others collapsed)
+  //   "<year>" in set   → forced collapsed
+  //   "!<year>" in set  → forced expanded
+  const newestYear = allDates.length ? yearOf(allDates[0].entry_date) : null;
+  const isCollapsed = collapsedYears.has(year) ||
+    (year !== newestYear && !collapsedYears.has('!' + year));
+  collapsedYears.delete(year);
+  collapsedYears.delete('!' + year);
+  if (isCollapsed) {
+    // expanding
+    if (year !== newestYear) collapsedYears.add('!' + year);
+  } else {
+    // collapsing
+    if (year === newestYear) collapsedYears.add(year);
+  }
+  saveCollapsedYears();
+  renderDateSidebar();
+}
+
+// Make sure when a search result is clicked, the year containing it
+// is force-expanded so the chip is visible.
+function ensureYearExpanded(dateStr) {
+  const year = yearOf(dateStr);
+  const newestYear = allDates.length ? yearOf(allDates[0].entry_date) : null;
+  if (year === newestYear) {
+    collapsedYears.delete(year);
+  } else {
+    collapsedYears.delete(year);
+    collapsedYears.add('!' + year);
+  }
+  saveCollapsedYears();
+}
+
+// ─── Search ───
+function highlightTerm(text, term) {
+  // Escape HTML first, then re-inject <mark> around the (escaped) term.
+  // We work on the escaped string so we never inject raw HTML from the source.
+  const escaped = escHtml(text);
+  if (!term) return escaped;
+  const escapedTerm = escHtml(term).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (!escapedTerm) return escaped;
+  return escaped.replace(new RegExp(escapedTerm, 'gi'), m => `<mark>${m}</mark>`);
+}
+
+function setSearchUiActive(active) {
+  document.getElementById('searchClear').hidden    = !active;
+  document.getElementById('searchResults').hidden  = !active;
+  document.getElementById('dateList').hidden       = active;
+}
+
+async function runSearch(q) {
+  searchQuery = q;
+  const resultsEl = document.getElementById('searchResults');
+  if (!q) {
+    setSearchUiActive(false);
+    return;
+  }
+  setSearchUiActive(true);
+  resultsEl.innerHTML =
+    '<div class="search-status">搜尋中…</div>';
+  searching = true;
+  try {
+    const data = await apiFetch(`/api/entries/search?q=${encodeURIComponent(q)}`);
+    if (q !== searchQuery) return; // a newer search has started
+    renderSearchResults(data);
+  } catch {
+    resultsEl.innerHTML =
+      '<div class="search-status error">搜尋失敗，請稍後再試</div>';
+  } finally {
+    searching = false;
+  }
+}
+
+function renderSearchResults(data) {
+  const resultsEl = document.getElementById('searchResults');
+  const results = data.results || [];
+  if (results.length === 0) {
+    resultsEl.innerHTML =
+      `<div class="search-status">找不到符合 "<strong>${escHtml(data.query)}</strong>" 的日誌</div>`;
+    return;
+  }
+  // Group by date — one entry_date may have two sessions both matching.
+  const byDate = new Map();
+  for (const r of results) {
+    if (!byDate.has(r.entry_date)) byDate.set(r.entry_date, []);
+    byDate.get(r.entry_date).push(r);
+  }
+  const head = `<div class="search-status">共找到 <strong>${results.length}</strong> 筆結果（${byDate.size} 天）</div>`;
+  const rows = [...byDate.entries()].map(([dateStr, hits]) => {
+    const fields = [...new Set(hits.map(h => h.matched_field))].join('、');
+    const snippet = hits.find(h => h.snippet)?.snippet || '';
+    const isActive = dateStr === currentDate;
+    return `
+      <button type="button" class="search-result ${isActive ? 'active' : ''}" data-date="${escHtml(dateStr)}">
+        <div class="search-result-date">${escHtml(formatDateChip(dateStr))} <span class="search-result-year">${escHtml(yearOf(dateStr))}</span></div>
+        <div class="search-result-field">${escHtml(fields)}</div>
+        ${snippet ? `<div class="search-result-snippet">${highlightTerm(snippet, data.query)}</div>` : ''}
+      </button>`;
+  }).join('');
+  resultsEl.innerHTML = head + rows;
+  // Wire result buttons
+  resultsEl.querySelectorAll('.search-result').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = btn.dataset.date;
+      selectDate(d);
+    });
+  });
+}
+
+function initSearchInput() {
+  const input  = document.getElementById('searchInput');
+  const clear  = document.getElementById('searchClear');
+  if (!input) return;
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    clear.hidden = !q;
+    if (searchTimer) clearTimeout(searchTimer);
+    if (!q) { runSearch(''); return; }
+    searchTimer = setTimeout(() => runSearch(q), 250);
+  });
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      input.value = '';
+      clear.hidden = true;
+      runSearch('');
+    }
+  });
+  clear.addEventListener('click', () => {
+    input.value = '';
+    clear.hidden = true;
+    input.focus();
+    runSearch('');
+  });
 }
 
 // ─── Health banner ───
@@ -373,4 +608,5 @@ function showLoadingState() {
 }
 
 // ─── Boot ───
+initSearchInput();
 initJournal();
