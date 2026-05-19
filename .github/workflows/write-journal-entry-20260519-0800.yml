@@ -1,0 +1,33 @@
+name: Write Journal Entry (2026-05-19 08:00)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/write-journal-entry-20260519-0800.yml'
+  workflow_dispatch:
+
+jobs:
+  write-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write entry JSON
+        run: |
+          printf '%s' '{"entry_date":"2026-05-19","session_label":"08:00","tech_content":"**SAP AI Agent Hub——企業 AI 代理治理新基準**\n\n隨著企業內部 AI agent 數量激增，來自不同廠商的代理人、LLM 與 MCP server 形成難以管控的「代理人蔓生」（Agent Sprawl）困境。SAP 在 Sapphire 2026 大會推出的 AI Agent Hub，是廠商無關（vendor-agnostic）的統一治理命令中心：自動發現並盤點跨廠商所有 AI 代理人與 MCP server，附帶風險評分與合規映射，確保任何代理人進入生產環境前都完成稽核。此工具將於 Q3 正式上市並整合 SAP Cloud Identity Services，讓每個代理人擁有獨立身份與存取控制，是企業 AI 採用從試驗走向可治理規模化的重要里程碑。\n\n**Figma 數據管道重構：批次到近即時的漸進演進路徑**\n\nFigma 公開了其數據同步管道的架構升級過程，是極具參考價值的工程案例。原始架構是每日執行一次的 cron job 全量匯出到 Snowflake，三年後最大資料表同步耗費數天、需要專用只讀副本，年成本達數百萬美元。升級後引入增量變更捕獲（CDC）機制，設定預設每 3 小時合併一次，高優先級資料表（如帳單）可設為 30 分鐘，同時加入合併佇列與 CLI 工具支援手動觸發即時同步。這條批次到可配置增量再到近即時的漸進重構路徑，無需引入 Kafka 或 Flink 等複雜串流框架即可達成近即時分析目標。\n\n**Ollama + Gemma 3：本地 LLM 開發的零成本起點**\n\n開源 LLM 生態在 2026 年已成熟到讓個人開發者在普通筆電上穩定運行生產級模型。Ollama 提供類似 Docker 的體驗：一行指令拉取並執行任意 LLM，本地 API 與 OpenAI 完全相容，無需雲端 API key。Google 的 Gemma 3（4B 版本是最佳入門選擇）支援 128K context、140 種語言與視覺輸入，在 8GB RAM 機器上即可流暢運行。相比雲端 API，本地部署的優勢在於零 per-token 成本、離線可用、資料不離機、延遲可預測——對需要快速驗證 AI 原型或處理敏感資料的開發場景，Ollama + Gemma 3 是目前門檻最低且效益最高的組合。","tech_application":"**① 5 分鐘在本地部署 Gemma 3（Ollama）**\n\n適合想驗證 AI 功能原型、離線開發或避免 API 費用的個人開發者。Ollama 安裝後提供 OpenAI 相容 API，程式碼幾乎不需改動即可從雲端切換到本地運行。\n\n```bash\n# 安裝 Ollama（macOS/Linux）\ncurl -fsSL https://ollama.com/install.sh | sh\n\n# 拉取 Gemma 3（4B 版，約 2.5GB）\nollama pull gemma3:4b\n\n# 啟動互動對話模式\nollama run gemma3:4b\n\n# 查看已安裝模型列表\nollama list\n```\n\n**② 企業 AI 代理盤點（為 SAP AI Agent Hub Q3 上市預做準備）**\n\n適合企業架構師或平台工程師。在 SAP AI Agent Hub 正式上市前，先建立代理人資產盤點清單，掌握組織內現有代理人的廠商分布、LLM 使用情況及風險等級，有助後續平滑接入治理平台。\n\n```yaml\n# agent_inventory.yaml\nagents:\n  - name: sales-forecasting-agent\n    vendor: SAP\n    llm: GPT-4o\n    mcp_servers: [crm-mcp, erp-mcp]\n    risk_rating: medium\n    compliance: [SOC2, GDPR]\n  - name: code-review-agent\n    vendor: GitHub\n    llm: Claude Sonnet\n    risk_rating: low\n    compliance: [SOC2]\n```","learning_analysis":{"AI / 機器學習":{"summary":"企業級 AI 代理治理成為 2026 年關鍵工程議題，SAP AI Agent Hub 提供跨廠商統一治理框架；本地 LLM 部署（Ollama + Gemma 3）讓個人開發者得以零成本驗證 AI 原型。","items":["SAP AI Agent Hub 自動發現並盤點跨廠商 AI 代理人、LLM 與 MCP server，附帶風險評分與合規映射","Ollama 提供 OpenAI 相容本地 API，支援 Gemma 3（4B/12B/27B）等主流開源模型","Gemma 3 4B 在 8GB RAM 機器上可流暢運行，支援 128K context 與視覺輸入","本地 LLM 解決零成本、離線可用、資料不離機三大開發痛點"]},"雲端與基礎架構":{"summary":"Figma 的數據管道重構案例示範了從高成本批次架構遷移到近即時 CDC 架構的漸進路徑，兼顧成本控制與分析時效。","items":["Figma 以 CDC 增量合併取代每日全量匯出，省下數百萬美元年費","可配置合併頻率（預設 3 小時，最短 30 分鐘）兼顧 Snowflake 計算成本與數據新鮮度","合併佇列系統搭配 CLI 工具支援手動觸發即時同步","此漸進重構模式無需引入 Kafka 或 Flink 即可實現近即時數據分析"]},"前端開發":{"summary":"React 19 Server Components 在 2026 年已成為前端效能優化的最高槓桿點，典型遷移可減少 40% JavaScript bundle 大小並大幅改善 LCP 指標。建議複習 RSC 串流渲染原理。","items":["React Server Components 在伺服器端直接存取資料庫，僅傳送預渲染 HTML 給客戶端，消除 JavaScript 負擔","Next.js 15 Partial Prerendering（PPR）可從邊緣快取服務靜態 shell，動態部分串流補充","遷移策略：優先將資料密集型頁面轉為 Server Components，互動元件保留 Client Components","Core Web Vitals 目標：LCP 低於 2.5 秒、INP 低於 200ms、CLS 低於 0.1"]},"後端 / 系統設計":{"summary":"2026 年後端架構選型趨向務實：Modular Monolith 以 20% 的運維成本獲得 80% 的微服務優勢，資料庫儲存引擎選型則需根據讀寫模式在 B-Tree 與 LSM Tree 之間取捨。","items":["Modular Monolith 以明確模組邊界取代服務網格，部署複雜度大幅降低","Backend for Frontend（BFF）模式解決多端 API 聚合的耦合問題","B-Trees 適合讀多寫少場景，LSM Trees 適合寫入密集型場景（時序資料、日誌）","Circuit Breaker + Retry pattern 是應對上游服務不穩定的標準後端防禦模式"]},"開發者工具 / DevOps":{"summary":"企業 AI 代理治理工具（SAP AI Agent Hub）正成為 DevOps 堆疊新一層，本地 LLM 工具（Ollama）讓開發者在 CI/CD 流程中整合 AI 能力而無需依賴外部 API。","items":["Ollama 提供類 Docker 的 LLM 管理體驗，支援 Modelfile 自定義系統提示與推理參數","SAP AI Agent Hub 統一治理 MCP server，補足企業 DevOps 的 AI 可觀測性缺口","Visual Studio 2026 主打 AI 輔助增強與效能改善，側重漸進演進而非大幅重寫","GitHub Copilot 代碼審查從 6 月起消耗 Actions 分鐘數，需納入 CI/CD 成本規劃"]}},"sources":[{"title":"SAP AI Agent Hub at Sapphire 2026 - The New Stack","url":"https://thenewstack.io/sap-ai-agent-hub/"},{"title":"SAP Sapphire 2026: SAP Unveils the Autonomous Enterprise","url":"https://news.sap.com/2026/05/sap-sapphire-sap-unveils-autonomous-enterprise/"},{"title":"From Multi-Day Latency to Near Real-Time: Figma Data Pipeline Upgrade","url":"https://www.figma.com/blog/figmas-data-pipeline-upgrade/"},{"title":"How Figma Upgraded Data Pipeline - ByteByteGo","url":"https://blog.bytebytego.com/p/how-figma-upgraded-data-pipeline"},{"title":"Gemma 3 Local LLM Deployment Guide - SitePoint","url":"https://www.sitepoint.com/gemma-3-local-llm-deployment-googles-ai-for-developers-2026/"},{"title":"Best Open Source LLM Models to Run Locally in 2026 - Hugging Face","url":"https://huggingface.co/blog/daya-shankar/open-source-llm-models-to-run-locally"},{"title":"React 19 Server Components Production Patterns 2026 - DEV Community","url":"https://dev.to/vikrant_bagal_afae3e25ca7/react-19-server-components-production-patterns-for-high-performance-apps-in-2026-3278"},{"title":"GitHub Actions 2026 Security Roadmap - GitHub Blog","url":"https://github.blog/news-insights/product-news/whats-coming-to-our-github-actions-2026-security-roadmap/"}]}' > entry.json
+
+      - name: Post entry to journal API
+        env:
+          JOURNAL_API_KEY: ${{ secrets.JOURNAL_API_KEY }}
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST             https://learning-journal.mariposa-lw.xyz/api/entries             -H "X-Journal-Key: $JOURNAL_API_KEY"             -H "Content-Type: application/json; charset=utf-8"             -d @entry.json)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -1)
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" = "201" ]; then
+            echo "SUCCESS: Entry written."
+          elif [ "$HTTP_CODE" = "409" ]; then
+            echo "SKIP: Entry already exists."
+          else
+            echo "ERROR: Unexpected status $HTTP_CODE"
+            exit 1
+          fi
